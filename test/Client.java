@@ -1,8 +1,9 @@
+package test;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.net.SocketException;
 
 public class Client {
@@ -56,7 +57,7 @@ public class Client {
 
 			// wait a second before transmitting the next packet
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(50);
 			} catch (InterruptedException ie) {
 				ie.printStackTrace();
 				System.exit(1);
