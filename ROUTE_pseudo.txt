@@ -1,0 +1,25 @@
+ROUTE(dest_ID)
+
+if(my_ID == dest_ID) then 
+	*service*
+
+from = *ID mittente*
+
+if(from == lchild_ID) then
+	if(parent_ID == null) or (dest_ID < parent_ID) then
+		forward to rchild
+	else(dest_ID >= parent_ID) then
+		forward to parent
+
+if(from == rchild_ID) then
+	if(parent_ID == null) or (dest_ID < parent_ID) then
+		forward to lchild
+	else(dest_ID >= parent_ID) then
+		forward to parent
+
+else if(from == parent_ID) then
+	if(dest_ID < my_ID) then
+		forward to lchild
+	else forward to rchild
+
+
