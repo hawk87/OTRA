@@ -1,0 +1,11 @@
+SEND(dest_ID) {packet generation}
+
+if(dest_ID > my_ID) then
+	if(dest_ID < parent_ID) then
+		forward to rchild
+	else forward to parent
+
+else if(dest_ID > parent_ID) then
+	forward to lchild
+
+else forward to parent
