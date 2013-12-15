@@ -36,15 +36,28 @@ public final class TreeMaintenance {
 		return table;
 	}
 
-
+	// holds the current operational state
+	// this can be NormalState, BalancingState ecc...
 	private OperationalState maintenanceState;
 	
 	void changeState(OperationalState os) {
 		maintenanceState = os;
 	}
 	
+	//
+	// INCOMING MESSAGES HANDLES
+	//
+	
 	public void sizeFromChild(Node n, int s) {
 		maintenanceState.sizeFromChild(n, s);
+	}
+	
+	public void joinBroadcast(Node n) {
+		maintenanceState.joinBroadcast(n);
+	}
+	
+	public void joinSearch(Node n) {
+		maintenanceState.joinSearch(n);
 	}
 
 }

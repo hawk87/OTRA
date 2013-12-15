@@ -1,6 +1,7 @@
 package app.tree;
 
 import app.Node;
+import app.Debug;
 
 class NormalState extends OperationalState {
 	
@@ -10,7 +11,7 @@ class NormalState extends OperationalState {
 	private boolean rightIsReady;
 	
 	// this counts the number of received SIZE messages from a single side
-	// this permit us to TOUCH the children who's keeping quiet
+	// this permit us to decide to TOUCH the children who's keeping silence
 	private int waiting;
 	
 	void sizeFromChild(Node n, int s) {
@@ -35,8 +36,7 @@ class NormalState extends OperationalState {
 				Node b = supervisor.getNodeTable().getRightNode();
 				nextState(new BalancingState(b));
 			} else {
-				System.out.println("normal state:");
-				System.out.println("  need to send SIZE to the parent.. FIXME");
+				Debug.output("need to send SIZE to the parent.. FIXME");
 				//TODO send a SIZE signal to the parent
 			}
 			
@@ -46,8 +46,7 @@ class NormalState extends OperationalState {
 		}
 		else if(leftIsReady || rightIsReady) {
 			if (waiting > 2) {
-				System.out.println("normal state:");
-				System.out.println("  needed touching operation.. FIXME");
+				Debug.output("needed touching operation.. FIXME");
 				//TODO
 				// send TOUCH message
 			}
@@ -55,5 +54,65 @@ class NormalState extends OperationalState {
 		//normal
 		//add a wait turn
 		waiting++;
+	}
+
+	void joinBroadcast(Node n) {
+		if(supervisor.getNodeTable().isThisRoot()) {
+			//ok, this node is root, so generate a JOIN_SEARCH
+			//and forward if necessary
+			Debug.output("root received a join broadcast message");
+			
+			Node thisnode = supervisor.getNodeTable().getThisNode();
+			if(n.getId() < thisnode.getId()) {
+				if(supervisor.getNodeTable().hasLeftNode()) {
+					//TODO
+					//send JOIN_SEARCH to the left child
+				} else {
+					//TODO
+					// joining node can be attached here, to the left
+				}
+			} else if(n.getId() > thisnode.getId()) {
+				if(supervisor.getNodeTable().hasRightNode()) {
+					//TODO
+					//send JOIN_SEARCH to the right child
+				} else {
+					//TODO
+					// joining node can be attached here, to the right
+				}
+			} else {
+				// n has the same id of thisnode. ERROR
+				//TODO
+				//send a FUCK message to n
+			}
+		}
+		// else { this is not root -> do nothing }
+	}
+	
+	void joinSearch(Node n) {
+		Debug.output("received a JOIN_SEARCH message");
+		Debug.output("joining node id: " + n.getId());
+		
+		Node thisnode = supervisor.getNodeTable().getThisNode();
+		if(n.getId() < thisnode.getId()) {
+			if(supervisor.getNodeTable().hasLeftNode()) {
+				//TODO
+				//forward the JOIN_SEARCH to the left child
+			} else {
+				//TODO
+				//joining node can attach here, to the left
+			}
+		} else if(n.getId() > thisnode.getId()) {
+			if(supervisor.getNodeTable().hasRightNode()) {
+				//TODO
+				//forward the JOIN_SEARCH to the right child
+			} else {
+				//TODO
+				//joining node can attach here, to the right
+			}
+		} else {
+			// n has the same id of thisnode. ERROR
+			//TODO
+			//send a FUCK message to n
+		}
 	}
 }

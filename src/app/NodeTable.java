@@ -1,10 +1,24 @@
 package app;
 
+/**
+ * This is the main table that every node/host maintain.
+ * It serves two purposes: tree maintenance and routing algorithm.
+ */
 public class NodeTable {
+	
+	private Node thisNode;
 	
 	private Node parent;
 	private Node leftChild;
 	private Node rightChild;
+	
+	public NodeTable(Node n) {
+		thisNode = n;
+	}
+	
+	public Node getThisNode() {
+		return thisNode;
+	}
 	
 	public Node getParent() {
 		return parent;
@@ -36,6 +50,18 @@ public class NodeTable {
 	
 	public boolean isRightNode(Node x) {
 		return (rightChild == x);
+	}
+	
+	public boolean isThisRoot() {
+		return (parent == null);
+	}
+	
+	public boolean hasLeftNode() {
+		return (leftChild != null);
+	}
+	
+	public boolean hasRightNode() {
+		return (rightChild != null);
 	}
 
 }

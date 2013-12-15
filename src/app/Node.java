@@ -1,5 +1,9 @@
 package app;
 
+/**
+ * This class represents every node/host in the network.
+ * It associates ID number <--> IP address
+ */
 public class Node {
 	private int identifier;
 	
