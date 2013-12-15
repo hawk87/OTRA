@@ -1,0 +1,8 @@
+fast way to compile without an IDE
+$ mkdir bin
+$ find ./src -name *.java > sources_list.txt
+$ javac -d bin/ @sources_list.txt
+
+to run the application
+$ cd bin
+$ java app/Prova
