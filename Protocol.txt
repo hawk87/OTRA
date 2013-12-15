@@ -1,0 +1,11 @@
+# PROTOCOL MESSAGES
+
+SIZE <-Node n, int s->
+It comes from children and provides to a given node balancing information of the subtrees.
+
+JOIN_BROADCAST <-Node n->
+Lan broadcast packet to inspect if there is a tree network already built.
+
+JOIN_SEARCH <-Node n->
+Inform the receiving host that Node n is looking for a place to attach. This propagates from the root to the leaves until it encouter a free place where n can attach itself.
+
