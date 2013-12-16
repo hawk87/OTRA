@@ -5,6 +5,7 @@ import app.Node;
 
 class BalancingState extends OperationalState {
 	
+	@SuppressWarnings("unused")
 	private Node unbalanced;
 	
 	BalancingState(Node unbal) {

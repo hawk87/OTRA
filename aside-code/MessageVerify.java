@@ -1,10 +1,8 @@
-package otra;
-
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.*;
 
-public class Messages {
+public class MessageVerify {
 
 	class UDPSend extends Thread {
 		private static final int ACK_PORT = 9999;
@@ -35,7 +33,7 @@ public class Messages {
 				DatagramSocket ackSocket = new DatagramSocket(ACK_PORT);
 
 				for (;;) {
-					// acknowledgment delay tollerance (in milliseconds)
+					// acknowledgment delay tolerance (in milliseconds)
 					ackSocket.setSoTimeout(DELAY_TOLLERANCE);
 					socket.send(packet);
 					socket.close();
