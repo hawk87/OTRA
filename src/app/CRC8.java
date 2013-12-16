@@ -1,3 +1,4 @@
+package app;
 
 public class CRC8 {
 	// CRC-8, poly = x^8 + x^2 + x^1 + x^0, init = 0

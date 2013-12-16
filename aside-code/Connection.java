@@ -2,7 +2,9 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.*;
 
-public class MessageVerify {
+import app.CRC8;
+
+public class Connection {
 
 	class UDPSend extends Thread {
 		private static final int ACK_PORT = 9999;
@@ -63,7 +65,7 @@ public class MessageVerify {
 	private static DatagramSocket socket;
 	private static int port = 7777;
 
-	public static void touch(InetAddress address) throws IOException {
+	public static void send(InetAddress address) throws IOException {
 
 		socket = new DatagramSocket();
 
