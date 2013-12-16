@@ -1,4 +1,4 @@
-package app;
+import app.Node;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
