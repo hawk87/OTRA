@@ -7,7 +7,7 @@ public class Message {
 	public static void touch(Node n) throws IOException {
 		
 		byte[] data = new byte[1];
-		data[0] = 0x01; // flag number
+		data[0] = MessageType.TOUCH.getFlag();
 		Connection.send(n.getAddress(), data);
 		
 	}
@@ -15,7 +15,7 @@ public class Message {
 	public static void size(Node n, int s) throws IOException {
 		
 		byte[] data = new byte[5];
-		data[0] = 0x02; // flag number
+		data[0] = MessageType.SIZE.getFlag();
 		
 		// tradurre int -> byte
 		
@@ -33,5 +33,25 @@ public class Message {
 		//}
 		
 		Connection.send(n.getAddress(), data);
+	}
+	
+	public static void translate(byte[] data) {
+		MessageType flag = MessageType.convert(data[0]);
+		switch(flag) {
+		case TOUCH:
+			//TODO
+			break;
+		case SIZE:
+			//TODO
+			break;
+		case JOIN_BROADCAST:
+			//TODO
+			break;
+		case JOIN_SEARCH:
+			break;
+		default:
+			//if it doesn't match against any of our defined messages
+			//throw an exception
+		}
 	}
 }
