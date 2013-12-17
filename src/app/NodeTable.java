@@ -8,14 +8,33 @@ import java.net.InetAddress;
  */
 public class NodeTable {
 	
+	private static NodeTable INSTANCE;
+	
 	private Node thisNode;
 	
 	private Node parent;
 	private Node leftChild;
 	private Node rightChild;
 	
-	public NodeTable(Node n) {
+	private NodeTable(Node n) {
 		thisNode = n;
+	}
+	
+	public static NodeTable getInstance(Node n) {
+		if(INSTANCE != null) {
+			System.out.println("NodeTable: instance already created");
+			System.exit(1);
+		}
+		INSTANCE = new NodeTable(n);
+		return INSTANCE;
+	}
+	
+	public static NodeTable getInstance() {
+		if(INSTANCE == null) {
+			System.out.println("NodeTable: instance not already created");
+			System.exit(1);
+		}
+		return INSTANCE;
 	}
 	
 	/**
