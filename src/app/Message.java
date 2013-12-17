@@ -17,7 +17,7 @@ public class Message {
 		byte[] data = new byte[5];
 		data[0] = MessageType.SIZE.getFlag();
 		
-		// tradurre int -> byte
+		// int -> byte
 		
 		for(int i = 1; i < data.length; i++) {
 			data[i] = (byte) s;
@@ -39,6 +39,7 @@ public class Message {
 		byte[] data = new byte[4];
 		data[0] = MessageType.JOIN_SEARCH.getFlag();
 		
+		//TODO
 		Connection.send(n.getAddress(), data);
 	}
 	
@@ -57,6 +58,7 @@ public class Message {
 				System.exit(1);
 			}
 			
+			// byte -> int
 			for(int j = 1; j < data.length; j++) {
 				temp = (int) data[j];
 				k = k + (temp << (8*j));
