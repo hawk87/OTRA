@@ -21,7 +21,6 @@ public class Connection {
 	}
 	
 	public void stop() {
-		l=null;
 	}
 	
 	private class Listener extends Thread {
@@ -63,7 +62,7 @@ public class Connection {
 						receiveSocket.send(nack);
 					}
 					for (int i = 0; i < data.length; i++) {
-						System.out.print(data[i] + ";");
+						System.out.println("-> "+data[i]);
 					}
 
 				} catch (IOException e) {
@@ -106,10 +105,10 @@ public class Connection {
 
 					// MIGLIORARE VERIFICA
 					if (ackPacket.getData()[0] == ACK[0]) {
-						System.out.print("ACK");
+						System.out.println("<- ACK");
 						break;
 					} else {
-						System.out.print("NACK");
+						System.out.println("<- NACK");
 						retry++;
 					}
 
@@ -125,5 +124,4 @@ public class Connection {
 			System.err.println(e.getMessage());
 		}
 	}
-
 }
