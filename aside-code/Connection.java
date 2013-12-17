@@ -1,5 +1,3 @@
-import java.io.IOException;
-import java.io.InterruptedIOException;
 import java.net.*;
 
 import app.CRC8;
@@ -8,6 +6,7 @@ public class Connection {
 
 	private static final int RETRY_LIMIT = 3;
 	private static final int DELAY_TOLLERANCE = 1000;
+	private static final int PORT = 7777;
 
 	public void send(InetAddress address, byte[] data) {
 
@@ -17,7 +16,7 @@ public class Connection {
 		System.arraycopy(data, 0, message, 0, data.length);
 		message[data.length] = CRC8.calculate(data);
 		DatagramPacket packet = new DatagramPacket(message, message.length,
-				address, port);
+				address, PORT);
 		// ack packet
 		byte[] ack = new byte[1];
 		DatagramPacket ackPacket = new DatagramPacket(ack, ack.length);
@@ -36,7 +35,7 @@ public class Connection {
 					// da aggiungere verifica ACK/NACK
 					socket.close();
 					break;
-				} catch (InterruptedIOException e) {
+				} catch (SocketTimeoutException e) {
 					if (++retry >= RETRY_LIMIT) {
 						socket.close();
 						System.err.println("Max retry limit reached.");
