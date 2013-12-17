@@ -1,6 +1,7 @@
 package app;
 
 import java.io.IOException;
+import java.net.InetAddress;
 
 public class Message {
 	
@@ -24,25 +25,30 @@ public class Message {
 			s = s >> 8;
 		}
 		
-		//int k = 0;
-		//int temp = 0;
-		
-		//for(int j = 1; j < data.length; j++) {
-		//	temp = (int) data[j];
-		//	k = k + (temp << (8*j));
-		//}
-		
 		Connection.send(n.getAddress(), data);
 	}
 	
-	public static void translate(byte[] data) {
+	public static void translate(InetAddress addr, byte[] data) {
 		MessageType flag = MessageType.convert(data[0]);
 		switch(flag) {
 		case TOUCH:
 			//TODO
 			break;
 		case SIZE:
-			//TODO
+			int k = 0;
+			int temp = 0;
+			
+			if (data.length != 5) {
+				System.out.println("Parsing Error. Expected data size: 5.");
+				System.exit(1);
+			}
+			
+			for(int j = 1; j < data.length; j++) {
+				temp = (int) data[j];
+				k = k + (temp << (8*j));
+			}
+			
+			//Node n = new Node(id, addr);
 			break;
 		case JOIN_BROADCAST:
 			//TODO
