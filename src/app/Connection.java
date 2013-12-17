@@ -15,7 +15,7 @@ public class Connection {
 		socket = new DatagramSocket();
 
 		byte[] message = new byte[data.length+1];
-		message[0] = CRC8.calculate(data, 1);
+		message[0] = CRC8.calculate(data);
 		
 		for(int i = 1; i < message.length; i++) {
 			message[i] = data [i-1];
