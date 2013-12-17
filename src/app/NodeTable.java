@@ -1,5 +1,7 @@
 package app;
 
+import java.net.InetAddress;
+
 /**
  * This is the main table that every node/host maintain.
  * It serves two purposes: tree maintenance and routing algorithm.
@@ -14,6 +16,25 @@ public class NodeTable {
 	
 	public NodeTable(Node n) {
 		thisNode = n;
+	}
+	
+	/**
+	 * This method matches against its entries to find the proper node which is
+	 * mapped to this InetAddress
+	 * 
+	 * @return null if adr is not associated with any Node 
+	 */
+	public Node getNodeFromAddress(InetAddress adr) {
+		if (parent.getAddress().equals(adr)) 
+			return parent;
+		else if (leftChild.getAddress().equals(adr))
+			return leftChild;
+		else if (rightChild.getAddress().equals(adr))
+			return rightChild;
+		else {
+			// this address is not in the NodeTable
+			return null;
+		}	
 	}
 	
 	public Node getThisNode() {
