@@ -92,9 +92,6 @@ public class Connection extends Thread {
 						System.out.print("NACK");
 						retry++;
 					}
-					
-					System.out.println("ACK");
-					break;
 
 				} catch (SocketTimeoutException e) {
 					if (++retry >= RETRY_LIMIT) {
