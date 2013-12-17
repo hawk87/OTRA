@@ -85,15 +85,15 @@ public class Connection extends Thread {
 					ackSocket.close();
 					
 					//MIGLIORARE VERIFICA
-					/*if(ackPacket.getData()[0]== ACK[0]){
+					if(ackPacket.getData()[0]== ACK[0]){
 						System.out.print("ACK");
 						break;
 					} else{
 						System.out.print("NACK");
 						retry++;
-					}*/
+					}
 					
-					System.out.print("ACK");
+					System.out.println("ACK");
 					break;
 
 				} catch (SocketTimeoutException e) {
