@@ -24,6 +24,7 @@ public class Connection extends Thread {
 	}
 
 	public void run() {
+		while(true){
 		byte[] buf = new byte[16];
 		DatagramPacket receivePacket = new DatagramPacket(buf, buf.length);
 		try {
@@ -50,6 +51,7 @@ public class Connection extends Thread {
 
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
+		}
 		}
 	}
 
