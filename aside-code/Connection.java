@@ -12,12 +12,18 @@ public class Connection {
 
 	private static final byte[] ACK = { (byte) 0x00 };
 	private static final byte[] NACK = { (byte) 0xFF };
+	
+	Listener l;
 
 	public Connection() {
-		Listener l = new Listener();
+		l = new Listener();
 		l.start();
 	}
-
+	
+	public void stop() {
+		l=null;
+	}
+	
 	private class Listener extends Thread {
 
 		private DatagramSocket receiveSocket;
