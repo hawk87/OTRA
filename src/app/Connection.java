@@ -1,6 +1,5 @@
 package app;
 
-import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -10,7 +9,7 @@ public class Connection {
 	private static DatagramSocket socket;
 	private static final int port = 7777;
 	
-	public static void send(InetAddress address, byte[] data) throws IOException {
+	public static void send(InetAddress address, byte[] data) {
 
 		socket = new DatagramSocket();
 

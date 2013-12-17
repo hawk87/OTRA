@@ -52,6 +52,10 @@ public final class TreeMaintenance {
 		maintenanceState.sizeFromChild(n, s);
 	}
 	
+	public void touchFromParent(Node n) {
+		maintenanceState.touchFromParent(n);
+	}
+	
 	public void joinBroadcast(Node n) {
 		maintenanceState.joinBroadcast(n);
 	}

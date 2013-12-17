@@ -23,6 +23,9 @@ abstract class OperationalState {
 		// subclasses that want to listen for this message must override
 	}
 	
+	void touchFromParent(Node n) {
+	}
+	
 	void joinBroadcast(Node n) {	
 	}
 	

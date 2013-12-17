@@ -2,6 +2,8 @@ package app;
 
 import java.net.InetAddress;
 
+import app.tree.TreeMaintenance;
+
 public class Message {
 	
 	public static void touch(Node n) {
@@ -47,7 +49,13 @@ public class Message {
 		MessageType flag = MessageType.convert(data[0]);
 		switch(flag) {
 		case TOUCH:
-			//TODO
+			NodeTable tbl = NodeTable.getInstance();
+			Node n = tbl.getNodeFromAddress(addr);
+			if(n == null) {
+				System.out.println("ERROR: touch message from unknown node");
+				System.exit(1);
+			}
+			TreeMaintenance.getInstance().touchFromParent(n);
 			break;
 		case SIZE:
 			int k = 0;
