@@ -1,11 +1,10 @@
 package app;
 
-import java.io.IOException;
 import java.net.InetAddress;
 
 public class Message {
 	
-	public static void touch(Node n) throws IOException {
+	public static void touch(Node n) {
 		
 		byte[] data = new byte[1];
 		data[0] = MessageType.TOUCH.getFlag();
@@ -13,7 +12,7 @@ public class Message {
 		
 	}
 	
-	public static void size(Node n, int s) throws IOException {
+	public static void size(Node n, int s) {
 		
 		byte[] data = new byte[5];
 		data[0] = MessageType.SIZE.getFlag();
@@ -24,6 +23,21 @@ public class Message {
 			data[i] = (byte) s;
 			s = s >> 8;
 		}
+		
+		Connection.send(n.getAddress(), data);
+	}
+	
+	public static void sendJoinBroadcast(int id) {
+		byte[] data = new byte[5];
+		data[0] = MessageType.JOIN_BROADCAST.getFlag();
+		
+		//TODO
+		//Connection.broadcast();
+	}
+	
+	public static void joinSearch(Node n) {
+		byte[] data = new byte[4];
+		data[0] = MessageType.JOIN_SEARCH.getFlag();
 		
 		Connection.send(n.getAddress(), data);
 	}
