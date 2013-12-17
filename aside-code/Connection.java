@@ -1,53 +1,103 @@
+import java.io.IOException;
 import java.net.*;
 
 import app.CRC8;
 
-public class Connection {
+public class Connection extends Thread {
 
 	private static final int RETRY_LIMIT = 3;
 	private static final int DELAY_TOLLERANCE = 1000;
-	private static final int PORT = 7777;
+	private static final int PORT = 6666;
+	private static final int ACK_PORT = 7777;
+
+	private static final byte[] ACK = { (byte) 0x00 };
+	private static final byte[] NACK = { (byte) 0xFF };
+
+	private DatagramSocket receiveSocket;
+
+	public Connection() {
+		try {
+			receiveSocket = new DatagramSocket(PORT);
+		} catch (Exception e) {
+			System.err.print(e.getMessage());
+		}
+	}
+
+	public void run() {
+		byte[] buf = new byte[16];
+		DatagramPacket receivePacket = new DatagramPacket(buf, buf.length);
+		try {
+			receiveSocket.receive(receivePacket);
+			byte[] message = receivePacket.getData();
+
+			byte[] data = new byte[message.length - 1];
+			System.arraycopy(message, 0, data, 0, data.length);
+
+			if (CRC8.calculate(data) == message[message.length - 1]) {
+				DatagramPacket ack = new DatagramPacket(ACK, ACK.length,
+						receivePacket.getAddress(), ACK_PORT);
+				receiveSocket.send(ack);
+			} else {
+				DatagramPacket nack = new DatagramPacket(NACK, NACK.length,
+						receivePacket.getAddress(), ACK_PORT);
+				receiveSocket.send(nack);
+			}
+
+		} catch (IOException e) {
+			System.err.print(e.getMessage());
+		}
+	}
 
 	public void send(InetAddress address, byte[] data) {
 
 		int retry = 0;
+		
 		// message packet
 		byte[] message = new byte[data.length + 1];
 		System.arraycopy(data, 0, message, 0, data.length);
 		message[data.length] = CRC8.calculate(data);
-		DatagramPacket packet = new DatagramPacket(message, message.length,
+		DatagramPacket sendPacket = new DatagramPacket(message, message.length,
 				address, PORT);
+		
 		// ack packet
-		byte[] ack = new byte[1];
-		DatagramPacket ackPacket = new DatagramPacket(ack, ack.length);
+		byte[] buf = new byte[8];
+		DatagramPacket ackPacket = new DatagramPacket(buf, buf.length);
 
 		try {
-			DatagramSocket socket = new DatagramSocket();
+			DatagramSocket ackSocket = new DatagramSocket(ACK_PORT);
 
 			for (;;) {
-				socket.send(packet);
-
 				// acknowledgment delay tolerance (in milliseconds)
-				socket.setSoTimeout(DELAY_TOLLERANCE);
+				ackSocket.setSoTimeout(DELAY_TOLLERANCE);
+				
+				DatagramSocket sendSocket = new DatagramSocket();
+				sendSocket.send(sendPacket);
+				sendSocket.close();
 
 				try {
-					socket.receive(ackPacket);
-					// da aggiungere verifica ACK/NACK
-					socket.close();
-					break;
+					ackSocket.receive(ackPacket);
+					ackSocket.close();
+					
+					//MIGLIORARE VERIFICA
+					if(ackPacket.getData()[0]== ACK[0]){
+						System.out.print("ACK");
+						break;
+					} else{
+						System.out.print("NACK");
+						retry++;
+					}
+
 				} catch (SocketTimeoutException e) {
 					if (++retry >= RETRY_LIMIT) {
-						socket.close();
+						ackSocket.close();
 						System.err.println("Max retry limit reached.");
 						System.exit(-1);// da modificare in futuro
 					}
-
 				}
-
 			}
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
-
 	}
+
 }
