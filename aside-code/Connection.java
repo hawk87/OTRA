@@ -29,6 +29,8 @@ public class Connection extends Thread {
 		try {
 			receiveSocket.receive(receivePacket);
 			byte[] message = receivePacket.getData();
+			
+			System.out.println("receive");
 
 			byte[] data = new byte[message.length - 1];
 			System.arraycopy(message, 0, data, 0, data.length);
@@ -42,6 +44,7 @@ public class Connection extends Thread {
 						receivePacket.getAddress(), ACK_PORT);
 				receiveSocket.send(nack);
 			}
+			System.out.println(data.toString());
 
 		} catch (IOException e) {
 			System.err.print(e.getMessage());
@@ -72,6 +75,7 @@ public class Connection extends Thread {
 				
 				DatagramSocket sendSocket = new DatagramSocket();
 				sendSocket.send(sendPacket);
+				System.out.println("send");
 				sendSocket.close();
 
 				try {
@@ -79,13 +83,16 @@ public class Connection extends Thread {
 					ackSocket.close();
 					
 					//MIGLIORARE VERIFICA
-					if(ackPacket.getData()[0]== ACK[0]){
+					/*if(ackPacket.getData()[0]== ACK[0]){
 						System.out.print("ACK");
 						break;
 					} else{
 						System.out.print("NACK");
 						retry++;
-					}
+					}*/
+					
+					System.out.print("ACK");
+					break;
 
 				} catch (SocketTimeoutException e) {
 					if (++retry >= RETRY_LIMIT) {
