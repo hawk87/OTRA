@@ -32,10 +32,10 @@ public class Connection extends Thread {
 			
 			System.out.println("receive");
 
-			byte[] data = new byte[message.length - 1];
+			byte[] data = new byte[receivePacket.getLength() - 1];
 			System.arraycopy(message, 0, data, 0, data.length);
 
-			if (CRC8.calculate(data) == message[message.length - 1]) {
+			if (CRC8.calculate(data) == message[receivePacket.getLength() - 1]) {
 				DatagramPacket ack = new DatagramPacket(ACK, ACK.length,
 						receivePacket.getAddress(), ACK_PORT);
 				receiveSocket.send(ack);
@@ -44,10 +44,12 @@ public class Connection extends Thread {
 						receivePacket.getAddress(), ACK_PORT);
 				receiveSocket.send(nack);
 			}
-			System.out.println(data.toString());
+			for(int i =0; i<data.length;i++){
+				System.out.print(data[i] + ";");
+			}
 
 		} catch (IOException e) {
-			System.err.print(e.getMessage());
+			System.err.println(e.getMessage());
 		}
 	}
 
