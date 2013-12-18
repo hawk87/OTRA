@@ -10,7 +10,7 @@ public class Test {
 		
 		for(int i =0; i<=100; i++ )
 		{
-			byte[] data = new byte[(int)(Math.random() * 10)];
+			byte[] data = new byte[(int)(1 + Math.random() * 10)];
 			
 			for(int j = 0; j<data.length;j++)
 			{
