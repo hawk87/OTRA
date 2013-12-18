@@ -18,7 +18,6 @@ public class Cache {
 			}
 			table.add(r);
 		}
-
 		else {
 			Row d = table.remove(index);
 			if (d.getSeq() == seq) {
@@ -29,13 +28,6 @@ public class Cache {
 		return sw;
 	}
 
-	public static void print() {
-		System.out.println("InetAddress, Sequence Number");
-		for(int i = 0; i < table.size(); i++) {
-			System.out.println(table.get(i).getAddr()+", "+table.get(i).getSeq());
-		}
-	}
-	
 	private static int searchByIP(InetAddress ip) {
 		int index = -1;
 
@@ -46,6 +38,11 @@ public class Cache {
 			}
 		}
 		return index;
+	}
+
+	public static void print() {
+		// TODO
+		System.out.println();
 	}
 
 	// --- PRIVATE CLASS ---
