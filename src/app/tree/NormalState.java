@@ -1,7 +1,9 @@
 package app.tree;
 
+import app.Message;
 import app.Node;
 import app.Debug;
+import app.NodeTable;
 
 class NormalState extends OperationalState {
 	
@@ -62,27 +64,39 @@ class NormalState extends OperationalState {
 			//and forward if necessary
 			Debug.output("root received a join broadcast message");
 			
-			Node thisnode = supervisor.getNodeTable().getThisNode();
+			NodeTable tbl = supervisor.getNodeTable();
+			Node thisnode = tbl.getThisNode();
 			if(n.getId() < thisnode.getId()) {
-				if(supervisor.getNodeTable().hasLeftNode()) {
-					//TODO
+				if(tbl.hasLeftNode()) {
 					//send JOIN_SEARCH to the left child
+					Message.sendJoinSearch(tbl.getLeftNode(), n);
 				} else {
-					//TODO
 					// joining node can be attached here, to the left
+					Debug.output("node id: " + n.getId() + "attaches here to the"
+							+ "left");
+					//set joining node as left child
+					tbl.setLeftNode(n);
+					//signal to joining node that it can attach itself here
+					Message.sendJoinSearch(n, thisnode);
 				}
 			} else if(n.getId() > thisnode.getId()) {
-				if(supervisor.getNodeTable().hasRightNode()) {
-					//TODO
+				if(tbl.hasRightNode()) {
 					//send JOIN_SEARCH to the right child
+					Message.sendJoinSearch(tbl.getRightNode(), n);
 				} else {
-					//TODO
 					// joining node can be attached here, to the right
+					Debug.output("node id: " + n.getId() + "attaches here to the"
+							+ "right");
+					//set joining node as right child
+					tbl.setRightNode(n);
+					//signal to joining node that it can attach itself here
+					Message.sendJoinSearch(n, thisnode);
 				}
 			} else {
 				// n has the same id of thisnode. ERROR
-				//TODO
-				//send a FUCK message to n
+				System.out.println("ERROR: joining node has got the same id"
+						+ "as this node: " + n.getId());
+				System.exit(1);
 			}
 		}
 		// else { this is not root -> do nothing }
@@ -92,27 +106,39 @@ class NormalState extends OperationalState {
 		Debug.output("received a JOIN_SEARCH message");
 		Debug.output("joining node id: " + n.getId());
 		
-		Node thisnode = supervisor.getNodeTable().getThisNode();
+		NodeTable tbl = supervisor.getNodeTable();
+		Node thisnode = tbl.getThisNode();
 		if(n.getId() < thisnode.getId()) {
-			if(supervisor.getNodeTable().hasLeftNode()) {
-				//TODO
+			if(tbl.hasLeftNode()) {
 				//forward the JOIN_SEARCH to the left child
+				Message.sendJoinSearch(tbl.getLeftNode(), n);
 			} else {
-				//TODO
 				//joining node can attach here, to the left
+				Debug.output("node id: " + n.getId() + "attaches here to the"
+						+ "left");
+				//set joining node as left child
+				tbl.setLeftNode(n);
+				//signal to joining node that it can attach itself here
+				Message.sendJoinSearch(n, thisnode);
 			}
 		} else if(n.getId() > thisnode.getId()) {
-			if(supervisor.getNodeTable().hasRightNode()) {
-				//TODO
+			if(tbl.hasRightNode()) {
 				//forward the JOIN_SEARCH to the right child
+				Message.sendJoinSearch(tbl.getRightNode(), n);
 			} else {
-				//TODO
 				//joining node can attach here, to the right
+				Debug.output("node id: " + n.getId() + "attaches here to the"
+						+ "right");
+				//set joining node as right child
+				tbl.setRightNode(n);
+				//signal to joining node that it can attach itself here
+				Message.sendJoinSearch(n, thisnode);
 			}
 		} else {
 			// n has the same id of thisnode. ERROR
-			//TODO
-			//send a FUCK message to n
+			System.out.println("ERROR: joining node has got the same id"
+					+ "as this node: " + n.getId());
+			System.exit(1);
 		}
 	}
 }

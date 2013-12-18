@@ -8,17 +8,27 @@ public final class TreeMaintenance {
 	private NodeTable table;
 	
 	// Singleton design pattern
-	private static TreeMaintenance INSTANCE = new TreeMaintenance();
+	private static TreeMaintenance INSTANCE;
 
 	private TreeMaintenance() {
-		// INSTANCE have to contain a pointer to the newly created instance
-		INSTANCE = this;
-		// we start maintenance from NormalState
-		maintenanceState = new NormalState();
+		// we start maintenance from InitialState
+		maintenanceState = InitialState.init();
 		table = NodeTable.getInstance();
 	}
 	
+	public static void startMaintenance() {
+		if(INSTANCE != null) {
+			System.out.println("maintenance already started..!!");
+			System.exit(1);
+		}
+		INSTANCE = new TreeMaintenance();
+	}
+	
 	public static TreeMaintenance getInstance() {
+		if(INSTANCE == null) {
+			System.out.println("maintenance not started...abort");
+			System.exit(1);
+		}
 		return INSTANCE;
 	}
 	
