@@ -43,17 +43,22 @@ public class Connection {
 					receiveSocket.receive(receivePacket);
 					byte[] message = receivePacket.getData();
 
-					System.out.println("receive");
-
 					byte[] data = new byte[receivePacket.getLength() - 2];
 					System.arraycopy(message, 0, data, 0, data.length);
 
 					byte crc = message[receivePacket.getLength() - 1];
 					byte sn = message[receivePacket.getLength() - 2];
+
+					System.out.println("receive " + (int) sn);
+
 					InetAddress address = receivePacket.getAddress();
 
-					if (CRC8.calculate(data) == crc
-							&& !Cache.isThere(address, sn)) {
+					// PORCATA
+					if (Cache.isThere(address, sn)) {
+						System.out.println("DUPLICATO");
+					}
+
+					if (CRC8.calculate(data) == crc) {
 						DatagramPacket ack = new DatagramPacket(ACK,
 								ACK.length, address, ACK_PORT);
 						receiveSocket.send(ack);
@@ -99,7 +104,7 @@ public class Connection {
 
 				DatagramSocket sendSocket = new DatagramSocket();
 				sendSocket.send(sendPacket);
-				System.out.println("send");
+				System.out.println("send " + (int) sn);
 				sendSocket.close();
 
 				try {
@@ -108,11 +113,11 @@ public class Connection {
 
 					// MIGLIORARE VERIFICA
 					if (ackPacket.getData()[0] == ACK[0]) {
-						System.out.println("<- ACK");
+						System.out.println("<- ACK " + (int) sn);
 						sn++;
 						break;
 					} else {
-						System.out.println("<- NACK");
+						System.out.println("<- NACK " + (int) sn);
 						retry++;
 					}
 
