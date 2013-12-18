@@ -49,7 +49,7 @@ public class Connection {
 					byte crc = message[receivePacket.getLength() - 1];
 					byte sn = message[receivePacket.getLength() - 2];
 
-					System.out.println("receive " + (int) sn);
+					System.out.println("receive " + (int) sn+" crc: "+crc);
 
 					InetAddress address = receivePacket.getAddress();
 
@@ -58,7 +58,7 @@ public class Connection {
 						System.out.println("DUPLICATO");
 					}
 
-					if (CRC8.calculate(data) == crc) {
+					if (CRC8.calculate(message, receivePacket.getLength()-1) == crc) {
 						DatagramPacket ack = new DatagramPacket(ACK,
 								ACK.length, address, ACK_PORT);
 						receiveSocket.send(ack);
@@ -85,8 +85,8 @@ public class Connection {
 		// message packet
 		byte[] message = new byte[data.length + 2];
 		System.arraycopy(data, 0, message, 0, data.length);
-		message[data.length - 1] = sn; // add SN
-		message[data.length] = CRC8.calculate(message, message.length - 1); // add
+		message[data.length] = sn; // add SN
+		message[data.length+1] = CRC8.calculate(message, message.length - 1); // add
 																			// CRC
 		DatagramPacket sendPacket = new DatagramPacket(message, message.length,
 				address, PORT);
