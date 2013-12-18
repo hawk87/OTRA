@@ -5,8 +5,8 @@ import app.CRC8;
 
 public class Connection {
 
-	private static final int RETRY_LIMIT = 3;
-	private static final int DELAY_TOLLERANCE = 1000;
+	private static final int RETRY_LIMIT = 5;
+	private static final int DELAY_TOLLERANCE = 100;
 	private static final int PORT = 6666;
 	private static final int ACK_PORT = 7777;
 
@@ -18,9 +18,6 @@ public class Connection {
 	public Connection() {
 		l = new Listener();
 		l.start();
-	}
-	
-	public void stop() {
 	}
 	
 	private class Listener extends Thread {
