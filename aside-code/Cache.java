@@ -32,7 +32,7 @@ public class Cache {
 		int index = -1;
 
 		for (int i = 0; i < table.size(); i++) {
-			if (table.get(i).getAddr() == ip) {
+			if (table.get(i).getAddr().equals(ip)) {
 				index = i;
 				break;
 			}
