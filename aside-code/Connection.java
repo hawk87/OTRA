@@ -109,16 +109,17 @@ public class Connection {
 
 				try {
 					ackSocket.receive(ackPacket);
-					ackSocket.close();
+					
 
 					// MIGLIORARE VERIFICA
 					if (ackPacket.getData()[0] == ACK[0]) {
 						System.out.println("<- ACK " + (int) sn);
 						sn++;
+						ackSocket.close();
 						break;
 					} else {
 						System.out.println("<- NACK " + (int) sn);
-						retry++;
+						//retry++;
 					}
 
 				} catch (SocketTimeoutException e) {
