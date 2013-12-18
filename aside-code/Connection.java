@@ -57,6 +57,8 @@ public class Connection {
 					if (Cache.isThere(address, sn)) {
 						System.out.println("DUPLICATO");
 					}
+					
+					Cache.print();
 
 					if (CRC8.calculate(message, receivePacket.getLength()-1) == crc) {
 						DatagramPacket ack = new DatagramPacket(ACK,
