@@ -56,7 +56,7 @@ public class Message {
 			NodeTable tbl = NodeTable.getInstance();
 			n = tbl.getNodeFromAddress(adr);
 			if(n == null) {
-				System.out.println("ERROR: touch message from unknown node");
+				System.out.println("ERROR: TOUCH message from unknown node");
 				System.exit(1);
 			}
 			TreeMaintenance.getInstance().touchFromParent(n);
@@ -66,7 +66,7 @@ public class Message {
 			
 			n = NodeTable.getInstance().getNodeFromAddress(adr);
 			if(n == null) {
-				System.out.println("ERROR: touch message from unknown node");
+				System.out.println("ERROR: SIZE message from unknown node");
 				System.exit(1);
 			}
 			TreeMaintenance.getInstance().sizeFromChild(n, k);
@@ -103,6 +103,10 @@ public class Message {
 		}
 	}
 	
+	/**
+	 * Utility to convert a 32 bit integer to vector of 4 bytes.
+	 * @return 4 bytes coding n
+	 */
 	private static byte[] intToByte(int n) {
 		byte[] data = new byte[4];
 		
@@ -113,6 +117,11 @@ public class Message {
 		return data;
 	}
 	
+	/**
+	 * Utility to parse 4bytes array into an integer representation
+	 * @param 4byte array containing the integer representation
+	 * @return the integer value
+	 */
 	private static int byteToInt(byte[] data) {
 		if(data.length != 4) {
 			System.out.println("error parsing integer");
@@ -127,6 +136,13 @@ public class Message {
 		return k;
 	}
 	
+	/**
+	 * Utility to append an array to another.
+	 * @param first
+	 * @param second
+	 * @return a (first.length + second.length) long array containing the two
+	 * concatenated.
+	 */
 	private static byte[] appendArray(byte[] first, byte[] second) {
 		byte[] result = new byte[first.length + second.length];
 		for(int i=0; i < first.length; i++) {
