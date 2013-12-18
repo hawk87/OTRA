@@ -1,53 +1,57 @@
 import java.net.InetAddress;
 import java.util.ArrayList;
 
-
 public class Cache {
-	
+
 	// Fields
 	private static ArrayList<Row> table = new ArrayList<Row>();
-	
+
 	// Methods
 	public static boolean isThere(InetAddress ip, byte seq) {
 		boolean sw = false;
 		Row r = new Row(ip, seq);
 		int index = searchByIP(ip);
-		
-		if (index == -1)
+
+		if (index == -1) {
+			if (table.size() > 10) {
+				table.remove(0);
+			}
 			table.add(r);
+		}
+
 		else {
 			Row d = table.remove(index);
-			if(d.getSeq() == seq) {
+			if (d.getSeq() == seq) {
 				sw = true;
-				table.add(r);
 			}
+			table.add(r);
 		}
 		return sw;
 	}
-	
+
 	private static int searchByIP(InetAddress ip) {
 		int index = -1;
-		
-		for(int i = 0; i < table.size(); i++) {
-			if(table.get(i).getAddr() == ip) {
+
+		for (int i = 0; i < table.size(); i++) {
+			if (table.get(i).getAddr() == ip) {
 				index = i;
 				break;
 			}
 		}
-		return index;	
+		return index;
 	}
-	
-	public static void print(){
-		//TODO
+
+	public static void print() {
+		// TODO
 		System.out.println();
 	}
-	
+
 	// --- PRIVATE CLASS ---
 	private static class Row {
-		
+
 		private InetAddress addr;
 		private byte seq;
-		
+
 		public Row(InetAddress a, byte s) {
 			setAddr(a);
 			setSeq(s);
@@ -67,7 +71,7 @@ public class Cache {
 
 		public void setAddr(InetAddress addr) {
 			this.addr = addr;
-		}		
+		}
 	}
 
 }

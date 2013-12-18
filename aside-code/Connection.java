@@ -44,8 +44,6 @@ public class Connection {
 					byte[] message = receivePacket.getData();
 
 					System.out.println("receive");
-					
-					
 
 					byte[] data = new byte[receivePacket.getLength() - 2];
 					System.arraycopy(message, 0, data, 0, data.length);
