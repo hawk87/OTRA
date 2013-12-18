@@ -8,27 +8,17 @@ public final class TreeMaintenance {
 	private NodeTable table;
 	
 	// Singleton design pattern
-	private static TreeMaintenance INSTANCE;
+	private static TreeMaintenance INSTANCE = new TreeMaintenance();
 
-	private TreeMaintenance(NodeTable nt) {
+	private TreeMaintenance() {
 		// INSTANCE have to contain a pointer to the newly created instance
 		INSTANCE = this;
 		// we start maintenance from NormalState
 		maintenanceState = new NormalState();
-		table = nt;
+		table = NodeTable.getInstance();
 	}
 	
 	public static TreeMaintenance getInstance() {
-		if (INSTANCE == null)
-			throw new IllegalStateException("TreeMaintenance not initialized");
-		return INSTANCE;
-	}
-
-	public static TreeMaintenance getInstance(NodeTable nt) {
-		if(INSTANCE == null) {
-			INSTANCE = new TreeMaintenance(nt);
-		} else
-			throw new IllegalStateException("TreeMaint. already initialized");
 		return INSTANCE;
 	}
 	
@@ -48,20 +38,20 @@ public final class TreeMaintenance {
 	// INCOMING MESSAGES HANDLES
 	//
 	
-	public void sizeFromChild(Node n, int s) {
-		maintenanceState.sizeFromChild(n, s);
+	public void handleSize(Node n, int s) {
+		maintenanceState.handleSize(n, s);
 	}
 	
-	public void touchFromParent(Node n) {
-		maintenanceState.touchFromParent(n);
+	public void handleTouch(Node n) {
+		maintenanceState.handleTouch(n);
 	}
 	
-	public void joinBroadcast(Node n) {
-		maintenanceState.joinBroadcast(n);
+	public void handleJoinBroadcast(Node n) {
+		maintenanceState.handleJoinBroadcast(n);
 	}
 	
-	public void joinSearch(Node n) {
-		maintenanceState.joinSearch(n);
+	public void handleJoinSearch(Node n) {
+		maintenanceState.handleJoinSearch(n);
 	}
 
 }

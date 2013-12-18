@@ -18,18 +18,18 @@ abstract class OperationalState {
 	// INCOMING MESSAGES HANDLES
 	//
 	
-	void sizeFromChild(Node n, int s) {
+	void handleSize(Node n, int s) {
 		//nop
 		// subclasses that want to listen for this message must override
 	}
 	
-	void touchFromParent(Node n) {
+	void handleTouch(Node n) {
 	}
 	
-	void joinBroadcast(Node n) {	
+	void handleJoinBroadcast(Node n) {	
 	}
 	
-	void joinSearch(Node n) {
+	void handleJoinSearch(Node n) {
 	}
 	
 }

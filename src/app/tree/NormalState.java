@@ -14,7 +14,7 @@ class NormalState extends OperationalState {
 	// this permit us to decide to TOUCH the children who's keeping silence
 	private int waiting;
 	
-	void sizeFromChild(Node n, int s) {
+	void handleSize(Node n, int s) {
 		if(supervisor.getNodeTable().isLeftNode(n)) {
 			leftSize = s;
 			leftIsReady = true;
@@ -56,7 +56,7 @@ class NormalState extends OperationalState {
 		waiting++;
 	}
 
-	void joinBroadcast(Node n) {
+	void handleJoinBroadcast(Node n) {
 		if(supervisor.getNodeTable().isThisRoot()) {
 			//ok, this node is root, so generate a JOIN_SEARCH
 			//and forward if necessary
@@ -88,7 +88,7 @@ class NormalState extends OperationalState {
 		// else { this is not root -> do nothing }
 	}
 	
-	void joinSearch(Node n) {
+	void handleJoinSearch(Node n) {
 		Debug.output("received a JOIN_SEARCH message");
 		Debug.output("joining node id: " + n.getId());
 		

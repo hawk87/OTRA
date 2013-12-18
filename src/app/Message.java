@@ -8,13 +8,13 @@ import app.tree.TreeMaintenance;
 
 public class Message {
 	
-	public static void touch(Node n) {
+	public static void sendTouch(Node n) {
 		byte[] data = new byte[1];
 		data[0] = MessageType.TOUCH.getFlag();
 		Connection.send(n.getAddress(), data);
 	}
 	
-	public static void size(Node n, int s) {
+	public static void sendSize(Node n, int s) {
 		byte[] flag = new byte[1];
 		flag[0] = MessageType.SIZE.getFlag();
 		
@@ -36,7 +36,7 @@ public class Message {
 		//Connection.broadcast();
 	}
 	
-	public static void joinSearch(Node to, Node joining) {
+	public static void sendJoinSearch(Node to, Node joining) {
 		byte[] flag = new byte[1];
 		flag[0] = MessageType.JOIN_SEARCH.getFlag();
 		//append 4 bytes for the id
@@ -59,7 +59,7 @@ public class Message {
 				System.out.println("ERROR: TOUCH message from unknown node");
 				System.exit(1);
 			}
-			TreeMaintenance.getInstance().touchFromParent(n);
+			TreeMaintenance.getInstance().handleTouch(n);
 			break;
 		case SIZE:
 			k = byteToInt(Arrays.copyOfRange(data, 1, 5));
@@ -69,7 +69,7 @@ public class Message {
 				System.out.println("ERROR: SIZE message from unknown node");
 				System.exit(1);
 			}
-			TreeMaintenance.getInstance().sizeFromChild(n, k);
+			TreeMaintenance.getInstance().handleSize(n, k);
 			break;
 		case JOIN_BROADCAST:
 			k = byteToInt(Arrays.copyOfRange(data, 1, 5));
@@ -78,7 +78,7 @@ public class Message {
 				System.exit(1);
 			}
 			n = new Node(k, adr);
-			TreeMaintenance.getInstance().joinBroadcast(n);
+			TreeMaintenance.getInstance().handleJoinBroadcast(n);
 			break;
 		case JOIN_SEARCH:
 			InetAddress joinAdr = null;
@@ -93,7 +93,7 @@ public class Message {
 			}
 			
 			n = new Node(id, joinAdr);
-			TreeMaintenance.getInstance().joinSearch(n);
+			TreeMaintenance.getInstance().handleJoinSearch(n);
 			break;
 		default:
 			//if it doesn't match against any of our defined messages
