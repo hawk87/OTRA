@@ -42,8 +42,10 @@ public class Cache {
 	}
 
 	public static void print() {
-		// TODO
-		System.out.println();
+		System.out.println("InetAddress, Sequence Number");
+		for(int i = 0; i < table.size(); i++) {
+			System.out.println(table.get(i).getAddr()+","+table.get(i).getSeq());
+		}
 	}
 
 	// --- PRIVATE CLASS ---
