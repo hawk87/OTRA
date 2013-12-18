@@ -5,13 +5,19 @@ public class Test {
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
 		Connection c = new Connection();
-		c.start();
 		
 		InetAddress address = InetAddress.getByName(args[0]);
-		byte[] data = {(byte) 0x3, (byte) 0x5};
 		
-		c.send(address, data);
-
+		for(int i =0; i<=100; i++ )
+		{
+			byte[] data = new byte[(int)(Math.random() * 10)];
+			
+			for(int j = 0; j<data.length;j++)
+			{
+				//data[j]=(byte)(Math.random() * 100);
+				data[j]=(byte)j;
+			}
+			c.send(address, data);
+		}
 	}
-
 }
