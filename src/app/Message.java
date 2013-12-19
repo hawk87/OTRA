@@ -31,9 +31,7 @@ public class Message {
 		byte[] data = appendArray(flag, intToByte(id));
 		//data now holds the first byte as flag and next four bytes
 		//for the integer
-		
-		//TODO
-		//Connection.broadcast();
+		Connection.sendBroadcast(data);
 	}
 	
 	public static void sendJoinSearch(Node to, Node joining) {
