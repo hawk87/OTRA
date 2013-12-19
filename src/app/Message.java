@@ -50,6 +50,7 @@ public class Message {
 	public static void translate(InetAddress adr, byte[] data) {
 		Node n;
 		int k;
+		TreeMaintenance maintainer = TreeMaintenance.getInstance();
 		MessageType flag = MessageType.convert(data[0]);
 		switch(flag) {
 		case TOUCH:
@@ -59,7 +60,7 @@ public class Message {
 				System.out.println("ERROR: TOUCH message from unknown node");
 				System.exit(1);
 			}
-			TreeMaintenance.getInstance().handleTouch(n);
+			maintainer.handleTouch(n);
 			break;
 		case SIZE:
 			k = byteToInt(Arrays.copyOfRange(data, 1, 5));
@@ -69,7 +70,7 @@ public class Message {
 				System.out.println("ERROR: SIZE message from unknown node");
 				System.exit(1);
 			}
-			TreeMaintenance.getInstance().handleSize(n, k);
+			maintainer.handleSize(n, k);
 			break;
 		case JOIN_BROADCAST:
 			k = byteToInt(Arrays.copyOfRange(data, 1, 5));
@@ -78,7 +79,7 @@ public class Message {
 				System.exit(1);
 			}
 			n = new Node(k, adr);
-			TreeMaintenance.getInstance().handleJoinBroadcast(n);
+			maintainer.handleJoinBroadcast(n);
 			break;
 		case JOIN_SEARCH:
 			InetAddress joinAdr = null;
@@ -93,7 +94,7 @@ public class Message {
 			}
 			
 			n = new Node(id, joinAdr);
-			TreeMaintenance.getInstance().handleJoinSearch(n);
+			maintainer.handleJoinSearch(n);
 			break;
 		default:
 			//if it doesn't match against any of our defined messages

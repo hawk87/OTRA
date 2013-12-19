@@ -16,6 +16,10 @@ class NormalState extends OperationalState {
 	// this permit us to decide to TOUCH the children who's keeping silence
 	private int waiting;
 	
+	NormalState() {
+		Debug.output("Entering normal state...");
+	}
+	
 	void handleSize(Node n, int s) {
 		if(supervisor.getNodeTable().isLeftNode(n)) {
 			leftSize = s;

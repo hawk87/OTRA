@@ -11,8 +11,6 @@ public final class TreeMaintenance {
 	private static TreeMaintenance INSTANCE;
 
 	private TreeMaintenance() {
-		// we start maintenance from InitialState
-		maintenanceState = InitialState.init();
 		table = NodeTable.getInstance();
 	}
 	
@@ -22,6 +20,8 @@ public final class TreeMaintenance {
 			System.exit(1);
 		}
 		INSTANCE = new TreeMaintenance();
+		// we start maintenance from InitialState
+		INSTANCE.maintenanceState = InitialState.init();
 	}
 	
 	public static TreeMaintenance getInstance() {
