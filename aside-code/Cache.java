@@ -13,7 +13,7 @@ public class Cache {
 		int index = searchByIP(ip);
 
 		if (index == -1) {
-			if (table.size() > 10) {
+			if (table.size() >= 10) {
 				table.remove(0);
 			}
 			table.add(r);
