@@ -47,10 +47,11 @@ public class Connection {
 					byte[] data = new byte[receivePacket.getLength() - 2];
 					System.arraycopy(message, 0, data, 0, data.length);
 
+					byte flag = message[0];
 					byte crc = message[receivePacket.getLength() - 1];
-					byte sn = message[receivePacket.getLength() - 2];
+					byte sn = message[1];
 
-					System.out.println("receive " + (int) sn+" crc: "+crc);
+					System.out.println("receive " + (int) sn + " crc: " + crc);
 
 					InetAddress address = receivePacket.getAddress();
 
@@ -58,17 +59,21 @@ public class Connection {
 					if (Cache.isThere(address, sn)) {
 						System.out.println("DUPLICATO");
 					}
-					
+
 					Cache.print();
 
-					if (CRC8.calculate(message, receivePacket.getLength()-1) == crc) {
-						DatagramPacket ack = new DatagramPacket(ACK,
-								ACK.length, address, ACK_PORT);
-						receiveSocket.send(ack);
+					if (CRC8.calculate(message, receivePacket.getLength() - 1) == crc) {
+						if (flag == (byte) 0x00) {
+							DatagramPacket ack = new DatagramPacket(ACK,
+									ACK.length, address, ACK_PORT);
+							receiveSocket.send(ack);
+						}
 					} else {
-						DatagramPacket nack = new DatagramPacket(NACK,
-								NACK.length, address, ACK_PORT);
-						receiveSocket.send(nack);
+						if (flag == (byte) 0x00) {
+							DatagramPacket nack = new DatagramPacket(NACK,
+									NACK.length, address, ACK_PORT);
+							receiveSocket.send(nack);
+						}
 					}
 					for (int i = 0; i < data.length; i++) {
 						System.out.println("-> " + data[i]);
@@ -86,11 +91,12 @@ public class Connection {
 		int retry = 0;
 
 		// message packet
-		byte[] message = new byte[data.length + 2];
-		System.arraycopy(data, 0, message, 0, data.length);
-		message[data.length] = sn; // add SN
-		message[data.length+1] = CRC8.calculate(message, message.length - 1); // add
-																			// CRC
+		byte[] message = new byte[data.length + 3];
+		System.arraycopy(data, 0, message, 2, data.length);
+		message[0] = (byte) 0x00;
+		message[1] = sn; // add SN
+		message[message.length - 1] = CRC8.calculate(message,
+				message.length - 1); // add CRC
 		DatagramPacket sendPacket = new DatagramPacket(message, message.length,
 				address, PORT);
 
@@ -112,7 +118,6 @@ public class Connection {
 
 				try {
 					ackSocket.receive(ackPacket);
-					
 
 					// MIGLIORARE VERIFICA
 					if (ackPacket.getData()[0] == ACK[0]) {
@@ -122,7 +127,7 @@ public class Connection {
 						break;
 					} else {
 						System.out.println("<- NACK " + (int) sn);
-						//retry++;
+						// retry++;
 					}
 
 				} catch (SocketTimeoutException e) {
@@ -138,14 +143,33 @@ public class Connection {
 		}
 	}
 
-	public void sendBroadcast(byte[] data){
+	public void sendBroadcast(byte[] data) {
 		try {
-			byte[] address = InetAddress.getLocalHost().getAddress();
-			address[3]=(byte)0xFF;
-		} catch (UnknownHostException e) {
+			byte[] addr = InetAddress.getLocalHost().getAddress();
+			addr[3] = (byte) 255;
+
+			InetAddress address = InetAddress.getByAddress(addr);
+
+			DatagramSocket sendSocket = new DatagramSocket();
+			sendSocket.setBroadcast(true);
+
+			byte[] message = new byte[data.length + 3];
+			System.arraycopy(data, 0, message, 2, data.length);
+			message[0] = (byte) 0x80;
+			message[1] = sn; // add SN
+			message[message.length - 1] = CRC8.calculate(message,
+					message.length - 1); // add CRC
+			DatagramPacket sendPacket = new DatagramPacket(message,
+					message.length, address, PORT);
+
+			sendSocket.send(sendPacket);
+			System.out.println("send broadcast " + (int) sn);
+			sendSocket.close();
+			sn++;
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 }
