@@ -144,12 +144,10 @@ public class Message {
 	 */
 	private static byte[] appendArray(byte[] first, byte[] second) {
 		byte[] result = new byte[first.length + second.length];
-		for(int i=0; i < first.length; i++) {
-			result[i] = first[i];
-		}
-		for(int j=0; j < second.length; j++) {
-			result[j + first.length] = second[j];
-		}
+		
+		System.arraycopy(first, 0, result, 0, first.length);
+		System.arraycopy(second, 0, result, first.length, second.length);
+
 		return result;
 	}
 }
