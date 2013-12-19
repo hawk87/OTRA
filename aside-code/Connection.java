@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.net.*;
 
 import app.CRC8;
+import app.Cache;
 
 public class Connection {
 
