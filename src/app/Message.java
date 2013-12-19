@@ -127,8 +127,8 @@ public class Message {
 			System.exit(1);
 		}
 		int k = 0;
-		int tmp = 0;
-		for(int j = 1; j < data.length; j++) {
+		int tmp;
+		for(int j = 0; j < data.length; j++) {
 			tmp = (int) data[j];
 			k = k + (tmp << (8*j));
 		}
