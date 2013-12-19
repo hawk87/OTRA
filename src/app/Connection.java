@@ -15,16 +15,9 @@ public class Connection {
 	private static final byte[] ACK = { (byte) 0x00 };
 	private static final byte[] NACK = { (byte) 0xFF };
 
-	Listener l;
+	private static byte sn = 00000000;
 
-	private byte sn = 00000000;
-
-	public Connection() {
-		l = new Listener();
-		l.start();
-	}
-
-	private class Listener extends Thread {
+	private static class Listener extends Thread {
 
 		private DatagramSocket receiveSocket;
 
@@ -52,22 +45,18 @@ public class Connection {
 					byte crc = message[receivePacket.getLength() - 1];
 					byte sn = message[1];
 
-					System.out.println("receive " + (int) sn + " crc: " + crc);
+					//System.out.println("receive " + (int) sn + " crc: " + crc);
 
 					InetAddress address = receivePacket.getAddress();
-
-					// PORCATA
-					if (Cache.isThere(address, sn)) {
-						System.out.println("DUPLICATO");
-					}
-
-					Cache.print();
 
 					if (CRC8.calculate(message, receivePacket.getLength() - 1) == crc) {
 						if (flag == (byte) 0x00) {
 							DatagramPacket ack = new DatagramPacket(ACK,
 									ACK.length, address, ACK_PORT);
 							receiveSocket.send(ack);
+						}
+						if (!Cache.isThere(address, sn)) {
+							Message.translate(receivePacket.getAddress(), data);
 						}
 					} else {
 						if (flag == (byte) 0x00) {
@@ -76,9 +65,9 @@ public class Connection {
 							receiveSocket.send(nack);
 						}
 					}
-					for (int i = 0; i < data.length; i++) {
+					/*for (int i = 0; i < data.length; i++) {
 						System.out.println("-> " + data[i]);
-					}
+					}*/
 
 				} catch (IOException e) {
 					System.err.println(e.getMessage());
@@ -87,7 +76,12 @@ public class Connection {
 		}
 	}
 
-	public void send(InetAddress address, byte[] data) {
+	public static void start(){
+		Listener l  = new Listener();
+		l.start();
+	}
+
+	public static void send(InetAddress address, byte[] data) {
 
 		int retry = 0;
 
@@ -114,7 +108,7 @@ public class Connection {
 
 				DatagramSocket sendSocket = new DatagramSocket();
 				sendSocket.send(sendPacket);
-				System.out.println("send " + (int) sn);
+				//System.out.println("send " + (int) sn);
 				sendSocket.close();
 
 				try {
@@ -122,7 +116,7 @@ public class Connection {
 
 					// MIGLIORARE VERIFICA
 					if (ackPacket.getData()[0] == ACK[0]) {
-						System.out.println("<- ACK " + (int) sn);
+						//System.out.println("<- ACK " + (int) sn);
 						sn++;
 						ackSocket.close();
 						break;
@@ -144,7 +138,7 @@ public class Connection {
 		}
 	}
 
-	public void sendBroadcast(byte[] data) {
+	public static void sendBroadcast(byte[] data) {
 		try {
 			byte[] addr = InetAddress.getLocalHost().getAddress();
 			addr[3] = (byte) 255;
