@@ -137,4 +137,15 @@ public class Connection {
 			System.err.println(e.getMessage());
 		}
 	}
+
+	public void sendBroadcast(byte[] data){
+		try {
+			byte[] address = InetAddress.getLocalHost().getAddress();
+			address[3]=(byte)0xFF;
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 }
