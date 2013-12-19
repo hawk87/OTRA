@@ -53,6 +53,21 @@ public class InitialState extends OperationalState implements Runnable {
 			}
 		}
 	}
+	
+	//this handle in this operational state serves to set the InetAddress of
+	//this host itself. we capture the broadcast signal we generated and use the
+	//ip address contained in it.
+	void handleJoinBroadcast(Node n) {
+		Node thisnode = supervisor.getNodeTable().getThisNode();
+		//we check if the ip address of thisnode is null
+		if(thisnode.getAddress() == null) {
+			if(n.getId() == thisnode.getId()) {
+				//we are receiving the broadcast signal we generated
+				//we set the InetAddress
+				thisnode.setAddress(n.getAddress());
+			}
+		}
+	}
 
 	//in the initial state this message comes from the node who's going to
 	//host us in the tree

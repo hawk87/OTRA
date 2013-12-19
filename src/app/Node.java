@@ -22,5 +22,9 @@ public class Node {
 	public InetAddress getAddress() {
 		return address;
 	}
+	
+	public void setAddress(InetAddress adr) {
+		address = adr;
+	}
 
 }
