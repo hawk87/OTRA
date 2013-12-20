@@ -1,6 +1,5 @@
 package app;
 
-import java.util.List;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -11,6 +10,7 @@ import app.tree.TreeMaintenance;
 
 public class Main {
 	public static void main(String args[]) {
+		System.setProperty("java.net.preferIPv4Stack", "true");
 		System.out.println("set the ID of this host");
 		Scanner sc = new Scanner(System.in);
 		System.out.print(">>");
@@ -47,13 +47,7 @@ public class Main {
 			System.exit(1);
 		}
 		
-		List<InterfaceAddress> interfaceAddresses = netinterface.getInterfaceAddresses();
-		if(interfaceAddresses.size() != 1) {
-			System.out.println("too many InterfaceAddresses");
-			System.exit(1);
-		}
-		
-		InterfaceAddress ourInterface = interfaceAddresses.get(0);
+		InterfaceAddress ourInterface = netinterface.getInterfaceAddresses().get(0);
 		
 		Node thisnode = new Node(id, ourInterface.getAddress());
 		//allocating the node/routing table
