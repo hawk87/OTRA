@@ -46,9 +46,9 @@ public class NodeTable {
 	public Node getNodeFromAddress(InetAddress adr) {
 		if (parent.getAddress().equals(adr)) 
 			return parent;
-		else if (leftChild.getAddress().equals(adr))
+		else if (leftChild != null && leftChild.getAddress().equals(adr))
 			return leftChild;
-		else if (rightChild.getAddress().equals(adr))
+		else if (rightChild != null && rightChild.getAddress().equals(adr))
 			return rightChild;
 		else {
 			// this address is not in the NodeTable
