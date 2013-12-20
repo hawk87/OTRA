@@ -16,6 +16,8 @@ public class Connection {
 	private static final byte[] NACK = { (byte) 0xFF };
 
 	private static byte sn = 00000000;
+	
+	private static InterfaceAddress interfaceAddress = null;
 
 	private static class Listener extends Thread {
 
@@ -76,9 +78,10 @@ public class Connection {
 		}
 	}
 
-	public static void start(){
+	public static void start(InterfaceAddress intAdr){
 		Listener l  = new Listener();
 		l.start();
+		interfaceAddress = intAdr;
 	}
 
 	public static void send(InetAddress address, byte[] data) {
@@ -140,10 +143,8 @@ public class Connection {
 
 	public static void sendBroadcast(byte[] data) {
 		try {
-			byte[] addr = InetAddress.getLocalHost().getAddress();
-			addr[3] = (byte) 255;
 
-			InetAddress address = InetAddress.getByAddress(addr);
+			InetAddress address = interfaceAddress.getBroadcast();
 
 			DatagramSocket sendSocket = new DatagramSocket();
 			sendSocket.setBroadcast(true);
