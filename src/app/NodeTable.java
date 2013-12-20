@@ -20,7 +20,7 @@ public class NodeTable {
 		thisNode = n;
 	}
 	
-	public static NodeTable getInstance(Node n) {
+	public static NodeTable createInstance(Node n) {
 		if(INSTANCE != null) {
 			System.out.println("NodeTable: instance already created");
 			System.exit(1);
