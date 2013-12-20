@@ -26,5 +26,11 @@ public class Node {
 	public void setAddress(InetAddress adr) {
 		address = adr;
 	}
+	
+	public String toString() {
+		String s = "";
+		s += identifier + " " + address;
+		return s;
+	}
 
 }

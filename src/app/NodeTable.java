@@ -105,5 +105,43 @@ public class NodeTable {
 	public boolean hasRightNode() {
 		return (rightChild != null);
 	}
+	
+	public String toString() {
+		String leftStr;
+		String rightStr;
+		String parentStr;
+		String s = "";
+		
+		if(leftChild == null)
+			leftStr = spaces(thisNode.toString().length());
+		else
+			leftStr = leftChild.toString();
+		
+		if(rightChild == null)
+			rightStr = spaces(thisNode.toString().length());
+		else
+			rightStr = rightChild.toString();
+		
+		if(parent == null)
+			parentStr = spaces(thisNode.toString().length());
+		else
+			parentStr = parent.toString();
+		
+		s += spaces(leftStr.length()) + parentStr + "\n";
+		s += spaces(leftStr.length()) + thisNode + "\n";
+		s += leftStr + spaces(parentStr.length()) + rightStr;
+		return s;
+	}
+	
+	private String spaces(int p) {
+		if(p <= 0 && p > 10000) {
+			return "";
+		}
+		String s = "";
+		for(int i=0; i < p; i++) {
+			s += " ";
+		}
+		return s;
+	}
 
 }
