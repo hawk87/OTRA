@@ -5,6 +5,12 @@ import app.Node;
 import app.Debug;
 import app.NodeTable;
 
+/**
+ * Normal operational state. Under normal conditions: without any
+ * balancing call or recovery operation. From children nodes we receive non-stop
+ * SIZE messages that we use to inspect if the connection is set up and if some 
+ * balancing operation must occur.
+ */
 class NormalState extends OperationalState {
 	
 	private int leftSize;
@@ -12,10 +18,13 @@ class NormalState extends OperationalState {
 	private boolean leftIsReady;
 	private boolean rightIsReady;
 	
-	// this counts the number of received SIZE messages from a single side
-	// this permit us to decide to TOUCH the children who's keeping silence
+	/**
+	 * This counts the number of received SIZE messages from a single side when
+	 * the other is not sending anything.
+	 * That permit us to decide to TOUCH the children who's keeping silence
+	 */
 	private int waiting;
-	
+
 	NormalState() {
 		Debug.output("Entering normal state...");
 	}
