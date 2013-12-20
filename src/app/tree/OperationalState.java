@@ -2,14 +2,26 @@ package app.tree;
 
 import app.Node;
 
+/**
+ * Fictional operational state.
+ * Logic common to all operational state, in fact every class that wants to
+ * listen for incoming messages must extends this one.
+ */
 abstract class OperationalState {
 
+	/**
+	 * A reference to the TreeMaintenance instance that is used, as example,
+	 * for retrieving the node table, ecc..
+	 */
 	protected static TreeMaintenance supervisor;
+	// static initializer
 	{
 		supervisor = TreeMaintenance.getInstance();
 	}
 	
-	// pass the control to another OperationalState
+	/**
+	 * Pass the control to the next operational state.
+	 */
 	final void nextState(OperationalState nextState) {
 		supervisor.changeState(nextState);
 	}
@@ -17,10 +29,10 @@ abstract class OperationalState {
 	//
 	// INCOMING MESSAGES HANDLES
 	//
+	//NOP operations
+	//subclasses that want to listen for these messages must override
 	
 	void handleSize(Node n, int s) {
-		//nop
-		// subclasses that want to listen for this message must override
 	}
 	
 	void handleTouch(Node n) {
