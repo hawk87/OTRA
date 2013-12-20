@@ -3,8 +3,14 @@ package app.tree;
 import app.Node;
 import app.NodeTable;
 
+/**
+ * This class holds the current operational state and route incoming messages
+ * to the proper object methods.
+ */
 public final class TreeMaintenance {
-	// node/routing table
+	/**
+	 * reference to the node/routing table
+	 */
 	private NodeTable table;
 	
 	// Singleton design pattern
@@ -14,7 +20,11 @@ public final class TreeMaintenance {
 		table = NodeTable.getInstance();
 	}
 	
-	public static void startMaintenance() {
+	/**
+	 * Since this class implements the singleton design patter, this is the only
+	 * way to create the single instance.
+	 */
+	public static void start() {
 		if(INSTANCE != null) {
 			System.out.println("maintenance already started..!!");
 			System.exit(1);
@@ -24,6 +34,10 @@ public final class TreeMaintenance {
 		INSTANCE.maintenanceState = InitialState.init();
 	}
 	
+	/**
+	 * Retrieve the single instance of this class. If there was not previously
+	 * any call to start() method this generate an abort.
+	 */
 	public static TreeMaintenance getInstance() {
 		if(INSTANCE == null) {
 			System.out.println("maintenance not started...abort");
@@ -36,10 +50,15 @@ public final class TreeMaintenance {
 		return table;
 	}
 
-	// holds the current operational state
-	// this can be NormalState, BalancingState ecc...
+	/**
+	 * Holds the current operational state. This can be NormalState, Balancing ecc..
+	 */
 	private OperationalState maintenanceState;
 	
+	/**
+	 * Used when there is some operational-state change. From one state we change to
+	 * another consequential new state. Called from OperationalState class.
+	 */
 	void changeState(OperationalState os) {
 		maintenanceState = os;
 	}

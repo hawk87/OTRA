@@ -21,7 +21,7 @@ public class Main {
 		//set up Connection
 		Connection.start();
 		//entering in maintenance state
-		TreeMaintenance.startMaintenance();
+		TreeMaintenance.start();
 		
 		sc.close();
 	}
