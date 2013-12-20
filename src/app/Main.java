@@ -14,7 +14,6 @@ public class Main {
 		Scanner sc = new Scanner(System.in);
 		System.out.print(">>");
 		String str = sc.next();
-		sc.close();
 		int id = Integer.parseInt(str);
 		if(id <= 0) {
 			System.out.println("the ID must be a positive integer number");
@@ -27,6 +26,7 @@ public class Main {
 		Node thisnode = new Node(id, ourInterface.getAddress());
 		//allocating the node/routing table
 		NodeTable.createInstance(thisnode);
+		System.out.println(NodeTable.getInstance());
 		//set up Connection
 		Connection.start(ourInterface);
 		//entering in maintenance state
