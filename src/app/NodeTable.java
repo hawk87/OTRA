@@ -44,16 +44,18 @@ public class NodeTable {
 	 * @return null if adr is not associated with any Node 
 	 */
 	public Node getNodeFromAddress(InetAddress adr) {
-		if (parent.getAddress().equals(adr)) 
-			return parent;
-		else if (leftChild != null && leftChild.getAddress().equals(adr))
-			return leftChild;
-		else if (rightChild != null && rightChild.getAddress().equals(adr))
-			return rightChild;
-		else {
-			// this address is not in the NodeTable
-			return null;
-		}	
+		if(parent != null) {
+			if(parent.getAddress().equals(adr))
+				return parent;
+		} else if(leftChild != null) {
+			if(leftChild.getAddress().equals(adr))
+				return leftChild;
+		} else if(rightChild != null) {
+			if(rightChild != null)
+				return rightChild;
+		}
+		//no match
+		return null;
 	}
 	
 	public Node getThisNode() {
