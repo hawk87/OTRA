@@ -41,7 +41,7 @@ public class Connection {
 					byte[] message = receivePacket.getData();
 
 					byte[] data = new byte[receivePacket.getLength() - 3];
-					System.arraycopy(message, 2, data, 0, data.length-1);
+					System.arraycopy(message, 2, data, 0, data.length);
 
 					byte flag = message[0];
 					byte sn = message[1];
