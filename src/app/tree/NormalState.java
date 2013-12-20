@@ -11,12 +11,14 @@ import app.NodeTable;
  * SIZE messages that we use to inspect if the connection is set up and if some 
  * balancing operation must occur.
  */
-class NormalState extends OperationalState {
+class NormalState extends OperationalState implements Runnable {
 	
 	private int leftSize;
 	private int rightSize;
 	private boolean leftIsReady;
 	private boolean rightIsReady;
+	
+	private final int waitmsec = 500;
 	
 	/**
 	 * This counts the number of received SIZE messages from a single side when
@@ -27,6 +29,23 @@ class NormalState extends OperationalState {
 
 	NormalState() {
 		Debug.output("Entering normal state...");
+		NodeTable tbl = supervisor.getNodeTable();
+		if((!tbl.hasLeftNode()) && (!tbl.hasRightNode()) && (!tbl.isThisRoot())) {
+			//we are leaf, then we have to start a thread to signal parent
+			//about our size
+			Thread thread = new Thread(this);
+			thread.start();
+		}
+	}
+	
+	public void run() {
+		NodeTable tbl = supervisor.getNodeTable();
+		Message.sendSize(tbl.getParent(), 1);
+		try {
+			Thread.sleep(waitmsec);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	void handleSize(Node n, int s) {
