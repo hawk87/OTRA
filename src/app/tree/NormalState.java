@@ -40,15 +40,19 @@ class NormalState extends OperationalState implements Runnable {
 	
 	public void run() {
 		NodeTable tbl = supervisor.getNodeTable();
-		Message.sendSize(tbl.getParent(), 1);
-		try {
-			Thread.sleep(waitmsec);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+		while(true) {
+			Message.sendSize(tbl.getParent(), 1);
+			try {
+				Thread.sleep(waitmsec);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
 	void handleSize(Node n, int s) {
+		Debug.output("received a SIZE message");
+		Debug.output("  id: " + n.getId() + " size: " + s);
 		if(supervisor.getNodeTable().isLeftNode(n)) {
 			leftSize = s;
 			leftIsReady = true;
@@ -104,8 +108,7 @@ class NormalState extends OperationalState implements Runnable {
 					Message.sendJoinSearch(tbl.getLeftNode(), n);
 				} else {
 					// joining node can be attached here, to the left
-					Debug.output("node id: " + n.getId() + "attaches here to the"
-							+ "left");
+					Debug.output("node id: " + n.getId() + " attaches here to the left");
 					//set joining node as left child
 					tbl.setLeftNode(n);
 					//signal to joining node that it can attach itself here
@@ -117,8 +120,7 @@ class NormalState extends OperationalState implements Runnable {
 					Message.sendJoinSearch(tbl.getRightNode(), n);
 				} else {
 					// joining node can be attached here, to the right
-					Debug.output("node id: " + n.getId() + "attaches here to the"
-							+ "right");
+					Debug.output("node id: " + n.getId() + " attaches here to the right");
 					//set joining node as right child
 					tbl.setRightNode(n);
 					//signal to joining node that it can attach itself here
@@ -146,8 +148,7 @@ class NormalState extends OperationalState implements Runnable {
 				Message.sendJoinSearch(tbl.getLeftNode(), n);
 			} else {
 				//joining node can attach here, to the left
-				Debug.output("node id: " + n.getId() + "attaches here to the"
-						+ "left");
+				Debug.output("node id: " + n.getId() + " attaches here to the left");
 				//set joining node as left child
 				tbl.setLeftNode(n);
 				//signal to joining node that it can attach itself here
@@ -159,8 +160,7 @@ class NormalState extends OperationalState implements Runnable {
 				Message.sendJoinSearch(tbl.getRightNode(), n);
 			} else {
 				//joining node can attach here, to the right
-				Debug.output("node id: " + n.getId() + "attaches here to the"
-						+ "right");
+				Debug.output("node id: " + n.getId() + " attaches here to the right");
 				//set joining node as right child
 				tbl.setRightNode(n);
 				//signal to joining node that it can attach itself here
