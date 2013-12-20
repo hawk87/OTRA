@@ -84,7 +84,7 @@ public class Message {
 			int id = byteToInt(Arrays.copyOfRange(data, 1, 5));
 			try {
 				joinAdr = InetAddress.getByAddress(
-						Arrays.copyOfRange(data, 6, 10));
+						Arrays.copyOfRange(data, 5, 9));
 			} catch(UnknownHostException uhe) {
 				System.out.println("ERROR: Message: received wrong JOIN_SEARCH message");
 				System.out.println("  UnknownHostException");
