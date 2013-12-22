@@ -159,7 +159,7 @@ public class Connection {
 					message.length, address, PORT);
 
 			sendSocket.send(sendPacket);
-			System.out.println("send broadcast " + (int) sn);
+			//System.out.println("send broadcast " + (int) sn);
 			sendSocket.close();
 			sn++;
 		} catch (Exception e) {

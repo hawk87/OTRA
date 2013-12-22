@@ -61,7 +61,7 @@ class InitialState extends OperationalState implements Runnable {
 				break;
 			}
 			waitcount++;
-			Debug.output("sending broadcast signal");
+			Debug.output("sending broadcast signal..." + waitcount);
 			Message.sendJoinBroadcast(tbl.getThisNode().getId());
 			try {
 				Thread.sleep(waitmsec);

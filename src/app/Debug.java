@@ -18,10 +18,10 @@ public class Debug {
 		int linenumber = stack[2].getLineNumber();
 		
 		if (!currentClass.equals(classname)) {
-			System.out.println("DEBUG: " + classname);
+			System.err.println("DEBUG: " + classname);
 			currentClass = classname;
 		}
-		System.out.println("  " + s + " (" + methodname + " " + linenumber + ")");
+		System.err.println("  " + s + " (" + methodname + " " + linenumber + ")");
 	}
 	
 }
