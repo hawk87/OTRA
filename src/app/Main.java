@@ -1,19 +1,28 @@
 package app;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
-import java.util.Scanner;
 
 import app.tree.TreeMaintenance;
 
 public class Main {
 	public static void main(String args[]) {
+		BufferedReader br = new BufferedReader(
+				new InputStreamReader(System.in));
+		
 		System.out.println("set the ID of this host");
-		Scanner sc = new Scanner(System.in);
 		System.out.print(">>");
-		String str = sc.next();
+		String str = "";
+		try {
+			str = br.readLine();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		int id = Integer.parseInt(str);
 		if(id <= 0) {
 			System.out.println("the ID must be a positive integer number");
@@ -26,15 +35,19 @@ public class Main {
 		Node thisnode = new Node(id, ourInterface.getAddress());
 		//allocating the node/routing table
 		NodeTable.createInstance(thisnode);
-		System.out.println(NodeTable.getInstance());
 		//set up Connection
 		Connection.start(ourInterface);
 		//entering in maintenance state
 		TreeMaintenance.start();
+		//run repl loop
+		Command repl = new Command();
+		repl.run();
 	}
 	
 	private static InterfaceAddress getNetworkInterface() {
 		System.setProperty("java.net.preferIPv4Stack", "true");
+		BufferedReader br = new BufferedReader(
+				new InputStreamReader(System.in));
 		
 		System.out.println("available network interfaces");
 		Enumeration<NetworkInterface> interfaces = null;
@@ -43,18 +56,20 @@ public class Main {
 				System.out.println(interfaces.nextElement());
 			}
 		} catch (SocketException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		System.out.print(">>");
-		Scanner sc = new Scanner(System.in);
-		String str = sc.next();
-		sc.close();
+		String str = "";
+		try {
+			str = br.readLine();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
 		NetworkInterface netinterface = null;
 		try {
 			netinterface = NetworkInterface.getByName(str);
 		} catch (SocketException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		if(netinterface == null) {
