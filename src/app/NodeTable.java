@@ -31,7 +31,7 @@ public class NodeTable {
 	
 	public static NodeTable getInstance() {
 		if(INSTANCE == null) {
-			System.out.println("NodeTable: instance not already created");
+			System.out.println("NodeTable: instance not yet created");
 			System.exit(1);
 		}
 		return INSTANCE;
@@ -112,24 +112,43 @@ public class NodeTable {
 		String parentStr;
 		String s = "";
 		
+		int width = thisNode.toString().length();
+		
 		if(leftChild == null)
-			leftStr = spaces(thisNode.toString().length());
+			leftStr = nullString(width);
 		else
 			leftStr = leftChild.toString();
 		
 		if(rightChild == null)
-			rightStr = spaces(thisNode.toString().length());
+			rightStr = nullString(width);
 		else
 			rightStr = rightChild.toString();
 		
 		if(parent == null)
-			parentStr = spaces(thisNode.toString().length());
+			parentStr = nullString(width);
 		else
 			parentStr = parent.toString();
 		
-		s += spaces(leftStr.length()) + parentStr + "\n";
-		s += spaces(leftStr.length()) + thisNode + "\n";
+		if(parent != null) {
+			if(parent.getId() > thisNode.getId())
+				s += spaces(leftStr.length() / 2) + parentStr + "\n\n";
+			else
+				s += spaces(leftStr.length() * 3 / 2) + parentStr + "\n\n";
+		} else
+			s += spaces(leftStr.length()) + parentStr + "\n\n";
+			
+		s += spaces(leftStr.length()) + thisNode + "\n\n";
 		s += leftStr + spaces(parentStr.length()) + rightStr;
+		return s;
+	}
+	
+	private String nullString(int size) {
+		// |size| >= 4
+		String s;
+		String ns = "null";
+		
+		s = spaces((size-4) / 2) + ns + spaces((size-4) / 2);
+		
 		return s;
 	}
 	
