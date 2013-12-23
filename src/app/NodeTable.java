@@ -130,7 +130,7 @@ public class NodeTable {
 			parentStr = parent.toString();
 		
 		if(parent != null) {
-			if(parent.getId() > thisNode.getId())
+			if(parent.getId() < thisNode.getId())
 				s += spaces(leftStr.length() / 2) + parentStr + "\n\n";
 			else
 				s += spaces(leftStr.length() * 3 / 2) + parentStr + "\n\n";
