@@ -129,7 +129,8 @@ public class Message {
 		int k = 0;
 		int tmp;
 		for(int j = 0; j < data.length; j++) {
-			tmp = (int) data[j];
+			//need a mask to avoid sign propagation
+			tmp = data[j] & 0x000000FF;
 			k = k + (tmp << (8*j));
 		}
 		return k;
