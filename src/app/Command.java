@@ -27,8 +27,8 @@ public class Command {
 	}
 	
 	private void read(String cmd) {
-		String[] tk = cmd.split("[ |\t]+");
-		switch (tk[0]) {
+		String[] tks = cmd.split("[ |\t]+");
+		switch (tks[0]) {
 		case "print":
 			print();
 			break;
