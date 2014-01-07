@@ -29,8 +29,11 @@ public class Command {
 	private void read(String cmd) {
 		String[] tks = cmd.split("[ |\t]+");
 		switch (tks[0]) {
-		case "print":
-			print();
+		case "table":
+			table();
+			break;
+		case "net":
+			printNetwork();
 			break;
 		case "send":
 			//TODO
@@ -44,9 +47,12 @@ public class Command {
 		}
 	}
 	
-	private void print() {
+	private void table() {
 		NodeTable tbl = NodeTable.getInstance();
 		System.out.println(tbl);
 	}
-
+	
+	private void printNetwork() {
+		Message.sendPrint();
+	}
 }
