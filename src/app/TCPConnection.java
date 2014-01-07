@@ -1,4 +1,5 @@
 package app;
+
 import java.io.*;
 import java.net.*;
 
@@ -20,6 +21,9 @@ public class TCPConnection {
 			while (true) {
 				try {
 					Socket socket = serverSocket.accept();
+
+					InetAddress address = socket.getInetAddress();
+
 					InputStream in = socket.getInputStream();
 					DataInputStream dis = new DataInputStream(in);
 
@@ -29,8 +33,8 @@ public class TCPConnection {
 					if (size > 0) {
 						dis.readFully(data);
 					}
-					
-					FileTransfer.receive(data);
+
+					FileTransfer.receive(address, data);
 
 				} catch (IOException e) {
 					System.err.println(e.getMessage());
