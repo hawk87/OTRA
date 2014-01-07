@@ -1,6 +1,6 @@
 package app;
 
-public class IntegerUtility {
+public class Utility {
 	
 	/**
 	 * Utility to convert a 32 bit integer to vector of 4 bytes.
@@ -34,6 +34,22 @@ public class IntegerUtility {
 			k = k + (tmp << (8*j));
 		}
 		return k;
+	}
+	
+	/**
+	 * Utility to append an array to another.
+	 * @param first
+	 * @param second
+	 * @return a (first.length + second.length) long array containing the two
+	 * concatenated.
+	 */
+	public static byte[] appendArray(byte[] first, byte[] second) {
+		byte[] result = new byte[first.length + second.length];
+		
+		System.arraycopy(first, 0, result, 0, first.length);
+		System.arraycopy(second, 0, result, first.length, second.length);
+
+		return result;
 	}
 
 }

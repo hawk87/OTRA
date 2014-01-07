@@ -44,4 +44,7 @@ abstract class OperationalState {
 	void handleJoinSearch(Node n) {
 	}
 	
+	void handlePrint(){
+	}
+	
 }

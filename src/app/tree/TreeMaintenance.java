@@ -82,5 +82,9 @@ public final class TreeMaintenance {
 	public void handleJoinSearch(Node n) {
 		maintenanceState.handleJoinSearch(n);
 	}
+	
+	public void handlePrint() {
+		maintenanceState.handlePrint();
+	}
 
 }
