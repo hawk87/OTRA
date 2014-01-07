@@ -55,4 +55,10 @@ public class Command {
 	private void printNetwork() {
 		Message.sendPrint();
 	}
+	
+	public static void println(String s) {
+		System.out.println("");
+		System.out.println(s);
+		System.out.print(">> ");
+	}
 }

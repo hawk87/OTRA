@@ -96,8 +96,8 @@ public class Router {
 			//we are root, then we have to print collected information
 			SerialTree st = new SerialTree(
 					Utility.byteArrayToIntArray(ndata));
-			//parse tree
-			st.read();
+			//parse and print the tree
+			Command.println(st.read());
 		} else {
 			// send the composed file to parent
 			OTRAFile nfile = new OTRAFile(-1, ndata);
