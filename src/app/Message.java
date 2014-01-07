@@ -18,7 +18,7 @@ public class Message {
 		byte[] flag = new byte[1];
 		flag[0] = MessageType.SIZE.getFlag();
 		
-		byte[] data = appendArray(flag, intToByte(s));
+		byte[] data = appendArray(flag, IntegerUtility.intToByte(s));
 		//data[] now holds the first byte as flag and next four bytes
 		//for the integer
 		Connection.send(n.getAddress(), data);
@@ -28,7 +28,7 @@ public class Message {
 		byte[] flag = new byte[1];
 		flag[0] = MessageType.JOIN_BROADCAST.getFlag();
 		
-		byte[] data = appendArray(flag, intToByte(id));
+		byte[] data = appendArray(flag, IntegerUtility.intToByte(id));
 		//data now holds the first byte as flag and next four bytes
 		//for the integer
 		Connection.sendBroadcast(data);
@@ -38,7 +38,7 @@ public class Message {
 		byte[] flag = new byte[1];
 		flag[0] = MessageType.JOIN_SEARCH.getFlag();
 		//append 4 bytes for the id
-		byte[] data = appendArray(flag, intToByte(joining.getId()));
+		byte[] data = appendArray(flag, IntegerUtility.intToByte(joining.getId()));
 		//append bytes for the InetAddress
 		data = appendArray(data, joining.getAddress().getAddress());
 
@@ -61,7 +61,7 @@ public class Message {
 			maintainer.handleTouch(n);
 			break;
 		case SIZE:
-			k = byteToInt(Arrays.copyOfRange(data, 1, 5));
+			k = IntegerUtility.byteToInt(Arrays.copyOfRange(data, 1, 5));
 			
 			n = NodeTable.getInstance().getNodeFromAddress(adr);
 			if(n == null) {
@@ -71,7 +71,7 @@ public class Message {
 			maintainer.handleSize(n, k);
 			break;
 		case JOIN_BROADCAST:
-			k = byteToInt(Arrays.copyOfRange(data, 1, 5));
+			k = IntegerUtility.byteToInt(Arrays.copyOfRange(data, 1, 5));
 			if(k <= 0) {
 				System.out.println("ERROR: received an invalid identifier: " + k);
 				System.exit(1);
@@ -81,7 +81,7 @@ public class Message {
 			break;
 		case JOIN_SEARCH:
 			InetAddress joinAdr = null;
-			int id = byteToInt(Arrays.copyOfRange(data, 1, 5));
+			int id = IntegerUtility.byteToInt(Arrays.copyOfRange(data, 1, 5));
 			try {
 				joinAdr = InetAddress.getByAddress(
 						Arrays.copyOfRange(data, 5, 9));
@@ -100,40 +100,6 @@ public class Message {
 			System.out.println("ERROR: Unknown type of message");
 			System.exit(1);
 		}
-	}
-	
-	/**
-	 * Utility to convert a 32 bit integer to vector of 4 bytes.
-	 * @return 4 bytes coding n
-	 */
-	private static byte[] intToByte(int n) {
-		byte[] data = new byte[4];
-		
-		for(int i = 0; i < data.length; i++) {
-			data[i] = (byte) n;
-			n = n >> 8;
-		}
-		return data;
-	}
-	
-	/**
-	 * Utility to parse 4bytes array into an integer representation
-	 * @param 4byte array containing the integer representation
-	 * @return the integer value
-	 */
-	private static int byteToInt(byte[] data) {
-		if(data.length != 4) {
-			System.out.println("error parsing integer");
-			System.exit(1);
-		}
-		int k = 0;
-		int tmp;
-		for(int j = 0; j < data.length; j++) {
-			//need a mask to avoid sign propagation
-			tmp = data[j] & 0x000000FF;
-			k = k + (tmp << (8*j));
-		}
-		return k;
 	}
 	
 	/**

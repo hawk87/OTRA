@@ -29,8 +29,8 @@ public class TCPConnection {
 					if (size > 0) {
 						dis.readFully(data);
 					}
-
-					// CHIAMATA METODO, inoltro data
+					
+					FileTransfer.receive(data);
 
 				} catch (IOException e) {
 					System.err.println(e.getMessage());
