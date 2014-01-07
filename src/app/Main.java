@@ -37,6 +37,8 @@ public class Main {
 		NodeTable.createInstance(thisnode);
 		//set up Connection
 		Connection.start(ourInterface);
+		//set up TCPConnection
+		TCPConnection.start();
 		//entering in maintenance state
 		TreeMaintenance.start();
 		//run repl loop
