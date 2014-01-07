@@ -18,7 +18,7 @@ public class Message {
 		byte[] flag = new byte[1];
 		flag[0] = MessageType.SIZE.getFlag();
 		
-		byte[] data = appendArray(flag, IntegerUtility.intToByte(s));
+		byte[] data = Utility.appendArray(flag, Utility.intToByte(s));
 		//data[] now holds the first byte as flag and next four bytes
 		//for the integer
 		Connection.send(n.getAddress(), data);
@@ -28,7 +28,7 @@ public class Message {
 		byte[] flag = new byte[1];
 		flag[0] = MessageType.JOIN_BROADCAST.getFlag();
 		
-		byte[] data = appendArray(flag, IntegerUtility.intToByte(id));
+		byte[] data = Utility.appendArray(flag, Utility.intToByte(id));
 		//data now holds the first byte as flag and next four bytes
 		//for the integer
 		Connection.sendBroadcast(data);
@@ -38,9 +38,9 @@ public class Message {
 		byte[] flag = new byte[1];
 		flag[0] = MessageType.JOIN_SEARCH.getFlag();
 		//append 4 bytes for the id
-		byte[] data = appendArray(flag, IntegerUtility.intToByte(joining.getId()));
+		byte[] data = Utility.appendArray(flag, Utility.intToByte(joining.getId()));
 		//append bytes for the InetAddress
-		data = appendArray(data, joining.getAddress().getAddress());
+		data = Utility.appendArray(data, joining.getAddress().getAddress());
 
 		Connection.send(to.getAddress(), data);
 	}
@@ -61,7 +61,7 @@ public class Message {
 			maintainer.handleTouch(n);
 			break;
 		case SIZE:
-			k = IntegerUtility.byteToInt(Arrays.copyOfRange(data, 1, 5));
+			k = Utility.byteToInt(Arrays.copyOfRange(data, 1, 5));
 			
 			n = NodeTable.getInstance().getNodeFromAddress(adr);
 			if(n == null) {
@@ -71,7 +71,7 @@ public class Message {
 			maintainer.handleSize(n, k);
 			break;
 		case JOIN_BROADCAST:
-			k = IntegerUtility.byteToInt(Arrays.copyOfRange(data, 1, 5));
+			k = Utility.byteToInt(Arrays.copyOfRange(data, 1, 5));
 			if(k <= 0) {
 				System.out.println("ERROR: received an invalid identifier: " + k);
 				System.exit(1);
@@ -81,7 +81,7 @@ public class Message {
 			break;
 		case JOIN_SEARCH:
 			InetAddress joinAdr = null;
-			int id = IntegerUtility.byteToInt(Arrays.copyOfRange(data, 1, 5));
+			int id = Utility.byteToInt(Arrays.copyOfRange(data, 1, 5));
 			try {
 				joinAdr = InetAddress.getByAddress(
 						Arrays.copyOfRange(data, 5, 9));
@@ -94,27 +94,14 @@ public class Message {
 			n = new Node(id, joinAdr);
 			maintainer.handleJoinSearch(n);
 			break;
+		case PRINT:
+			maintainer.handlePrint();
+			break;
 		default:
 			//if it doesn't match against any of our defined messages
 			//throw an exception
 			System.out.println("ERROR: Unknown type of message");
 			System.exit(1);
 		}
-	}
-	
-	/**
-	 * Utility to append an array to another.
-	 * @param first
-	 * @param second
-	 * @return a (first.length + second.length) long array containing the two
-	 * concatenated.
-	 */
-	private static byte[] appendArray(byte[] first, byte[] second) {
-		byte[] result = new byte[first.length + second.length];
-		
-		System.arraycopy(first, 0, result, 0, first.length);
-		System.arraycopy(second, 0, result, first.length, second.length);
-
-		return result;
 	}
 }

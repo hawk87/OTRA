@@ -4,7 +4,8 @@ public enum MessageType {
 	TOUCH,
 	SIZE,
 	JOIN_BROADCAST,
-	JOIN_SEARCH;
+	JOIN_SEARCH,
+	PRINT;
 	
 	public byte getFlag() {
 		return (byte)this.ordinal();
