@@ -1,34 +1,37 @@
 package app;
 
 public class Router {
-	
-private static Router INSTANCE = new Router();
-	
+
+	private static Router INSTANCE = new Router();
+
 	private OTRAFile leftTree;
 	private OTRAFile rightTree;
-			
+
 	private Router() {
-		
+
 	}
 	
 	public static Router getInstance() {
 		return INSTANCE;
 	}
 	
-	public void route(OTRAFile dest, Node from) {
-		if(dest.getID() == -1) {
-			//this file is for printing
-			routePrintingFile(dest, from);
-			//TODO perche' non tanto bella sta cosa
-			return;
+	public void route(OTRAFile f, Node from) {
+		if(f.getID() > 0) {
+			//normal routing
+			routeNormal(f, from);
+		} else if(f.getID() == -1) {
+			//this is a printing file
+			routePrintingFile(f, from);
 		}
-		
+	}
+	
+	private void routeNormal(OTRAFile dest, Node from) {
 		NodeTable tbl = NodeTable.getInstance();
 		// if(my_ID == dest_ID)
 		if(dest.getID() == tbl.getThisNode().getId()) {
 			// TODO *service*
 		}
-		
+
 		// if(from == lchild_ID)
 		else if(tbl.hasLeftNode())
 			if(from.getId() == tbl.getLeftNode().getId()) {
@@ -40,78 +43,69 @@ private static Router INSTANCE = new Router();
 			}
 
 		// if(from == rchild_ID)
-		else if(tbl.hasRightNode())
-			if(from.getId() == tbl.getRightNode().getId()) {
-				if(tbl.isThisRoot() || dest.getID() < tbl.getParent().getId())
-					// forward to lchild
-					FileTransfer.send(tbl.getLeftNode().getAddress(), dest);
-				else // forward to parent
-					FileTransfer.send(tbl.getParent().getAddress(), dest);
-	
-		}
-		
+			else if(tbl.hasRightNode())
+				if(from.getId() == tbl.getRightNode().getId()) {
+					if(tbl.isThisRoot() || dest.getID() < tbl.getParent().getId())
+						// forward to lchild
+						FileTransfer.send(tbl.getLeftNode().getAddress(), dest);
+					else // forward to parent
+						FileTransfer.send(tbl.getParent().getAddress(), dest);
+
+				}
+
 		// if(from == parent_ID)
-		else if(tbl.isLeftNode(tbl.getThisNode()) || tbl.isRightNode(tbl.getThisNode())) {
-			if(dest.getID() < tbl.getThisNode().getId())
-				// forward to lchild
-				FileTransfer.send(tbl.getLeftNode().getAddress(), dest);
-			else //forward to rchild
-				FileTransfer.send(tbl.getRightNode().getAddress(), dest);
-			
-		}
-			
+				else if(tbl.isLeftNode(tbl.getThisNode()) || tbl.isRightNode(tbl.getThisNode())) {
+					if(dest.getID() < tbl.getThisNode().getId())
+						// forward to lchild
+						FileTransfer.send(tbl.getLeftNode().getAddress(), dest);
+					else //forward to rchild
+						FileTransfer.send(tbl.getRightNode().getAddress(), dest);
+
+				}
 	}
 	
 	private void routePrintingFile(OTRAFile f, Node from) {
 		NodeTable tbl = NodeTable.getInstance();
+		
+		if(tbl.isLeftNode(from))
+			leftTree = f;
+		else
+			rightTree = f;
+		
+		//Exit conditions. We have to wait for information from
+		//both subtrees to generate a routing printing message.
+		if(leftTree == null && tbl.hasLeftNode())
+			return;
+		if(rightTree == null && tbl.hasRightNode())
+			return;
+		
+		
+		if(leftTree == null) {
+			leftTree = new OTRAFile(-1, Utility.intToByte(-1));
+		} else if(rightTree == null) {
+			rightTree = new OTRAFile(-1, Utility.intToByte(-1));
+		}
+		
 		byte[] head = Utility.intToByte(tbl.getThisNode().getId());
+		byte[] ndata;
 		
-		if(tbl.isLeftNode(from) && rightTree != null) {
-			leftTree = f;
-			byte[] ndata;
-			ndata = Utility.appendArray(head, rightTree.getData());
-			ndata = Utility.appendArray(ndata, leftTree.getData());
-			
-			if(tbl.isThisRoot()) {
-				SerialTree st = new SerialTree(
-						Utility.byteArrayToIntArray(ndata));
-				st.read();
-			} else {
-				// send the composed file to parent
-				OTRAFile nfile = new OTRAFile(f.getID(), ndata);
-				FileTransfer.send(tbl.getParent().getAddress(), nfile);
-			}
-			//set to default condition
-			leftTree = null;
-			rightTree = null;
-		} else if (tbl.isRightNode(from) && leftTree != null) {
-			rightTree = f;
-			byte[] ndata;
-			ndata = Utility.appendArray(head, rightTree.getData());
-			ndata = Utility.appendArray(ndata, leftTree.getData());
-			
-			if(tbl.isThisRoot()) {
-				SerialTree st = new SerialTree(
-						Utility.byteArrayToIntArray(ndata));
-				st.read();
-			} else {
-				// send the composed file to parent
-				OTRAFile nfile = new OTRAFile(f.getID(), ndata);
-				FileTransfer.send(tbl.getParent().getAddress(), nfile);
-			}
-			//set to default condition
-			leftTree = null;
-			rightTree = null;
+		ndata = Utility.appendArray(head, rightTree.getData());
+		ndata = Utility.appendArray(ndata, leftTree.getData());
+		
+		if(tbl.isThisRoot()) {
+			//we are root, then we have to print collected information
+			SerialTree st = new SerialTree(
+					Utility.byteArrayToIntArray(ndata));
+			//parse tree
+			st.read();
+		} else {
+			// send the composed file to parent
+			OTRAFile nfile = new OTRAFile(-1, ndata);
+			FileTransfer.send(tbl.getParent().getAddress(), nfile);
 		}
 		
-		if(tbl.isLeftNode(from)) {
-			//then we have to wait for information coming from right subtree
-			leftTree = f;
-		}
-		
-		if(tbl.isRightNode(from)) {
-			// wait for information coming from left subtree
-			rightTree = f;
-		}
+		//reset to default condition
+		leftTree = null;
+		rightTree = null;
 	}
 }

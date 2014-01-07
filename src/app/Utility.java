@@ -39,7 +39,7 @@ public class Utility {
 	public static int[] byteArrayToIntArray(byte[] data) {
 		int n = data.length / 4;
 		if(n * 4 != data.length) {
-			System.out.println("Utility.byteArrayToIntArray: bad formatting");
+			System.out.println("Utility.byteArrayToIntArray(): bad formatting");
 			System.exit(0);
 		}
 		
