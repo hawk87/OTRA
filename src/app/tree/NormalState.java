@@ -186,8 +186,11 @@ class NormalState extends OperationalState implements Runnable {
 
 		NodeTable tbl = supervisor.getNodeTable();
 		Node thisnode = tbl.getThisNode();
-
-		if (!tbl.hasLeftNode() && !tbl.hasRightNode()) {
+		
+		if(tbl.isThisRoot()) {
+			//we are root then we have to print nothing
+		}
+		else if (!tbl.hasLeftNode() && !tbl.hasRightNode()) {
 			Debug.output("accepted");
 			byte[] data = {};
 			data = Utility.appendArray(data,
