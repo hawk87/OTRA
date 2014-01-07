@@ -2,10 +2,28 @@ package app;
 
 public class Router {
 	
+private static Router INSTANCE = new Router();
+	
+	private OTRAFile leftTree;
+	private OTRAFile rightTree;
+			
+	private Router() {
+		
+	}
+	
+	public static Router getInstance() {
+		return INSTANCE;
+	}
+	
 	public void route(OTRAFile dest, Node from) {
+		if(dest.getID() == -1) {
+			//this file is for printing
+			routePrintingFile(dest, from);
+			//TODO perche' non tanto bella sta cosa
+			return;
+		}
 		
 		NodeTable tbl = NodeTable.getInstance();
-		
 		// if(my_ID == dest_ID)
 		if(dest.getID() == tbl.getThisNode().getId()) {
 			// TODO *service*
@@ -43,24 +61,12 @@ public class Router {
 		}
 			
 	}
-
-	private static Router INSTANCE = new Router();
-	
-	private OTRAFile leftTree;
-	private OTRAFile rightTree;
-			
-	private Router() {
-		
-	}
-	
-	public static Router getInstance() {
-		return INSTANCE;
-	}
 	
 	private void routePrintingFile(OTRAFile f, Node from) {
 		NodeTable tbl = NodeTable.getInstance();
 		
 		if(tbl.isLeftNode(from) && rightTree != null) {
+			leftTree = f;
 			
 			
 			//set to default condition
