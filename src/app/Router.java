@@ -64,17 +64,41 @@ private static Router INSTANCE = new Router();
 	
 	private void routePrintingFile(OTRAFile f, Node from) {
 		NodeTable tbl = NodeTable.getInstance();
+		byte[] head = Utility.intToByte(tbl.getThisNode().getId());
 		
 		if(tbl.isLeftNode(from) && rightTree != null) {
 			leftTree = f;
+			byte[] ndata;
+			ndata = Utility.appendArray(head, rightTree.getData());
+			ndata = Utility.appendArray(ndata, leftTree.getData());
 			
-			
+			if(tbl.isThisRoot()) {
+				SerialTree st = new SerialTree(
+						Utility.byteArrayToIntArray(ndata));
+				st.read();
+			} else {
+				// send the composed file to parent
+				OTRAFile nfile = new OTRAFile(f.getID(), ndata);
+				FileTransfer.send(tbl.getParent().getAddress(), nfile);
+			}
 			//set to default condition
 			leftTree = null;
 			rightTree = null;
 		} else if (tbl.isRightNode(from) && leftTree != null) {
+			rightTree = f;
+			byte[] ndata;
+			ndata = Utility.appendArray(head, rightTree.getData());
+			ndata = Utility.appendArray(ndata, leftTree.getData());
 			
-			
+			if(tbl.isThisRoot()) {
+				SerialTree st = new SerialTree(
+						Utility.byteArrayToIntArray(ndata));
+				st.read();
+			} else {
+				// send the composed file to parent
+				OTRAFile nfile = new OTRAFile(f.getID(), ndata);
+				FileTransfer.send(tbl.getParent().getAddress(), nfile);
+			}
 			//set to default condition
 			leftTree = null;
 			rightTree = null;
@@ -90,21 +114,4 @@ private static Router INSTANCE = new Router();
 			rightTree = f;
 		}
 	}
-	
-	/**
-	 * Utility to append an array to another.
-	 * @param first
-	 * @param second
-	 * @return a (first.length + second.length) long array containing the two
-	 * concatenated.
-	 */
-	private static byte[] appendArray(byte[] first, byte[] second) {
-		byte[] result = new byte[first.length + second.length];
-		
-		System.arraycopy(first, 0, result, 0, first.length);
-		System.arraycopy(second, 0, result, first.length, second.length);
-
-		return result;
-	}
-	
 }

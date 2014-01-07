@@ -36,6 +36,22 @@ public class Utility {
 		return k;
 	}
 	
+	public static int[] byteArrayToIntArray(byte[] data) {
+		int n = data.length / 4;
+		if(n * 4 != data.length) {
+			System.out.println("Utility.byteArrayToIntArray: bad formatting");
+			System.exit(0);
+		}
+		
+		byte[] tmp = new byte[4];
+		int[] vec = new int[n];
+		for(int i=0; i < n; i++) {
+			System.arraycopy(data, i*4, tmp, 0, 4);
+			vec[i] = byteToInt(tmp);
+		}
+		return vec;
+	}
+	
 	/**
 	 * Utility to append an array to another.
 	 * @param first

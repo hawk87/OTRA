@@ -38,7 +38,7 @@ class SerialTree {
 		position += n;
 	}
 	
-	private String read() {
+	public String read() {
 		if(serialTree[position] == -1) {
 			System.err.println("problems parsing the tree");
 			Thread.dumpStack();
@@ -90,13 +90,5 @@ class SerialTree {
 			printed += spc + lines[i] + "\n";
 		}
 		return printed;
-	}
-	
-	public static void main(String args[]) {
-		// for example, (45, -1, -1) is a leaf
-		//int[] tree = {100, 110, 120, -1, 115, -1, -1, 50, -1, -1, -1};
-		int[] tree = {100, -1, 90, -1, 80, 85, 87, -1, -1, 83, -1, -1, 70, -1, -1};
-		SerialTree st = new SerialTree(tree);
-		System.out.println(st.read());
 	}
 }
