@@ -1,3 +1,4 @@
+package app;
 
 /**
  * This class read the serialized version of a binary tree. So the input is an
