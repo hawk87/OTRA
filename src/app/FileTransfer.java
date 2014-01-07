@@ -24,6 +24,6 @@ public class FileTransfer {
 
 		OTRAFile file = new OTRAFile(Utility.byteToInt(ID), data);
 
-		// TODO chiamata router
+		Router.getInstance().route(file, node);
 	}
 }
