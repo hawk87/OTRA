@@ -45,6 +45,12 @@ public class Message {
 		Connection.send(to.getAddress(), data);
 	}
 	
+	public static void sendPrint() {
+		byte[] flag = new byte[1];
+		flag[0] = MessageType.PRINT.getFlag();
+		Connection.sendBroadcast(flag);
+	}
+	
 	public static void translate(InetAddress adr, byte[] data) {
 		Node n;
 		int k;
