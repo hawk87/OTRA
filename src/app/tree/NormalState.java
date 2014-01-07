@@ -189,6 +189,7 @@ class NormalState extends OperationalState implements Runnable {
 		
 		if(tbl.isThisRoot()) {
 			//we are root then we have to print nothing
+			Debug.output("dropped");
 		}
 		else if (!tbl.hasLeftNode() && !tbl.hasRightNode()) {
 			Debug.output("accepted");
