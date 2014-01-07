@@ -11,20 +11,19 @@ public class FileTransfer {
 	}
 
 	public static void receive(InetAddress address, byte[] stream) {
-		byte[] ID = new byte[4];
-		byte[] data = new byte[stream.length - 4];
-
-		System.arraycopy(stream, 0, ID, 0, 4);
-		System.arraycopy(stream, 4, data, 0, data.length);
-
-		OTRAFile file = new OTRAFile(IntegerUtility.byteToInt(ID), data);
-
 		Node node = NodeTable.getInstance().getNodeFromAddress(address);
 
 		if (node == null) {
 			System.err.println("Receive from unknow host");
 			System.exit(1);
 		}
+
+		byte[] ID = new byte[4];
+		byte[] data = new byte[stream.length - 4];
+		System.arraycopy(stream, 0, ID, 0, 4);
+		System.arraycopy(stream, 4, data, 0, data.length);
+
+		OTRAFile file = new OTRAFile(IntegerUtility.byteToInt(ID), data);
 
 		// TODO chiamata router
 	}
