@@ -1,6 +1,5 @@
 package app;
 
-import java.io.ObjectInputStream.GetField;
 import java.net.InetAddress;
 
 public class FileTransfer {
