@@ -47,10 +47,12 @@ public class NodeTable {
 		if(parent != null) {
 			if(parent.getAddress().equals(adr))
 				return parent;
-		} else if(leftChild != null) {
+		}
+		if(leftChild != null) {
 			if(leftChild.getAddress().equals(adr))
 				return leftChild;
-		} else if(rightChild != null) {
+		}
+		if(rightChild != null) {
 			if(rightChild != null)
 				return rightChild;
 		}
