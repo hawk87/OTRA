@@ -7,8 +7,8 @@ import app.Cache;
 
 public class Connection {
 
-	private static final int RETRY_LIMIT = 5;
-	private static final int DELAY_TOLLERANCE = 50;
+	private static final int RETRY_LIMIT = 10;
+	private static final int DELAY_TOLLERANCE = 25;
 	private static final int PORT = 6666;
 	private static final int ACK_PORT = 7777;
 
@@ -107,7 +107,7 @@ public class Connection {
 
 			for (;;) {
 				// acknowledgment delay tolerance (in milliseconds)
-				ackSocket.setSoTimeout(DELAY_TOLLERANCE*(int)Math.pow(2, retry));
+				ackSocket.setSoTimeout(DELAY_TOLLERANCE*(int)Math.pow(1.5, retry));
 
 				DatagramSocket sendSocket = new DatagramSocket();
 				sendSocket.send(sendPacket);
