@@ -1,9 +1,12 @@
-package app;
+package app.communication;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 
+import app.Node;
+import app.NodeTable;
+import app.Utility;
 import app.tree.TreeMaintenance;
 
 public class Message {

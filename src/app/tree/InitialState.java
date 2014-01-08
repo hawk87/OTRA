@@ -1,9 +1,9 @@
 package app.tree;
 
 import app.Debug;
-import app.Message;
 import app.Node;
 import app.NodeTable;
+import app.communication.Message;
 
 /**
  * Initial operational state. We send broadcast signal to inspect if there is

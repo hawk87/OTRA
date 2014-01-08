@@ -1,6 +1,12 @@
-package app;
+package app.communication;
 
 import java.net.InetAddress;
+
+import app.Node;
+import app.NodeTable;
+import app.OTRAFile;
+import app.Router;
+import app.Utility;
 
 public class FileTransfer {
 

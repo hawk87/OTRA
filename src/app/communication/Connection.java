@@ -1,9 +1,8 @@
-package app;
+package app.communication;
 import java.io.IOException;
 import java.net.*;
 
-import app.CRC8;
-import app.Cache;
+import app.communication.CRC8;
 
 public class Connection {
 

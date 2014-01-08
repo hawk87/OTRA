@@ -8,6 +8,8 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
 
+import app.communication.Connection;
+import app.communication.TCPConnection;
 import app.tree.TreeMaintenance;
 
 public class Main {

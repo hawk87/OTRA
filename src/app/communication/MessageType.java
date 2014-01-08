@@ -1,4 +1,4 @@
-package app;
+package app.communication;
 
 public enum MessageType {
 	TOUCH,

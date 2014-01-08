@@ -1,4 +1,4 @@
-package app;
+package app.communication;
 
 import java.io.*;
 import java.net.*;

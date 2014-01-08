@@ -1,4 +1,4 @@
-package app;
+package app.communication;
 import java.net.InetAddress;
 import java.util.ArrayList;
 

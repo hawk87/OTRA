@@ -1,5 +1,7 @@
 package app;
 
+import app.communication.FileTransfer;
+
 public class Router {
 
 	private static Router INSTANCE = new Router();

@@ -1,12 +1,12 @@
 package app.tree;
 
-import app.FileTransfer;
 import app.Utility;
-import app.Message;
 import app.Node;
 import app.Debug;
 import app.NodeTable;
 import app.OTRAFile;
+import app.communication.FileTransfer;
+import app.communication.Message;
 
 /**
  * Normal operational state. Under normal conditions: without any balancing call
