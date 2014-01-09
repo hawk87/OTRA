@@ -44,4 +44,7 @@ abstract class OperationalState {
 	void handlePrint(){
 	}
 	
+	void service() {
+	}
+	
 }

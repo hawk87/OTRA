@@ -7,11 +7,15 @@ import app.NodeTable;
  * This class holds the current operational state and route incoming messages
  * to the proper object methods.
  */
-public final class TreeMaintenance {
+public final class TreeMaintenance implements Runnable {
+	private final int WAITMSEC = 1000;
 	/**
 	 * reference to the node/routing table
 	 */
 	private NodeTable table;
+	
+	private int leftSize;
+	private int rightSize;
 	
 	// Singleton design pattern
 	private static TreeMaintenance INSTANCE;
@@ -32,6 +36,20 @@ public final class TreeMaintenance {
 		INSTANCE = new TreeMaintenance();
 		// we start maintenance from InitialState
 		INSTANCE.maintenanceState = InitialState.init();
+		Thread th = new Thread(INSTANCE);
+		th.setName("TreeMaintenance service thread");
+		th.start();
+	}
+	
+	public void run() {
+		while (true) {
+			maintenanceState.service();
+			try {
+				Thread.sleep(WAITMSEC);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	/**
@@ -48,6 +66,22 @@ public final class TreeMaintenance {
 	
 	NodeTable getNodeTable() {
 		return table;
+	}
+	
+	int getLeftSize() {
+		return leftSize;
+	}
+	
+	int getRightSize() {
+		return rightSize;
+	}
+	
+	void setLeftSize(int s) {
+		leftSize = s;
+	}
+	
+	void setRightSize(int s) {
+		rightSize = s;
 	}
 
 	/**

@@ -14,14 +14,10 @@ import app.communication.Message;
  * that we use to inspect if the connection is set up and if some balancing
  * operation must occur.
  */
-class NormalState extends OperationalState implements Runnable {
+class NormalState extends OperationalState {
 
-	private int leftSize;
-	private int rightSize;
 	private boolean leftIsReady;
 	private boolean rightIsReady;
-
-	private final int waitmsec = 500;
 
 	/**
 	 * This counts the number of received SIZE messages from a single side when
@@ -33,24 +29,10 @@ class NormalState extends OperationalState implements Runnable {
 	NormalState() {
 		Debug.output("Entering normal state...");
 		NodeTable tbl = supervisor.getNodeTable();
-		if ((!tbl.hasLeftNode()) && (!tbl.hasRightNode())
-				&& (!tbl.isThisRoot())) {
-			// we are leaf, then we have to start a thread to signal parent
-			// about our size
-			Thread thread = new Thread(this);
-			thread.start();
-		}
-	}
-
-	public void run() {
-		NodeTable tbl = supervisor.getNodeTable();
-		while (true) {
-			Message.sendSize(tbl.getParent(), 1);
-			try {
-				Thread.sleep(waitmsec);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+		// signal to parent if any the size
+		if(!tbl.isThisRoot()) {
+			int s = supervisor.getLeftSize() + supervisor.getRightSize() + 1;
+			Message.sendSize(tbl.getParent(), s);
 		}
 	}
 
@@ -58,22 +40,22 @@ class NormalState extends OperationalState implements Runnable {
 		Debug.output("received a SIZE message");
 		Debug.output("  id: " + n.getId() + " size: " + s);
 		if (supervisor.getNodeTable().isLeftNode(n)) {
-			leftSize = s;
+			supervisor.setLeftSize(s);
 			leftIsReady = true;
 		} else {
-			rightSize = s;
+			supervisor.setRightSize(s);
 			rightIsReady = true;
 		}
 
 		if (rightIsReady && leftIsReady) {
 			// unbalanced to the left
-			if (leftSize - rightSize >= 2) {
+			if (supervisor.getLeftSize() - supervisor.getRightSize() >= 2) {
 				// get b-balance node
 				Node b = supervisor.getNodeTable().getLeftNode();
 				nextState(new BalancingState(b));
 			}
 			// unbalanced to the right
-			else if (rightSize - leftSize >= 2) {
+			else if (supervisor.getRightSize() - supervisor.getLeftSize() >= 2) {
 				// get b-balance node
 				Node b = supervisor.getNodeTable().getRightNode();
 				nextState(new BalancingState(b));
