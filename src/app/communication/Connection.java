@@ -83,7 +83,7 @@ public class Connection {
 		interfaceAddress = intAdr;
 	}
 
-	public static void send(InetAddress address, byte[] data) {
+	public static boolean send(InetAddress address, byte[] data) {
 
 		int retry = 0;
 
@@ -104,7 +104,7 @@ public class Connection {
 		try {
 			DatagramSocket ackSocket = new DatagramSocket(ACK_PORT);
 
-			for (;;) {
+			while(true) {
 				// acknowledgment delay tolerance (in milliseconds)
 				ackSocket.setSoTimeout(DELAY_TOLLERANCE*(int)Math.pow(1.5, retry));
 
@@ -121,7 +121,7 @@ public class Connection {
 						//System.out.println("<- ACK " + (int) sn);
 						sn++;
 						ackSocket.close();
-						break;
+						return true;
 					} else {
 						System.out.println("<- NACK " + (int) sn);
 						// retry++;
@@ -131,12 +131,14 @@ public class Connection {
 					if (++retry >= RETRY_LIMIT) {
 						ackSocket.close();
 						System.err.println("Max retry limit reached.");
-						System.exit(-1);// da modificare in futuro
+						//System.exit(-1);
+						return false;
 					}
 				}
-			}
+			}	
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
+			return false;
 		}
 	}
 
