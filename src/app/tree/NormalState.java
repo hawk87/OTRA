@@ -188,6 +188,10 @@ class NormalState extends OperationalState {
 			System.exit(1);
 		}
 	}
+	
+	void handleBalance() {
+		//TODO
+	}
 
 	void handlePrint() {
 		Debug.output("received a PRINT message");

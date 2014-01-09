@@ -5,6 +5,7 @@ public enum MessageType {
 	SIZE,
 	JOIN_BROADCAST,
 	JOIN_SEARCH,
+	BALANCE,
 	PRINT;
 	
 	public byte getFlag() {

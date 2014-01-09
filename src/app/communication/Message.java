@@ -54,6 +54,12 @@ public class Message {
 		Connection.sendBroadcast(flag);
 	}
 	
+	public static void sendBalance(Node to) {
+		byte[] flag = new byte[1];
+		flag[0] = MessageType.BALANCE.getFlag();
+		Connection.send(to.getAddress(), flag);
+	}
+	
 	public static void translate(InetAddress adr, byte[] data) {
 		Node n;
 		int k;
@@ -101,6 +107,15 @@ public class Message {
 			
 			n = new Node(id, joinAdr);
 			maintainer.handleJoinSearch(n);
+			break;
+		case BALANCE:
+			tbl = NodeTable.getInstance();
+			n = tbl.getNodeFromAddress(adr);
+			if(n == null) {
+				System.out.println("ERROR: BALANCE message from unknown node");
+				System.exit(1);
+			}
+			maintainer.handleBalance();
 			break;
 		case PRINT:
 			maintainer.handlePrint();

@@ -47,4 +47,7 @@ abstract class OperationalState {
 	void service() {
 	}
 	
+	void handleBalance() {
+	}
+	
 }

@@ -122,5 +122,8 @@ public final class TreeMaintenance implements Runnable {
 	public void handlePrint() {
 		maintenanceState.handlePrint();
 	}
+	public void handleBalance() {
+		maintenanceState.handleBalance();
+	}
 
 }
