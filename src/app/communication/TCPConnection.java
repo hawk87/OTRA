@@ -45,6 +45,7 @@ public class TCPConnection {
 
 	public static void start() {
 		Server s = new Server();
+		s.setName("TCPConnection Thread");
 		s.start();
 	}
 
