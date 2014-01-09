@@ -71,7 +71,9 @@ public class Connection {
 					}*/
 
 				} catch (IOException e) {
-					System.err.println(e.getMessage());
+					e.printStackTrace();
+					//System.err.println(e.getMessage());
+					//System.err.println(e.getStackTrace());
 				}
 			}
 		}
@@ -138,7 +140,9 @@ public class Connection {
 				}
 			}	
 		} catch (Exception e) {
-			System.err.println(e.getMessage());
+			e.printStackTrace();
+			//System.err.println(e.getMessage());
+			//System.err.println(e.getStackTrace());
 			return false;
 		}
 	}
