@@ -14,7 +14,13 @@ public final class TreeMaintenance implements Runnable {
 	 */
 	private NodeTable table;
 	
+	/**
+	 * number of elements in the left subtree
+	 */
 	private int leftSize;
+	/**
+	 * number of elements in the right subtree
+	 */
 	private int rightSize;
 	
 	// Singleton design pattern

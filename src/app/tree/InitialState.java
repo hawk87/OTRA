@@ -51,7 +51,7 @@ class InitialState extends OperationalState implements Runnable {
 					//the network
 					break;
 			}
-			if(waitcount > 10) {
+			if(waitcount > 4) {
 				//we deduce there isn't any network up and running
 				//we become the root
 				Debug.output("There is no online network");
