@@ -35,9 +35,6 @@ abstract class OperationalState {
 	void handleSize(Node n, int s) {
 	}
 	
-	void handleTouch(Node n) {
-	}
-	
 	void handleJoinBroadcast(Node n) {	
 	}
 	

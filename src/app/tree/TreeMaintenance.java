@@ -71,10 +71,6 @@ public final class TreeMaintenance {
 		maintenanceState.handleSize(n, s);
 	}
 	
-	public void handleTouch(Node n) {
-		maintenanceState.handleTouch(n);
-	}
-	
 	public void handleJoinBroadcast(Node n) {
 		maintenanceState.handleJoinBroadcast(n);
 	}

@@ -67,7 +67,6 @@ public class Message {
 				System.out.println("ERROR: TOUCH message from unknown node");
 				System.exit(1);
 			}
-			maintainer.handleTouch(n);
 			break;
 		case SIZE:
 			k = Utility.byteToInt(Arrays.copyOfRange(data, 1, 5));
