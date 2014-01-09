@@ -79,6 +79,7 @@ public class Connection {
 
 	public static void start(InterfaceAddress intAdr){
 		Listener l  = new Listener();
+		l.setName("Connection thread");
 		l.start();
 		interfaceAddress = intAdr;
 	}
