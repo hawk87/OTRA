@@ -134,7 +134,7 @@ class NormalState extends OperationalState implements Runnable {
 			} else {
 				// n has the same id of thisnode. ERROR
 				System.out.println("ERROR: joining node has got the same id"
-						+ "as this node: " + n.getId());
+						+ " as this node: " + n.getId());
 				System.exit(1);
 			}
 		}
