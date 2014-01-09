@@ -12,7 +12,7 @@ import app.communication.Message;
  */
 class InitialState extends OperationalState implements Runnable {
 
-	private final int waitmsec = 500;
+	private final int waitmsec = 2000;
 	/**
 	 * Number of times that a broadcast message do not receive any response.
 	 * If this counter exceeds 3 then we assume there is no OTRA network running.
