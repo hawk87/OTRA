@@ -11,10 +11,10 @@ import app.tree.TreeMaintenance;
 
 public class Message {
 	
-	public static void sendTouch(Node n) {
+	public static boolean sendTouch(Node n) {
 		byte[] data = new byte[1];
 		data[0] = MessageType.TOUCH.getFlag();
-		Connection.send(n.getAddress(), data);
+		return Connection.send(n.getAddress(), data);
 	}
 	
 	public static void sendSize(Node n, int s) {

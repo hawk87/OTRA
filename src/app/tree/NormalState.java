@@ -19,13 +19,6 @@ class NormalState extends OperationalState {
 	private boolean leftIsReady;
 	private boolean rightIsReady;
 
-	/**
-	 * This counts the number of received SIZE messages from a single side when
-	 * the other is not sending anything. That permit us to decide to TOUCH the
-	 * children who's keeping silence
-	 */
-	private int waiting;
-
 	NormalState() {
 		Debug.output("Entering normal state...");
 		NodeTable tbl = supervisor.getNodeTable();
@@ -33,6 +26,37 @@ class NormalState extends OperationalState {
 		if(!tbl.isThisRoot()) {
 			int s = supervisor.getLeftSize() + supervisor.getRightSize() + 1;
 			Message.sendSize(tbl.getParent(), s);
+		}
+	}
+	
+	/* 
+	 * service() in this operational state touches all connected nodes
+	 */
+	void service() {
+		NodeTable tbl = supervisor.getNodeTable();
+		//check left node
+		if(tbl.hasLeftNode()) {
+			if(!Message.sendTouch(tbl.getLeftNode())) {
+				Debug.output("left node failing TOUCH: " + tbl.getLeftNode());
+				Debug.output("removing from NodeTable");
+				tbl.setLeftNode(null);
+			}
+		}
+		// right node
+		if(tbl.hasRightNode()) {
+			if(!Message.sendTouch(tbl.getRightNode())) {
+				Debug.output("right node failing TOUCH: " + tbl.getRightNode());
+				Debug.output("removing from NodeTable");
+				tbl.setRightNode(null);
+			}
+		}
+		//check parent
+		if(!tbl.isThisRoot()) {
+			if(!Message.sendTouch(tbl.getParent())) {
+				Debug.output("parent node failing TOUCH: " + tbl.getParent());
+				Debug.output("TODO: regenerate a joining signal");
+				tbl.setParent(null);
+			}
 		}
 	}
 
@@ -44,6 +68,13 @@ class NormalState extends OperationalState {
 			leftIsReady = true;
 		} else {
 			supervisor.setRightSize(s);
+			rightIsReady = true;
+		}
+		
+		if(!supervisor.getNodeTable().hasLeftNode()) {
+			leftIsReady = true;
+		}
+		if(!supervisor.getNodeTable().hasRightNode()) {
 			rightIsReady = true;
 		}
 
@@ -60,23 +91,18 @@ class NormalState extends OperationalState {
 				Node b = supervisor.getNodeTable().getRightNode();
 				nextState(new BalancingState(b));
 			} else {
-				Debug.output("need to send SIZE to the parent.. FIXME");
-				// TODO send a SIZE signal to the parent
+				//send a SIZE signal to the parent if any
+				if(!supervisor.getNodeTable().isThisRoot()) {
+					int treesize = supervisor.getLeftSize() + 
+							supervisor.getRightSize() + 1;
+					Message.sendSize(
+							supervisor.getNodeTable().getParent(), treesize);
+				}
 			}
 
 			leftIsReady = false;
 			rightIsReady = false;
-			waiting = 0;
-		} else if (leftIsReady || rightIsReady) {
-			if (waiting > 2) {
-				Debug.output("needed touching operation.. FIXME");
-				// TODO
-				// send TOUCH message
-			}
-		}
-		// normal
-		// add a wait turn
-		waiting++;
+		} 
 	}
 
 	void handleJoinBroadcast(Node n) {
