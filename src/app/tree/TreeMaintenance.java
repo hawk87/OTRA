@@ -43,7 +43,7 @@ public final class TreeMaintenance implements Runnable {
 	
 	public void run() {
 		while (true) {
-			//maintenanceState.service();
+			maintenanceState.service();
 			try {
 				Thread.sleep(WAITMSEC);
 			} catch (InterruptedException e) {

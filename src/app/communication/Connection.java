@@ -1,4 +1,5 @@
 package app.communication;
+
 import java.io.IOException;
 import java.net.*;
 
@@ -9,13 +10,13 @@ public class Connection {
 	private static final int RETRY_LIMIT = 10;
 	private static final int DELAY_TOLLERANCE = 25;
 	private static final int PORT = 6666;
-	private static final int ACK_PORT = 7777;
+	// private static final int ACK_PORT = 7777;
 
 	private static final byte[] ACK = { (byte) 0x00 };
 	private static final byte[] NACK = { (byte) 0xFF };
 
 	private static byte sn = 00000000;
-	
+
 	private static InterfaceAddress interfaceAddress = null;
 
 	private static class Listener extends Thread {
@@ -46,14 +47,16 @@ public class Connection {
 					byte sn = message[1];
 					byte crc = message[receivePacket.getLength() - 1];
 
-					//System.out.println("receive " + (int) sn + " crc: " + crc);
+					// System.out.println("receive " + (int) sn + " crc: " +
+					// crc);
 
 					InetAddress address = receivePacket.getAddress();
+					int ackPort = receivePacket.getPort();
 
 					if (CRC8.calculate(message, receivePacket.getLength() - 1) == crc) {
 						if (flag == (byte) 0x00) {
 							DatagramPacket ack = new DatagramPacket(ACK,
-									ACK.length, address, ACK_PORT);
+									ACK.length, address, ackPort);
 							receiveSocket.send(ack);
 						}
 						if (!Cache.isThere(address, sn)) {
@@ -62,95 +65,95 @@ public class Connection {
 					} else {
 						if (flag == (byte) 0x00) {
 							DatagramPacket nack = new DatagramPacket(NACK,
-									NACK.length, address, ACK_PORT);
+									NACK.length, address, ackPort);
 							receiveSocket.send(nack);
 						}
 					}
-					/*for (int i = 0; i < data.length; i++) {
-						System.out.println("-> " + data[i]);
-					}*/
+					/*
+					 * for (int i = 0; i < data.length; i++) {
+					 * System.out.println("-> " + data[i]); }
+					 */
 
 				} catch (IOException e) {
 					e.printStackTrace();
-					//System.err.println(e.getMessage());
-					//System.err.println(e.getStackTrace());
+					// System.err.println(e.getMessage());
+					// System.err.println(e.getStackTrace());
 				}
 			}
 		}
 	}
 
-	public static void start(InterfaceAddress intAdr){
-		Listener l  = new Listener();
+	public static void start(InterfaceAddress intAdr) {
+		Listener l = new Listener();
 		l.setName("Connection thread");
 		l.start();
 		interfaceAddress = intAdr;
 	}
 
-//	public static boolean send(InetAddress address, byte[] data) {
-//
-//		int retry = 0;
-//
-//		// message packet
-//		byte[] message = new byte[data.length + 3];
-//		System.arraycopy(data, 0, message, 2, data.length);
-//		message[0] = (byte) 0x00;
-//		message[1] = sn; // add SN
-//		message[message.length - 1] = CRC8.calculate(message,
-//				message.length - 1); // add CRC
-//		DatagramPacket sendPacket = new DatagramPacket(message, message.length,
-//				address, PORT);
-//
-//		// ack packet
-//		byte[] buf = new byte[8];
-//		DatagramPacket ackPacket = new DatagramPacket(buf, buf.length);
-//
-//		try {
-//			DatagramSocket ackSocket = new DatagramSocket(ACK_PORT);
-//
-//			while(true) {
-//				// acknowledgment delay tolerance (in milliseconds)
-//				ackSocket.setSoTimeout(DELAY_TOLLERANCE*(int)Math.pow(1.5, retry));
-//
-//				DatagramSocket sendSocket = new DatagramSocket();
-//				sendSocket.send(sendPacket);
-//				//System.out.println("send " + (int) sn);
-//				sendSocket.close();
-//
-//				try {
-//					ackSocket.receive(ackPacket);
-//
-//					// MIGLIORARE VERIFICA
-//					if (ackPacket.getData()[0] == ACK[0]) {
-//						//System.out.println("<- ACK " + (int) sn);
-//						sn++;
-//						ackSocket.close();
-//						return true;
-//					} else {
-//						System.out.println("<- NACK " + (int) sn);
-//						// retry++;
-//					}
-//
-//				} catch (SocketTimeoutException e) {
-//					if (++retry >= RETRY_LIMIT) {
-//						ackSocket.close();
-//						System.err.println("Max retry limit reached.");
-//						//System.exit(-1);
-//						return false;
-//					}
-//				}
-//			}	
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			//System.err.println(e.getMessage());
-//			//System.err.println(e.getStackTrace());
-//			return false;
-//		}
-//	}
-	
+	// public static boolean send(InetAddress address, byte[] data) {
+	//
+	// int retry = 0;
+	//
+	// // message packet
+	// byte[] message = new byte[data.length + 3];
+	// System.arraycopy(data, 0, message, 2, data.length);
+	// message[0] = (byte) 0x00;
+	// message[1] = sn; // add SN
+	// message[message.length - 1] = CRC8.calculate(message,
+	// message.length - 1); // add CRC
+	// DatagramPacket sendPacket = new DatagramPacket(message, message.length,
+	// address, PORT);
+	//
+	// // ack packet
+	// byte[] buf = new byte[8];
+	// DatagramPacket ackPacket = new DatagramPacket(buf, buf.length);
+	//
+	// try {
+	// DatagramSocket ackSocket = new DatagramSocket(ACK_PORT);
+	//
+	// while(true) {
+	// // acknowledgment delay tolerance (in milliseconds)
+	// ackSocket.setSoTimeout(DELAY_TOLLERANCE*(int)Math.pow(1.5, retry));
+	//
+	// DatagramSocket sendSocket = new DatagramSocket();
+	// sendSocket.send(sendPacket);
+	// //System.out.println("send " + (int) sn);
+	// sendSocket.close();
+	//
+	// try {
+	// ackSocket.receive(ackPacket);
+	//
+	// // MIGLIORARE VERIFICA
+	// if (ackPacket.getData()[0] == ACK[0]) {
+	// //System.out.println("<- ACK " + (int) sn);
+	// sn++;
+	// ackSocket.close();
+	// return true;
+	// } else {
+	// System.out.println("<- NACK " + (int) sn);
+	// // retry++;
+	// }
+	//
+	// } catch (SocketTimeoutException e) {
+	// if (++retry >= RETRY_LIMIT) {
+	// ackSocket.close();
+	// System.err.println("Max retry limit reached.");
+	// //System.exit(-1);
+	// return false;
+	// }
+	// }
+	// }
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// //System.err.println(e.getMessage());
+	// //System.err.println(e.getStackTrace());
+	// return false;
+	// }
+	// }
+
 	public static boolean send(InetAddress address, byte[] data) {
 
 		int retry = 0;
-		
 		boolean sent = false;
 
 		// message packet
@@ -168,47 +171,47 @@ public class Connection {
 		DatagramPacket ackPacket = new DatagramPacket(buf, buf.length);
 
 		try {
-			DatagramSocket sendSocket = new DatagramSocket();
-			sendSocket.setReuseAddress(true);
-			DatagramSocket ackSocket = new DatagramSocket(ACK_PORT);
-			ackSocket.setReuseAddress(true);
+			DatagramSocket socket = new DatagramSocket();
+			socket.setReuseAddress(true);
 
-			while(!sent) {
+			while (true) {
+				// send the packet
+				socket.send(sendPacket);
+
 				// acknowledgment delay tolerance (in milliseconds)
-				ackSocket.setSoTimeout(DELAY_TOLLERANCE*(int)Math.pow(1.5, retry));
-				sendSocket.send(sendPacket);
+				socket.setSoTimeout(DELAY_TOLLERANCE
+						* (int) Math.pow(1.5, retry));
 
 				try {
-					ackSocket.receive(ackPacket);
+					socket.receive(ackPacket);
 
 					// MIGLIORARE VERIFICA
 					if (ackPacket.getData()[0] == ACK[0]) {
 						sn++;
 						sent = true;
+						break;
 					} else {
 						System.out.println("<- NACK " + (int) sn);
-						// retry++;
+						retry++;
 					}
 
 				} catch (SocketTimeoutException e) {
 					if (++retry >= RETRY_LIMIT) {
 						System.err.println("Max retry limit reached.");
-						sendSocket.close();
-						ackSocket.close();
-						return false;
+						sent = false;
+						break;
 					}
 				}
 			}
-			sendSocket.close();
-			ackSocket.close();
-			return true;
-			
+			socket.close();
+
 		} catch (Exception e) {
+			System.err.print("FATAL ERROR: send function");
 			e.printStackTrace();
-			//System.err.println(e.getMessage());
-			//System.err.println(e.getStackTrace());
-			return false;
+			System.exit(1);
 		}
+
+		return sent;
 	}
 
 	public static void sendBroadcast(byte[] data) {
@@ -229,7 +232,7 @@ public class Connection {
 					message.length, address, PORT);
 
 			sendSocket.send(sendPacket);
-			//System.out.println("send broadcast " + (int) sn);
+			// System.out.println("send broadcast " + (int) sn);
 			sendSocket.close();
 			sn++;
 		} catch (Exception e) {
