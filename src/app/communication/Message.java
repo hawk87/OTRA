@@ -60,6 +60,36 @@ public class Message {
 		Connection.send(to.getAddress(), flag);
 	}
 	
+	public static void setParent(Node to, Node parent) {
+		byte[] flag = new byte[1];
+		flag[0] = MessageType.SET_PARENT.getFlag();		
+		
+		byte[] data = Utility.appendArray(flag, Utility.intToByte(parent.getId()));
+		data = Utility.appendArray(data, parent.getAddress().getAddress());
+		
+		Connection.send(to.getAddress(), data);
+	}
+	
+	public static void setLeftChild(Node to, Node leftChild) {
+		byte[] flag = new byte[1];
+		flag[0] = MessageType.SET_LEFT.getFlag();
+		
+		byte[] data = Utility.appendArray(flag, Utility.intToByte(leftChild.getId()));
+		data = Utility.appendArray(data, leftChild.getAddress().getAddress());
+		
+		Connection.send(to.getAddress(), flag);
+	}
+	
+	public static void setRightChild(Node to, Node rightChild) {
+		byte[] flag = new byte[1];
+		flag[0] = MessageType.SET_RIGHT.getFlag();
+		
+		byte[] data = Utility.appendArray(flag, Utility.intToByte(rightChild.getId()));
+		data = Utility.appendArray(data, rightChild.getAddress().getAddress());
+		
+		Connection.send(to.getAddress(), flag);
+	}
+	
 	public static void translate(InetAddress adr, byte[] data) {
 		Node n;
 		int k;
@@ -116,6 +146,60 @@ public class Message {
 				System.exit(1);
 			}
 			maintainer.handleBalance();
+			break;
+		case SET_PARENT:
+			tbl = NodeTable.getInstance();
+			n = tbl.getNodeFromAddress(adr);
+			if(n == null) {
+				System.out.println("ERROR: SET_PARENT message from unknown node");
+				System.exit(1);
+			}
+			
+			int idParent = Utility.byteToInt(Arrays.copyOfRange(data, 1, 4));
+			InetAddress addrParent;
+			try {
+				addrParent = InetAddress.getByAddress(Arrays.copyOfRange(data, 5, 8));
+				tbl.setParent(new Node(idParent, addrParent));
+			} catch (UnknownHostException e) {
+				System.out.println("IP Address illegal length");
+				e.printStackTrace();
+			}	
+			break;
+		case SET_LEFT:
+			tbl = NodeTable.getInstance();
+			n = tbl.getNodeFromAddress(adr);
+			if(n == null) {
+				System.out.println("ERROR: SET_PARENT message from unknown node");
+				System.exit(1);
+			}
+			
+			int idLeft = Utility.byteToInt(Arrays.copyOfRange(data, 1, 4));
+			InetAddress addrLeft;
+			try {
+				addrLeft = InetAddress.getByAddress(Arrays.copyOfRange(data, 5, 8));
+				tbl.setLeftNode(new Node(idLeft, addrLeft));
+			} catch (UnknownHostException e) {
+				System.out.println("IP Address illegal length");
+				e.printStackTrace();
+			}	
+			break;
+		case SET_RIGHT:
+			tbl = NodeTable.getInstance();
+			n = tbl.getNodeFromAddress(adr);
+			if(n == null) {
+				System.out.println("ERROR: SET_PARENT message from unknown node");
+				System.exit(1);
+			}
+			
+			int idRight = Utility.byteToInt(Arrays.copyOfRange(data, 1, 4));
+			InetAddress addrRight;
+			try {
+				addrRight = InetAddress.getByAddress(Arrays.copyOfRange(data, 5, 8));
+				tbl.setRightNode(new Node(idRight, addrRight));
+			} catch (UnknownHostException e) {
+				System.out.println("IP Address illegal length");
+				e.printStackTrace();
+			}	
 			break;
 		case PRINT:
 			maintainer.handlePrint();
