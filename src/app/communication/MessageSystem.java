@@ -3,6 +3,7 @@ package app.communication;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import app.Node;
 import app.NodeTable;
@@ -10,6 +11,16 @@ import app.Utility;
 import app.tree.TreeMaintenance;
 
 public class MessageSystem {
+	
+	private static ArrayBlockingQueue<Message> messageQueue;
+	
+	public static void enqueue(InetAddress address, byte[] data){
+		messageQueue.add(new Message(address, data));
+	}
+	
+	public static Message nextMessage(){
+		return messageQueue.poll();
+	}
 	
 	public static boolean sendTouch(Node n) {
 		byte[] data = new byte[1];
@@ -90,7 +101,7 @@ public class MessageSystem {
 		Connection.send(to.getAddress(), flag);
 	}
 	
-	public static void translate(InetAddress adr, byte[] data) {
+	public static void agent(InetAddress adr, byte[] data) {
 		Node n;
 		int k;
 		TreeMaintenance maintainer = TreeMaintenance.getInstance();
