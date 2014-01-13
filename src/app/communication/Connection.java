@@ -47,9 +47,6 @@ public class Connection {
 					byte sn = message[1];
 					byte crc = message[receivePacket.getLength() - 1];
 
-					// System.out.println("receive " + (int) sn + " crc: " +
-					// crc);
-
 					InetAddress address = receivePacket.getAddress();
 					int ackPort = receivePacket.getPort();
 
@@ -69,15 +66,9 @@ public class Connection {
 							receiveSocket.send(nack);
 						}
 					}
-					/*
-					 * for (int i = 0; i < data.length; i++) {
-					 * System.out.println("-> " + data[i]); }
-					 */
 
 				} catch (IOException e) {
 					e.printStackTrace();
-					// System.err.println(e.getMessage());
-					// System.err.println(e.getStackTrace());
 				}
 			}
 		}
