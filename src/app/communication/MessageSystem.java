@@ -9,7 +9,7 @@ import app.NodeTable;
 import app.Utility;
 import app.tree.TreeMaintenance;
 
-public class Message {
+public class MessageSystem {
 	
 	public static boolean sendTouch(Node n) {
 		byte[] data = new byte[1];

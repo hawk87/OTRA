@@ -3,7 +3,7 @@ package app.tree;
 import app.Debug;
 import app.Node;
 import app.NodeTable;
-import app.communication.Message;
+import app.communication.MessageSystem;
 
 /**
  * Initial operational state. We send broadcast signal to inspect if there is
@@ -62,7 +62,7 @@ class InitialState extends OperationalState implements Runnable {
 			}
 			waitcount++;
 			Debug.output("sending broadcast signal..." + waitcount);
-			Message.sendJoinBroadcast(tbl.getThisNode().getId());
+			MessageSystem.sendJoinBroadcast(tbl.getThisNode().getId());
 			try {
 				Thread.sleep(waitmsec);
 			} catch (InterruptedException e) {

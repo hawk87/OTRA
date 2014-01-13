@@ -6,7 +6,7 @@ import app.Debug;
 import app.NodeTable;
 import app.OTRAFile;
 import app.communication.FileTransfer;
-import app.communication.Message;
+import app.communication.MessageSystem;
 
 /**
  * Normal operational state. Under normal conditions: without any balancing call
@@ -25,7 +25,7 @@ class NormalState extends OperationalState {
 		// signal to parent if any the size
 		if(!tbl.isThisRoot()) {
 			int s = supervisor.getLeftSize() + supervisor.getRightSize() + 1;
-			Message.sendSize(tbl.getParent(), s);
+			MessageSystem.sendSize(tbl.getParent(), s);
 		}
 	}
 	
@@ -36,7 +36,7 @@ class NormalState extends OperationalState {
 		NodeTable tbl = supervisor.getNodeTable();
 		//check left node
 		if(tbl.hasLeftNode()) {
-			if(!Message.sendTouch(tbl.getLeftNode())) {
+			if(!MessageSystem.sendTouch(tbl.getLeftNode())) {
 				Debug.output("left node failing TOUCH: " + tbl.getLeftNode());
 				Debug.output("removing from NodeTable");
 				tbl.setLeftNode(null);
@@ -44,7 +44,7 @@ class NormalState extends OperationalState {
 		}
 		// right node
 		if(tbl.hasRightNode()) {
-			if(!Message.sendTouch(tbl.getRightNode())) {
+			if(!MessageSystem.sendTouch(tbl.getRightNode())) {
 				Debug.output("right node failing TOUCH: " + tbl.getRightNode());
 				Debug.output("removing from NodeTable");
 				tbl.setRightNode(null);
@@ -52,7 +52,7 @@ class NormalState extends OperationalState {
 		}
 		//check parent
 		if(!tbl.isThisRoot()) {
-			if(!Message.sendTouch(tbl.getParent())) {
+			if(!MessageSystem.sendTouch(tbl.getParent())) {
 				Debug.output("parent node failing TOUCH: " + tbl.getParent());
 				Debug.output("TODO: regenerate a joining signal");
 				tbl.setParent(null);
@@ -95,7 +95,7 @@ class NormalState extends OperationalState {
 				if(!supervisor.getNodeTable().isThisRoot()) {
 					int treesize = supervisor.getLeftSize() + 
 							supervisor.getRightSize() + 1;
-					Message.sendSize(
+					MessageSystem.sendSize(
 							supervisor.getNodeTable().getParent(), treesize);
 				}
 			}
@@ -116,7 +116,7 @@ class NormalState extends OperationalState {
 			if (n.getId() < thisnode.getId()) {
 				if (tbl.hasLeftNode()) {
 					// send JOIN_SEARCH to the left child
-					Message.sendJoinSearch(tbl.getLeftNode(), n);
+					MessageSystem.sendJoinSearch(tbl.getLeftNode(), n);
 				} else {
 					// joining node can be attached here, to the left
 					Debug.output("node id: " + n.getId()
@@ -124,12 +124,12 @@ class NormalState extends OperationalState {
 					// set joining node as left child
 					tbl.setLeftNode(n);
 					// signal to joining node that it can attach itself here
-					Message.sendJoinSearch(n, thisnode);
+					MessageSystem.sendJoinSearch(n, thisnode);
 				}
 			} else if (n.getId() > thisnode.getId()) {
 				if (tbl.hasRightNode()) {
 					// send JOIN_SEARCH to the right child
-					Message.sendJoinSearch(tbl.getRightNode(), n);
+					MessageSystem.sendJoinSearch(tbl.getRightNode(), n);
 				} else {
 					// joining node can be attached here, to the right
 					Debug.output("node id: " + n.getId()
@@ -137,7 +137,7 @@ class NormalState extends OperationalState {
 					// set joining node as right child
 					tbl.setRightNode(n);
 					// signal to joining node that it can attach itself here
-					Message.sendJoinSearch(n, thisnode);
+					MessageSystem.sendJoinSearch(n, thisnode);
 				}
 			} else {
 				// n has the same id of thisnode. ERROR
@@ -158,7 +158,7 @@ class NormalState extends OperationalState {
 		if (n.getId() < thisnode.getId()) {
 			if (tbl.hasLeftNode()) {
 				// forward the JOIN_SEARCH to the left child
-				Message.sendJoinSearch(tbl.getLeftNode(), n);
+				MessageSystem.sendJoinSearch(tbl.getLeftNode(), n);
 			} else {
 				// joining node can attach here, to the left
 				Debug.output("node id: " + n.getId()
@@ -166,12 +166,12 @@ class NormalState extends OperationalState {
 				// set joining node as left child
 				tbl.setLeftNode(n);
 				// signal to joining node that it can attach itself here
-				Message.sendJoinSearch(n, thisnode);
+				MessageSystem.sendJoinSearch(n, thisnode);
 			}
 		} else if (n.getId() > thisnode.getId()) {
 			if (tbl.hasRightNode()) {
 				// forward the JOIN_SEARCH to the right child
-				Message.sendJoinSearch(tbl.getRightNode(), n);
+				MessageSystem.sendJoinSearch(tbl.getRightNode(), n);
 			} else {
 				// joining node can attach here, to the right
 				Debug.output("node id: " + n.getId()
@@ -179,7 +179,7 @@ class NormalState extends OperationalState {
 				// set joining node as right child
 				tbl.setRightNode(n);
 				// signal to joining node that it can attach itself here
-				Message.sendJoinSearch(n, thisnode);
+				MessageSystem.sendJoinSearch(n, thisnode);
 			}
 		} else {
 			// n has the same id of thisnode. ERROR

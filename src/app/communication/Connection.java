@@ -57,7 +57,7 @@ public class Connection {
 							receiveSocket.send(ack);
 						}
 						if (!Cache.isThere(address, sn)) {
-							Message.translate(receivePacket.getAddress(), data);
+							MessageSystem.translate(receivePacket.getAddress(), data);
 						}
 					} else {
 						if (flag == (byte) 0x00) {

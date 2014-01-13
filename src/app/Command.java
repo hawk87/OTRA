@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import app.communication.Message;
+import app.communication.MessageSystem;
 
 public class Command {
 	
@@ -55,7 +55,7 @@ public class Command {
 	}
 	
 	private void printNetwork() {
-		Message.sendPrint();
+		MessageSystem.sendPrint();
 	}
 	
 	public static void println(String s) {
