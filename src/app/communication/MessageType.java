@@ -2,7 +2,7 @@ package app.communication;
 
 public enum MessageType {
 	TOUCH,
-	SIZE,
+	HEIGHT,
 	JOIN_BROADCAST,
 	JOIN_SEARCH,
 	BALANCE,

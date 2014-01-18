@@ -1,7 +1,6 @@
 package app.tree;
 
 import app.Node;
-import app.NodeTable;
 
 /**
  * This class holds the current operational state and route incoming messages
@@ -9,10 +8,6 @@ import app.NodeTable;
  */
 public final class TreeMaintenance implements Runnable {
 	private final int WAITMSEC = 1000;
-	/**
-	 * reference to the node/routing table
-	 */
-	private NodeTable table;
 	
 	/**
 	 * number of elements in the left subtree
@@ -27,7 +22,6 @@ public final class TreeMaintenance implements Runnable {
 	private static TreeMaintenance INSTANCE;
 
 	private TreeMaintenance() {
-		table = NodeTable.getInstance();
 	}
 	
 	/**
@@ -70,10 +64,6 @@ public final class TreeMaintenance implements Runnable {
 		return INSTANCE;
 	}
 	
-	NodeTable getNodeTable() {
-		return table;
-	}
-	
 	int getLeftSize() {
 		return leftSize;
 	}
@@ -107,8 +97,8 @@ public final class TreeMaintenance implements Runnable {
 	// INCOMING MESSAGES HANDLES
 	//
 	
-	public void handleSize(Node n, int s) {
-		maintenanceState.handleSize(n, s);
+	public void handlehHeight(Node n, int s) {
+		maintenanceState.handleHeight(n, s);
 	}
 	
 	public void handleJoinBroadcast(Node n) {

@@ -32,7 +32,7 @@ abstract class OperationalState {
 	//NOP operations
 	//subclasses that want to listen for these messages must override
 	
-	void handleSize(Node n, int s) {
+	void handleHeight(Node n, int s) {
 	}
 	
 	void handleJoinBroadcast(Node n) {	

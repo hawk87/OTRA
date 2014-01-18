@@ -21,11 +21,11 @@ class NormalState extends OperationalState {
 
 	NormalState() {
 		Debug.output("Entering normal state...");
-		NodeTable tbl = supervisor.getNodeTable();
+		NodeTable tbl = NodeTable.getInstance();
 		// signal to parent if any the size
 		if(!tbl.isThisRoot()) {
 			int s = supervisor.getLeftSize() + supervisor.getRightSize() + 1;
-			MessageSystem.sendSize(tbl.getParent(), s);
+			MessageSystem.sendHeight(tbl.getParent(), s);
 		}
 	}
 	
@@ -33,7 +33,7 @@ class NormalState extends OperationalState {
 	 * service() in this operational state touches all connected nodes
 	 */
 	void service() {
-		NodeTable tbl = supervisor.getNodeTable();
+		NodeTable tbl = NodeTable.getInstance();
 		//check left node
 		if(tbl.hasLeftNode()) {
 			if(!MessageSystem.sendTouch(tbl.getLeftNode())) {
@@ -60,21 +60,24 @@ class NormalState extends OperationalState {
 		}
 	}
 
-	void handleSize(Node n, int s) {
-		Debug.output("received a SIZE message");
-		Debug.output("  id: " + n.getId() + " size: " + s);
-		if (supervisor.getNodeTable().isLeftNode(n)) {
-			supervisor.setLeftSize(s);
+	void handleHeight(Node n, int h) {
+		Debug.output("received a HEIGHT message");
+		Debug.output("  id: " + n.getId() + " height: " + h);
+		
+		NodeTable tbl = NodeTable.getInstance();
+		
+		if (tbl.isLeftNode(n)) {
+			supervisor.setLeftSize(h);
 			leftIsReady = true;
 		} else {
-			supervisor.setRightSize(s);
+			supervisor.setRightSize(h);
 			rightIsReady = true;
 		}
 		
-		if(!supervisor.getNodeTable().hasLeftNode()) {
+		if(!tbl.hasLeftNode()) {
 			leftIsReady = true;
 		}
-		if(!supervisor.getNodeTable().hasRightNode()) {
+		if(!tbl.hasRightNode()) {
 			rightIsReady = true;
 		}
 
@@ -82,21 +85,21 @@ class NormalState extends OperationalState {
 			// unbalanced to the left
 			if (supervisor.getLeftSize() - supervisor.getRightSize() >= 2) {
 				// get b-balance node
-				Node b = supervisor.getNodeTable().getLeftNode();
+				Node b = tbl.getLeftNode();
 				nextState(new BalancingState(b));
 			}
 			// unbalanced to the right
 			else if (supervisor.getRightSize() - supervisor.getLeftSize() >= 2) {
 				// get b-balance node
-				Node b = supervisor.getNodeTable().getRightNode();
+				Node b = tbl.getRightNode();
 				nextState(new BalancingState(b));
 			} else {
 				//send a SIZE signal to the parent if any
-				if(!supervisor.getNodeTable().isThisRoot()) {
+				if(!tbl.isThisRoot()) {
 					int treesize = supervisor.getLeftSize() + 
 							supervisor.getRightSize() + 1;
-					MessageSystem.sendSize(
-							supervisor.getNodeTable().getParent(), treesize);
+					MessageSystem.sendHeight(
+							tbl.getParent(), treesize);
 				}
 			}
 
@@ -106,12 +109,12 @@ class NormalState extends OperationalState {
 	}
 
 	void handleJoinBroadcast(Node n) {
-		if (supervisor.getNodeTable().isThisRoot()) {
+		NodeTable tbl = NodeTable.getInstance();
+		
+		if (tbl.isThisRoot()) {
 			// ok, this node is root, so generate a JOIN_SEARCH
 			// and forward if necessary
 			Debug.output("root received a join broadcast message");
-
-			NodeTable tbl = supervisor.getNodeTable();
 			Node thisnode = tbl.getThisNode();
 			if (n.getId() < thisnode.getId()) {
 				if (tbl.hasLeftNode()) {
@@ -153,7 +156,7 @@ class NormalState extends OperationalState {
 		Debug.output("received a JOIN_SEARCH message");
 		Debug.output("joining node id: " + n.getId());
 
-		NodeTable tbl = supervisor.getNodeTable();
+		NodeTable tbl = NodeTable.getInstance();
 		Node thisnode = tbl.getThisNode();
 		if (n.getId() < thisnode.getId()) {
 			if (tbl.hasLeftNode()) {
@@ -196,7 +199,7 @@ class NormalState extends OperationalState {
 	void handlePrint() {
 		Debug.output("received a PRINT message");
 
-		NodeTable tbl = supervisor.getNodeTable();
+		NodeTable tbl = NodeTable.getInstance();
 		Node thisnode = tbl.getThisNode();
 		
 		if(tbl.isThisRoot()) {

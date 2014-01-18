@@ -43,7 +43,7 @@ class InitialState extends OperationalState implements Runnable {
 	}
 	
 	public void run() {
-		NodeTable tbl = supervisor.getNodeTable();
+		NodeTable tbl = NodeTable.getInstance();
 		while(true) {
 			synchronized (this) {
 				if(isAttached)
@@ -77,7 +77,7 @@ class InitialState extends OperationalState implements Runnable {
 	 */
 	void handleJoinSearch(Node n) {
 		//set as parent the node telling us that it has a free post to attach to.
-		supervisor.getNodeTable().setParent(n);
+		NodeTable.getInstance().setParent(n);
 		synchronized (this) {
 			isAttached = true;
 		}

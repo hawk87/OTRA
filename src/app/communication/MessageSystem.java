@@ -47,9 +47,9 @@ public class MessageSystem {
 		return Connection.send(n.getAddress(), data);
 	}
 	
-	public static void sendSize(Node n, int s) {
+	public static void sendHeight(Node n, int s) {
 		byte[] flag = new byte[1];
-		flag[0] = MessageType.SIZE.getFlag();
+		flag[0] = MessageType.HEIGHT.getFlag();
 		
 		byte[] data = Utility.appendArray(flag, Utility.intToByte(s));
 		//data[] now holds the first byte as flag and next four bytes
@@ -136,7 +136,7 @@ public class MessageSystem {
 				System.exit(1);
 			}
 			break;
-		case SIZE:
+		case HEIGHT:
 			k = Utility.byteToInt(Arrays.copyOfRange(data, 1, 5));
 			
 			n = NodeTable.getInstance().getNodeFromAddress(adr);
@@ -144,7 +144,7 @@ public class MessageSystem {
 				System.out.println("ERROR: SIZE message from unknown node");
 				System.exit(1);
 			}
-			maintainer.handleSize(n, k);
+			maintainer.handlehHeight(n, k);
 			break;
 		case JOIN_BROADCAST:
 			k = Utility.byteToInt(Arrays.copyOfRange(data, 1, 5));
