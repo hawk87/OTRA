@@ -108,8 +108,19 @@ public final class TreeMaintenance implements Runnable {
 		maintenanceState.handlePrint();
 	}
 	
-	public void handleBalance() {
-		maintenanceState.handleBalance();
+	public void handleBalance(Node from, Node anode) {
+		maintenanceState.handleBalance(from, anode);
+	}
+	
+	public void handleSetParent(Node from, Node x) {
+		maintenanceState.handleSetParent(from, x);
 	}
 
+	public void handleSetLeft(Node from, Node x) {
+		maintenanceState.handleSetLeft(from, x);
+	}
+	
+	public void handleSetRight(Node from, Node x) {
+		maintenanceState.handleSetRight(from, x);
+	}
 }

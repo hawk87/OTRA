@@ -27,6 +27,10 @@ public class Node {
 		address = adr;
 	}
 	
+	public boolean equals(Node x) {
+		return (this.address == x.address ? true : false);
+	}
+	
 	public String toString() {
 		String s = "";
 		s += identifier + " " + address;

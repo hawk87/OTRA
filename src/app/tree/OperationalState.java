@@ -47,7 +47,16 @@ abstract class OperationalState {
 	void service() {
 	}
 	
-	void handleBalance() {
+	void handleBalance(Node from, Node anode) {
+	}
+	
+	void handleSetParent(Node from, Node x) {
+	}
+	
+	void handleSetLeft(Node from, Node x) {
+	}
+	
+	void handleSetRight(Node from, Node x) {
 	}
 	
 }

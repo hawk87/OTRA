@@ -84,67 +84,83 @@ public class MessageSystem {
 		Connection.sendBroadcast(flag);
 	}
 	
-	public static void sendBalance(Node to) {
+	public static void sendBalance(Node to, Node anode) {
 		byte[] flag = new byte[1];
 		flag[0] = MessageType.BALANCE.getFlag();
-		Connection.send(to.getAddress(), flag);
-	}
-	
-	public static void setParent(Node to, Node parent) {
-		byte[] flag = new byte[1];
-		flag[0] = MessageType.SET_PARENT.getFlag();		
 		
-		byte[] data = Utility.appendArray(flag, Utility.intToByte(parent.getId()));
-		data = Utility.appendArray(data, parent.getAddress().getAddress());
+		byte[] data = Utility.appendArray(flag, Utility.intToByte(anode.getId()));
+		data = Utility.appendArray(data, anode.getAddress().getAddress());
 		
 		Connection.send(to.getAddress(), data);
 	}
 	
-	public static void setLeftChild(Node to, Node leftChild) {
+	public static void sendSetParent(Node to, Node parent) {
+		byte[] flag = new byte[1];
+		flag[0] = MessageType.SET_PARENT.getFlag();
+		byte[] data;
+		
+		if(parent == null) {
+			//we send ID=-1 to signal this situation
+			data = Utility.appendArray(flag, Utility.intToByte(-1));
+		} else {
+			data = Utility.appendArray(flag, Utility.intToByte(parent.getId()));
+			data = Utility.appendArray(data, parent.getAddress().getAddress());
+		}
+		Connection.send(to.getAddress(), data);
+	}
+	
+	public static void sendSetLeft(Node to, Node leftChild) {
 		byte[] flag = new byte[1];
 		flag[0] = MessageType.SET_LEFT.getFlag();
+		byte[] data;
 		
-		byte[] data = Utility.appendArray(flag, Utility.intToByte(leftChild.getId()));
-		data = Utility.appendArray(data, leftChild.getAddress().getAddress());
+		if(leftChild == null) {
+			//we send ID=-1 to signal this situation
+			data = Utility.appendArray(flag, Utility.intToByte(-1));
+		} else {
+			data = Utility.appendArray(flag, Utility.intToByte(leftChild.getId()));
+			data = Utility.appendArray(data, leftChild.getAddress().getAddress());
+		}
 		
 		Connection.send(to.getAddress(), flag);
 	}
 	
-	public static void setRightChild(Node to, Node rightChild) {
+	public static void sendSetRight(Node to, Node rightChild) {
 		byte[] flag = new byte[1];
 		flag[0] = MessageType.SET_RIGHT.getFlag();
-		
-		byte[] data = Utility.appendArray(flag, Utility.intToByte(rightChild.getId()));
-		data = Utility.appendArray(data, rightChild.getAddress().getAddress());
-		
+		byte[] data;
+
+		if(rightChild == null) {
+			// we send ID=-1 to signal this situation
+			data = Utility.appendArray(flag, Utility.intToByte(-1));
+		} else {
+			data = Utility.appendArray(flag, Utility.intToByte(rightChild.getId()));
+			data = Utility.appendArray(data, rightChild.getAddress().getAddress());
+		}
 		Connection.send(to.getAddress(), flag);
 	}
-	
-	private static void translate(Message msg) {
-		Node n;
-		int k;
+
+	private void translate(Message msg) {
+		Node from, x;
+		int k, id;
 		InetAddress adr = msg.getAddress();
 		byte[] data = msg.getData();
 		TreeMaintenance maintainer = TreeMaintenance.getInstance();
+		NodeTable tbl = NodeTable.getInstance();
+		from = tbl.getNodeFromAddress(adr);
+		//check if we know this sender
+		if(from == null) {
+			System.out.println("ERROR: message from unknown node");
+			System.exit(1);
+		}
+		
 		MessageType flag = MessageType.convert(data[0]);
 		switch(flag) {
 		case TOUCH:
-			NodeTable tbl = NodeTable.getInstance();
-			n = tbl.getNodeFromAddress(adr);
-			if(n == null) {
-				System.out.println("ERROR: TOUCH message from unknown node");
-				System.exit(1);
-			}
 			break;
 		case HEIGHT:
 			k = Utility.byteToInt(Arrays.copyOfRange(data, 1, 5));
-			
-			n = NodeTable.getInstance().getNodeFromAddress(adr);
-			if(n == null) {
-				System.out.println("ERROR: SIZE message from unknown node");
-				System.exit(1);
-			}
-			maintainer.handlehHeight(n, k);
+			maintainer.handlehHeight(from, k);
 			break;
 		case JOIN_BROADCAST:
 			k = Utility.byteToInt(Arrays.copyOfRange(data, 1, 5));
@@ -152,12 +168,12 @@ public class MessageSystem {
 				System.out.println("ERROR: received an invalid identifier: " + k);
 				System.exit(1);
 			}
-			n = new Node(k, adr);
-			maintainer.handleJoinBroadcast(n);
+			from = new Node(k, adr);
+			maintainer.handleJoinBroadcast(from);
 			break;
 		case JOIN_SEARCH:
 			InetAddress joinAdr = null;
-			int id = Utility.byteToInt(Arrays.copyOfRange(data, 1, 5));
+			id = Utility.byteToInt(Arrays.copyOfRange(data, 1, 5));
 			try {
 				joinAdr = InetAddress.getByAddress(
 						Arrays.copyOfRange(data, 5, 9));
@@ -167,71 +183,76 @@ public class MessageSystem {
 				System.exit(1);
 			}
 			
-			n = new Node(id, joinAdr);
-			maintainer.handleJoinSearch(n);
+			x = new Node(id, joinAdr);
+			maintainer.handleJoinSearch(x);
 			break;
 		case BALANCE:
-			tbl = NodeTable.getInstance();
-			n = tbl.getNodeFromAddress(adr);
-			if(n == null) {
-				System.out.println("ERROR: BALANCE message from unknown node");
+			id = Utility.byteToInt(Arrays.copyOfRange(data, 1, 5));
+			InetAddress anodeAdr = null;
+			try {
+				anodeAdr = InetAddress.getByAddress(
+						Arrays.copyOfRange(data, 5, 9));
+			} catch(UnknownHostException uhe) {
+				System.out.println("ERROR: Message: received wrong BALANCE message");
+				System.out.println("  UnknownHostException");
 				System.exit(1);
 			}
-			maintainer.handleBalance();
+			Node anode = new Node(id, anodeAdr);
+			maintainer.handleBalance(from, anode);
 			break;
 		case SET_PARENT:
-			tbl = NodeTable.getInstance();
-			n = tbl.getNodeFromAddress(adr);
-			if(n == null) {
-				System.out.println("ERROR: SET_PARENT message from unknown node");
-				System.exit(1);
+			id = Utility.byteToInt(Arrays.copyOfRange(data, 1, 5));
+			if(id == -1) {
+				x = null;
+			} else {
+				adr = null;
+				try {
+					adr = InetAddress.getByAddress(
+							Arrays.copyOfRange(data, 5, 9));
+				} catch (UnknownHostException e) {
+					System.out.println("ERROR: Message: received wrong SET_PARENT message");
+					System.out.println("  UnknownHostException");
+					System.exit(1);
+				}
+				x = new Node(id, adr);
 			}
-			
-			int idParent = Utility.byteToInt(Arrays.copyOfRange(data, 1, 4));
-			InetAddress addrParent;
-			try {
-				addrParent = InetAddress.getByAddress(Arrays.copyOfRange(data, 5, 8));
-				tbl.setParent(new Node(idParent, addrParent));
-			} catch (UnknownHostException e) {
-				System.out.println("IP Address illegal length");
-				e.printStackTrace();
-			}	
+			maintainer.handleSetParent(from, x);
 			break;
 		case SET_LEFT:
-			tbl = NodeTable.getInstance();
-			n = tbl.getNodeFromAddress(adr);
-			if(n == null) {
-				System.out.println("ERROR: SET_PARENT message from unknown node");
-				System.exit(1);
+			id = Utility.byteToInt(Arrays.copyOfRange(data, 1, 5));
+			if(id == -1) {
+				x = null;
+			} else {
+				adr = null;
+				try {
+					adr = InetAddress.getByAddress(
+							Arrays.copyOfRange(data, 5, 9));
+				} catch (UnknownHostException e) {
+					System.out.println("ERROR: Message: received wrong SET_LEFT message");
+					System.out.println("  UnknownHostException");
+					System.exit(1);
+				}
+				x = new Node(id, adr);
 			}
-			
-			int idLeft = Utility.byteToInt(Arrays.copyOfRange(data, 1, 4));
-			InetAddress addrLeft;
-			try {
-				addrLeft = InetAddress.getByAddress(Arrays.copyOfRange(data, 5, 8));
-				tbl.setLeftNode(new Node(idLeft, addrLeft));
-			} catch (UnknownHostException e) {
-				System.out.println("IP Address illegal length");
-				e.printStackTrace();
-			}	
+			maintainer.handleSetLeft(from, x);
 			break;
 		case SET_RIGHT:
-			tbl = NodeTable.getInstance();
-			n = tbl.getNodeFromAddress(adr);
-			if(n == null) {
-				System.out.println("ERROR: SET_PARENT message from unknown node");
-				System.exit(1);
+			id = Utility.byteToInt(Arrays.copyOfRange(data, 1, 5));
+			if(id == -1) {
+				x = null;
+			} else {
+				adr = null;
+				try {
+					adr = InetAddress.getByAddress(
+							Arrays.copyOfRange(data, 5, 9));
+				} catch (UnknownHostException e) {
+					System.out.println("ERROR: Message: received wrong SET_RIGHT message");
+					System.out.println("  UnknownHostException");
+					System.exit(1);
+				}
+				x = new Node(id, adr);
 			}
-			
-			int idRight = Utility.byteToInt(Arrays.copyOfRange(data, 1, 4));
-			InetAddress addrRight;
-			try {
-				addrRight = InetAddress.getByAddress(Arrays.copyOfRange(data, 5, 8));
-				tbl.setRightNode(new Node(idRight, addrRight));
-			} catch (UnknownHostException e) {
-				System.out.println("IP Address illegal length");
-				e.printStackTrace();
-			}	
+			maintainer.handleSetRight(from, x);
 			break;
 		case PRINT:
 			maintainer.handlePrint();

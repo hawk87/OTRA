@@ -86,13 +86,13 @@ class NormalState extends OperationalState {
 			if (supervisor.leftHeight - supervisor.rightHeight >= 2) {
 				// get b-balance node
 				Node b = tbl.getLeftNode();
-				nextState(new BalancingState(b));
+				nextState(new BalancingAState(b));
 			}
 			// unbalanced to the right
 			else if (supervisor.rightHeight - supervisor.leftHeight >= 2) {
 				// get b-balance node
 				Node b = tbl.getRightNode();
-				nextState(new BalancingState(b));
+				nextState(new BalancingAState(b));
 			} else {
 				//send a HEIGHT signal to the parent if any
 				if(!tbl.isThisRoot()) {
@@ -190,8 +190,29 @@ class NormalState extends OperationalState {
 		}
 	}
 	
-	void handleBalance() {
-		//TODO
+	void handleBalance(Node from, Node anode) {
+		if(!from.equals(anode)) {
+			// we are the C-balancing node
+			nextState(new BalancingCState(anode, from));
+		} else {
+			// we are the B-balancing node
+			nextState(new BalancingBState(from));
+		}
+	}
+	
+	void handleSetParent(Node from, Node x) {
+		NodeTable tbl = NodeTable.getInstance();
+		tbl.setParent(x);
+	}
+	
+	void handleSetLeft(Node from, Node x) {
+		NodeTable tbl = NodeTable.getInstance();
+		tbl.setLeftNode(x);
+	}
+	
+	void handleSetRight(Node from, Node x) {
+		NodeTable tbl = NodeTable.getInstance();
+		tbl.setRightNode(x);
 	}
 
 	void handlePrint() {
