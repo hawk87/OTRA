@@ -12,14 +12,33 @@ import app.tree.TreeMaintenance;
 
 public class MessageSystem {
 	
-	private static ArrayBlockingQueue<Message> messageQueue;
+	private ArrayBlockingQueue<Message> messageQueue;
 	
-	public static void enqueue(InetAddress address, byte[] data){
-		messageQueue.add(new Message(address, data));
+	private static MessageSystem INSTANCE = new MessageSystem();
+	
+	private MessageSystem() {
+		messageQueue = new ArrayBlockingQueue<>(10);
 	}
 	
-	public static Message nextMessage(){
-		return messageQueue.poll();
+	public static MessageSystem getInstance() {
+		return INSTANCE;
+	}
+	
+	public void enqueue(InetAddress address, byte[] data){
+		boolean r;
+		r = messageQueue.offer(new Message(address, data));
+		if(!r) {
+			System.out.println("ERROR: MessageSystem.enqueue(): no space available");
+			System.exit(1);
+		}
+	}
+	
+	public void nextMessage(){
+		try {
+			translate(messageQueue.take());
+		} catch(InterruptedException ie) {
+			ie.printStackTrace();
+		}
 	}
 	
 	public static boolean sendTouch(Node n) {
@@ -101,9 +120,11 @@ public class MessageSystem {
 		Connection.send(to.getAddress(), flag);
 	}
 	
-	public static void agent(InetAddress adr, byte[] data) {
+	private static void translate(Message msg) {
 		Node n;
 		int k;
+		InetAddress adr = msg.getAddress();
+		byte[] data = msg.getData();
 		TreeMaintenance maintainer = TreeMaintenance.getInstance();
 		MessageType flag = MessageType.convert(data[0]);
 		switch(flag) {

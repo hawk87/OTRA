@@ -57,7 +57,8 @@ public class Connection {
 							receiveSocket.send(ack);
 						}
 						if (!Cache.isThere(address, sn)) {
-							MessageSystem.agent(receivePacket.getAddress(), data);
+							MessageSystem.getInstance().
+								enqueue(receivePacket.getAddress(), data);
 						}
 					} else {
 						if (flag == (byte) 0x00) {
