@@ -21,12 +21,6 @@ class NormalState extends OperationalState {
 
 	NormalState() {
 		Debug.output("Entering normal state...");
-		NodeTable tbl = NodeTable.getInstance();
-		// signal to parent if any the height
-		if(!tbl.isThisRoot()) {
-			int s = supervisor.maxSubtreeHeight() + 1;
-			MessageSystem.sendHeight(tbl.getParent(), s);
-		}
 	}
 	
 	/* 
@@ -34,8 +28,10 @@ class NormalState extends OperationalState {
 	 */
 	void service() {
 		NodeTable tbl = NodeTable.getInstance();
+		boolean l = tbl.hasLeftNode();
+		boolean r = tbl.hasRightNode();
 		//check left node
-		if(tbl.hasLeftNode()) {
+		if(l) {
 			if(!MessageSystem.sendTouch(tbl.getLeftNode())) {
 				Debug.output("left node failing TOUCH: " + tbl.getLeftNode());
 				Debug.output("removing from NodeTable");
@@ -43,7 +39,7 @@ class NormalState extends OperationalState {
 			}
 		}
 		// right node
-		if(tbl.hasRightNode()) {
+		if(r){
 			if(!MessageSystem.sendTouch(tbl.getRightNode())) {
 				Debug.output("right node failing TOUCH: " + tbl.getRightNode());
 				Debug.output("removing from NodeTable");
@@ -56,6 +52,10 @@ class NormalState extends OperationalState {
 				Debug.output("parent node failing TOUCH: " + tbl.getParent());
 				Debug.output("TODO: regenerate a joining signal");
 				tbl.setParent(null);
+			}
+			if(!l && !r) {
+				//we are a leaf, then send height up
+				MessageSystem.sendHeight(tbl.getParent(), 1);
 			}
 		}
 	}
