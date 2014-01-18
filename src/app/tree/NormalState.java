@@ -22,9 +22,9 @@ class NormalState extends OperationalState {
 	NormalState() {
 		Debug.output("Entering normal state...");
 		NodeTable tbl = NodeTable.getInstance();
-		// signal to parent if any the size
+		// signal to parent if any the height
 		if(!tbl.isThisRoot()) {
-			int s = supervisor.getLeftSize() + supervisor.getRightSize() + 1;
+			int s = supervisor.maxSubtreeHeight() + 1;
 			MessageSystem.sendHeight(tbl.getParent(), s);
 		}
 	}
@@ -67,10 +67,10 @@ class NormalState extends OperationalState {
 		NodeTable tbl = NodeTable.getInstance();
 		
 		if (tbl.isLeftNode(n)) {
-			supervisor.setLeftSize(h);
+			supervisor.leftHeight = h;
 			leftIsReady = true;
 		} else {
-			supervisor.setRightSize(h);
+			supervisor.rightHeight = h;
 			rightIsReady = true;
 		}
 		
@@ -83,23 +83,21 @@ class NormalState extends OperationalState {
 
 		if (rightIsReady && leftIsReady) {
 			// unbalanced to the left
-			if (supervisor.getLeftSize() - supervisor.getRightSize() >= 2) {
+			if (supervisor.leftHeight - supervisor.rightHeight >= 2) {
 				// get b-balance node
 				Node b = tbl.getLeftNode();
 				nextState(new BalancingState(b));
 			}
 			// unbalanced to the right
-			else if (supervisor.getRightSize() - supervisor.getLeftSize() >= 2) {
+			else if (supervisor.rightHeight - supervisor.leftHeight >= 2) {
 				// get b-balance node
 				Node b = tbl.getRightNode();
 				nextState(new BalancingState(b));
 			} else {
-				//send a SIZE signal to the parent if any
+				//send a HEIGHT signal to the parent if any
 				if(!tbl.isThisRoot()) {
-					int treesize = supervisor.getLeftSize() + 
-							supervisor.getRightSize() + 1;
 					MessageSystem.sendHeight(
-							tbl.getParent(), treesize);
+							tbl.getParent(), supervisor.maxSubtreeHeight() + 1);
 				}
 			}
 

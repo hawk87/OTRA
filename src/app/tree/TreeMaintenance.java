@@ -10,13 +10,13 @@ public final class TreeMaintenance implements Runnable {
 	private final int WAITMSEC = 1000;
 	
 	/**
-	 * number of elements in the left subtree
+	 * height of the left subtree
 	 */
-	private int leftSize;
+	int leftHeight;
 	/**
-	 * number of elements in the right subtree
+	 * height of the right subtree
 	 */
-	private int rightSize;
+	int rightHeight;
 	
 	// Singleton design pattern
 	private static TreeMaintenance INSTANCE;
@@ -64,20 +64,15 @@ public final class TreeMaintenance implements Runnable {
 		return INSTANCE;
 	}
 	
-	int getLeftSize() {
-		return leftSize;
-	}
-	
-	int getRightSize() {
-		return rightSize;
-	}
-	
-	void setLeftSize(int s) {
-		leftSize = s;
-	}
-	
-	void setRightSize(int s) {
-		rightSize = s;
+	/**
+	 * TODO
+	 * @return
+	 */
+	int maxSubtreeHeight() {
+		if(leftHeight >= rightHeight)
+			return leftHeight;
+		else
+			return rightHeight;
 	}
 
 	/**
