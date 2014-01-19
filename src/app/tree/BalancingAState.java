@@ -16,7 +16,7 @@ class BalancingAState extends OperationalState {
 	}
 	
 	void handleSetParent(Node from, Node x) {
-		Debug.output("received SET_PARENT. id: " + x.getId());
+		Debug.output("received SET_PARENT. id: " + (x==null ? "null" : x.getId()));
 		NodeTable tbl = NodeTable.getInstance();
 		tbl.setParent(x);
 		//we have completed the rotation, go normal..
@@ -24,7 +24,7 @@ class BalancingAState extends OperationalState {
 	}
 	
 	void handleSetLeft(Node from, Node x) {
-		Debug.output("received a SET_LEFT. id: " + x.getId());
+		Debug.output("received a SET_LEFT. id: " + (x==null ? "null" : x.getId()));
 		NodeTable tbl = NodeTable.getInstance();
 		tbl.setLeftNode(x);
 		//then transfer the parent
@@ -40,7 +40,7 @@ class BalancingAState extends OperationalState {
 	}
 	
 	void handleSetRight(Node from, Node x) {
-		Debug.output("received a SET_RIGHT. id: " + x.getId());
+		Debug.output("received a SET_RIGHT. id: " + (x==null ? "null" : x.getId()));
 		NodeTable tbl = NodeTable.getInstance();
 		tbl.setRightNode(x);
 		//then transfer the parent

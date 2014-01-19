@@ -37,6 +37,7 @@ class BalancingCState extends OperationalState {
 	}
 	
 	void handleSetParent(Node from, Node x) {
+		Debug.output("received SET_PARENT. id: " + (x==null ? "null" : x.getId()));
 		NodeTable tbl = NodeTable.getInstance();
 		tbl.setParent(x);
 		

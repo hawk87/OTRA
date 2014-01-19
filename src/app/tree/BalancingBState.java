@@ -51,6 +51,7 @@ class BalancingBState extends OperationalState {
 	}
 	
 	void handleSetParent(Node from, Node x) {
+		Debug.output("received SET_PARENT. id: " + (x==null ? "null" : x.getId()));
 		NodeTable tbl = NodeTable.getInstance();
 		tbl.setParent(x);
 		if(singleRotation) {
@@ -70,11 +71,13 @@ class BalancingBState extends OperationalState {
 	}
 	
 	void handleSetLeft(Node from, Node x) {
+		Debug.output("received a SET_LEFT. id: " + (x==null ? "null" : x.getId()));
 		NodeTable tbl = NodeTable.getInstance();
 		tbl.setLeftNode(x);
 	}
 	
 	void handleSetRight(Node from, Node x) {
+		Debug.output("received a SET_RIGHT. id: " + (x==null ? "null" : x.getId()));
 		NodeTable tbl = NodeTable.getInstance();
 		tbl.setRightNode(x);
 	}
