@@ -28,7 +28,7 @@ public class Node {
 	}
 	
 	public boolean equals(Node x) {
-		return (this.address == x.address ? true : false);
+		return (this.identifier == x.identifier ? true : false);
 	}
 	
 	public String toString() {
