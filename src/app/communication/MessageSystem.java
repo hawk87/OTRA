@@ -124,7 +124,7 @@ public class MessageSystem extends Thread {
 			data = Utility.appendArray(data, leftChild.getAddress().getAddress());
 		}
 		
-		Connection.send(to.getAddress(), flag);
+		Connection.send(to.getAddress(), data);
 	}
 	
 	public static void sendSetRight(Node to, Node rightChild) {
@@ -139,7 +139,7 @@ public class MessageSystem extends Thread {
 			data = Utility.appendArray(flag, Utility.intToByte(rightChild.getId()));
 			data = Utility.appendArray(data, rightChild.getAddress().getAddress());
 		}
-		Connection.send(to.getAddress(), flag);
+		Connection.send(to.getAddress(), data);
 	}
 
 	private void translate(Message msg) {
