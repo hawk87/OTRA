@@ -10,7 +10,7 @@ import app.NodeTable;
 import app.Utility;
 import app.tree.TreeMaintenance;
 
-public class MessageSystem {
+public class MessageSystem extends Thread {
 	
 	private ArrayBlockingQueue<Message> messageQueue;
 	
@@ -33,11 +33,13 @@ public class MessageSystem {
 		}
 	}
 	
-	public void nextMessage(){
-		try {
-			translate(messageQueue.take());
-		} catch(InterruptedException ie) {
-			ie.printStackTrace();
+	public void run(){
+		while(true) {
+			try {
+				translate(messageQueue.take());
+			} catch(InterruptedException ie) {
+				ie.printStackTrace();
+			}
 		}
 	}
 	
@@ -148,11 +150,6 @@ public class MessageSystem {
 		TreeMaintenance maintainer = TreeMaintenance.getInstance();
 		NodeTable tbl = NodeTable.getInstance();
 		from = tbl.getNodeFromAddress(adr);
-		//check if we know this sender
-		if(from == null) {
-			System.out.println("ERROR: message from unknown node");
-			System.exit(1);
-		}
 		
 		MessageType flag = MessageType.convert(data[0]);
 		switch(flag) {

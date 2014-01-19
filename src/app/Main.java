@@ -9,6 +9,7 @@ import java.net.SocketException;
 import java.util.Enumeration;
 
 import app.communication.Connection;
+import app.communication.MessageSystem;
 import app.communication.TCPConnection;
 import app.tree.TreeMaintenance;
 
@@ -43,6 +44,9 @@ public class Main {
 		TCPConnection.start();
 		//entering in maintenance state
 		TreeMaintenance.start();
+		//start messaging system
+		MessageSystem.getInstance().setName("MessageSystem listener thread");
+		MessageSystem.getInstance().start();
 		//run repl loop
 		Command repl = new Command();
 		repl.run();
