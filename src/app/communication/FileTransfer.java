@@ -11,15 +11,10 @@ import app.Router;
 public class FileTransfer {
 
 	public static void send(InetAddress address, OTRAFile file) {
-		/*
-		 * byte[] ID = Utility.intToByte(file.getID());
-		 * TCPConnection.send(address, Utility.appendArray(ID, file.getData()));
-		 */
-
-		TCPConnection.send(address, file);
+		TCPConnection.send(address, file.getName(), file.getData());
 	}
 
-	public static void receive(InetAddress address, Object data) {
+	public static void receive(InetAddress address, String fileName, byte[] data) {
 		Node node = NodeTable.getInstance().getNodeFromAddress(address);
 
 		if (node == null) {
@@ -27,17 +22,9 @@ public class FileTransfer {
 			System.exit(1);
 		}
 
-		/*
-		 * byte[] ID = new byte[4]; byte[] data = new byte[stream.length - 4];
-		 * System.arraycopy(stream, 0, ID, 0, 4); System.arraycopy(stream, 4,
-		 * data, 0, data.length);
-		 * 
-		 * String name = byteToString();
-		 * 
-		 * OTRAFile file = new OTRAFile(Utility.byteToInt(ID),, data);
-		 */
+		int ID = Integer.parseInt(fileName.split("_")[0]);
 
-		OTRAFile file = (OTRAFile) data;
+		OTRAFile file = new OTRAFile(ID, fileName, data);
 
 		try {
 			Router.getInstance().route(file, node);
