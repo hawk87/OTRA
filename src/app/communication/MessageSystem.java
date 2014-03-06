@@ -101,11 +101,14 @@ public class MessageSystem extends Thread {
 		flag[0] = MessageType.SET_PARENT.getFlag();
 		byte[] data;
 		
+		int thisid = NodeTable.getInstance().getThisNode().getId();
+		data = Utility.appendArray(flag, Utility.intToByte(thisid));
+		
 		if(parent == null) {
 			//we send ID=-1 to signal this situation
-			data = Utility.appendArray(flag, Utility.intToByte(-1));
+			data = Utility.appendArray(data, Utility.intToByte(-1));
 		} else {
-			data = Utility.appendArray(flag, Utility.intToByte(parent.getId()));
+			data = Utility.appendArray(data, Utility.intToByte(parent.getId()));
 			data = Utility.appendArray(data, parent.getAddress().getAddress());
 		}
 		Connection.send(to.getAddress(), data);
@@ -116,11 +119,14 @@ public class MessageSystem extends Thread {
 		flag[0] = MessageType.SET_LEFT.getFlag();
 		byte[] data;
 		
+		int thisid = NodeTable.getInstance().getThisNode().getId();
+		data = Utility.appendArray(flag, Utility.intToByte(thisid));
+		
 		if(leftChild == null) {
 			//we send ID=-1 to signal this situation
-			data = Utility.appendArray(flag, Utility.intToByte(-1));
+			data = Utility.appendArray(data, Utility.intToByte(-1));
 		} else {
-			data = Utility.appendArray(flag, Utility.intToByte(leftChild.getId()));
+			data = Utility.appendArray(data, Utility.intToByte(leftChild.getId()));
 			data = Utility.appendArray(data, leftChild.getAddress().getAddress());
 		}
 		
@@ -131,12 +137,15 @@ public class MessageSystem extends Thread {
 		byte[] flag = new byte[1];
 		flag[0] = MessageType.SET_RIGHT.getFlag();
 		byte[] data;
+		
+		int thisid = NodeTable.getInstance().getThisNode().getId();
+		data = Utility.appendArray(flag, Utility.intToByte(thisid));
 
 		if(rightChild == null) {
 			// we send ID=-1 to signal this situation
-			data = Utility.appendArray(flag, Utility.intToByte(-1));
+			data = Utility.appendArray(data, Utility.intToByte(-1));
 		} else {
-			data = Utility.appendArray(flag, Utility.intToByte(rightChild.getId()));
+			data = Utility.appendArray(data, Utility.intToByte(rightChild.getId()));
 			data = Utility.appendArray(data, rightChild.getAddress().getAddress());
 		}
 		Connection.send(to.getAddress(), data);
@@ -198,57 +207,63 @@ public class MessageSystem extends Thread {
 			maintainer.handleBalance(from, anode);
 			break;
 		case SET_PARENT:
-			id = Utility.byteToInt(Arrays.copyOfRange(data, 1, 5));
+			id = Utility.byteToInt(Arrays.copyOfRange(data, 5, 9));
 			if(id == -1) {
 				x = null;
 			} else {
-				adr = null;
+				InetAddress badr = null;
 				try {
-					adr = InetAddress.getByAddress(
-							Arrays.copyOfRange(data, 5, 9));
+					badr = InetAddress.getByAddress(
+							Arrays.copyOfRange(data, 9, 13));
 				} catch (UnknownHostException e) {
 					System.out.println("ERROR: Message: received wrong SET_PARENT message");
 					System.out.println("  UnknownHostException");
 					System.exit(1);
 				}
-				x = new Node(id, adr);
+				x = new Node(id, badr);
 			}
+			id = Utility.byteToInt(Arrays.copyOfRange(data, 1, 5));
+			from = new Node(id, adr);
 			maintainer.handleSetParent(from, x);
 			break;
 		case SET_LEFT:
-			id = Utility.byteToInt(Arrays.copyOfRange(data, 1, 5));
+			id = Utility.byteToInt(Arrays.copyOfRange(data, 5, 9));
 			if(id == -1) {
 				x = null;
 			} else {
-				adr = null;
+				InetAddress badr = null;
 				try {
-					adr = InetAddress.getByAddress(
-							Arrays.copyOfRange(data, 5, 9));
+					badr = InetAddress.getByAddress(
+							Arrays.copyOfRange(data, 9, 13));
 				} catch (UnknownHostException e) {
-					System.out.println("ERROR: Message: received wrong SET_LEFT message");
+					System.out.println("ERROR: Message: received wrong SET_PARENT message");
 					System.out.println("  UnknownHostException");
 					System.exit(1);
 				}
-				x = new Node(id, adr);
+				x = new Node(id, badr);
 			}
+			id = Utility.byteToInt(Arrays.copyOfRange(data, 1, 5));
+			from = new Node(id, adr);
 			maintainer.handleSetLeft(from, x);
 			break;
 		case SET_RIGHT:
-			id = Utility.byteToInt(Arrays.copyOfRange(data, 1, 5));
+			id = Utility.byteToInt(Arrays.copyOfRange(data, 5, 9));
 			if(id == -1) {
 				x = null;
 			} else {
-				adr = null;
+				InetAddress badr = null;
 				try {
-					adr = InetAddress.getByAddress(
-							Arrays.copyOfRange(data, 5, 9));
+					badr = InetAddress.getByAddress(
+							Arrays.copyOfRange(data, 9, 13));
 				} catch (UnknownHostException e) {
-					System.out.println("ERROR: Message: received wrong SET_RIGHT message");
+					System.out.println("ERROR: Message: received wrong SET_PARENT message");
 					System.out.println("  UnknownHostException");
 					System.exit(1);
 				}
-				x = new Node(id, adr);
+				x = new Node(id, badr);
 			}
+			id = Utility.byteToInt(Arrays.copyOfRange(data, 1, 5));
+			from = new Node(id, adr);
 			maintainer.handleSetRight(from, x);
 			break;
 		case PRINT:
