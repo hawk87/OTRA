@@ -1,5 +1,9 @@
 package app;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import app.communication.FileTransfer;
 
 public class Router {
@@ -17,7 +21,7 @@ public class Router {
 		return INSTANCE;
 	}
 	
-	public void route(OTRAFile f, Node from) {
+	public void route(OTRAFile f, Node from) throws IOException {
 		if(f.getID() > 0) {
 			//normal routing
 			routeNormal(f, from);
@@ -27,11 +31,21 @@ public class Router {
 		}
 	}
 	
-	private void routeNormal(OTRAFile dest, Node from) {
+	private void routeNormal(OTRAFile dest, Node from) throws IOException {
 		NodeTable tbl = NodeTable.getInstance();
 		// if(my_ID == dest_ID)
 		if(dest.getID() == tbl.getThisNode().getId()) {
-			// TODO *service*
+			// *service*
+			File file = new File(dest.getName());
+			
+			// if file doesn't exists, then create it
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+			
+			FileOutputStream f = new FileOutputStream(file);
+			f.write(dest.getData());
+			f.close();
 		}
 
 		// if(from == lchild_ID)
