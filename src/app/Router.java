@@ -36,47 +36,62 @@ public class Router {
 		// if(my_ID == dest_ID)
 		if(dest.getID() == tbl.getThisNode().getId()) {
 			// *service*
+			Debug.output("File is mine");
 			File file = new File(dest.getName());
+			Debug.output("Creating new file");
 			
 			// if file doesn't exists, then create it
 			if (!file.exists()) {
 				file.createNewFile();
 			}
+			Debug.output("File already exists, creating a new one");
 			
 			FileOutputStream f = new FileOutputStream(file);
 			f.write(dest.getData());
+			Debug.output("File wrote");
 			f.close();
+			Debug.output("File closed");
 		}
 
 		// if(from == lchild_ID)
 		else if(tbl.hasLeftNode())
 			if(from.getId() == tbl.getLeftNode().getId()) {
-				if(tbl.isThisRoot() || dest.getID() < tbl.getParent().getId())
+				if(tbl.isThisRoot() || dest.getID() < tbl.getParent().getId()) {
 					// forward to rchild
+					Debug.output("Forwarding to Right Child");
 					FileTransfer.send(tbl.getRightNode().getAddress(), dest);
-				else // forward to parent
+				}
+				else { // forward to parent
+					Debug.output("Forwarding to Parent");
 					FileTransfer.send(tbl.getParent().getAddress(), dest);
+				}
 			}
 
 		// if(from == rchild_ID)
 			else if(tbl.hasRightNode())
 				if(from.getId() == tbl.getRightNode().getId()) {
-					if(tbl.isThisRoot() || dest.getID() < tbl.getParent().getId())
+					if(tbl.isThisRoot() || dest.getID() < tbl.getParent().getId()) {
 						// forward to lchild
+						Debug.output("Forwarding to Left Child");
 						FileTransfer.send(tbl.getLeftNode().getAddress(), dest);
-					else // forward to parent
+					}
+					else { // forward to parent
+						Debug.output("Forwarding to Parent");
 						FileTransfer.send(tbl.getParent().getAddress(), dest);
-
+					}
 				}
 
 		// if(from == parent_ID)
 				else if(tbl.isLeftNode(tbl.getThisNode()) || tbl.isRightNode(tbl.getThisNode())) {
-					if(dest.getID() < tbl.getThisNode().getId())
+					if(dest.getID() < tbl.getThisNode().getId()) {
 						// forward to lchild
+						Debug.output("Forwarding to Left Child");
 						FileTransfer.send(tbl.getLeftNode().getAddress(), dest);
-					else //forward to rchild
+					}
+					else { //forward to rchild
+						Debug.output("Forwarding to Right Child");
 						FileTransfer.send(tbl.getRightNode().getAddress(), dest);
-
+					}
 				}
 	}
 	
