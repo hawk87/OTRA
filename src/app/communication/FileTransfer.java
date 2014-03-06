@@ -18,7 +18,7 @@ public class FileTransfer {
 		Node node = NodeTable.getInstance().getNodeFromAddress(address);
 
 		if (node == null) {
-			System.err.println("Receive from unknow host");
+			System.err.println("Receive from unknown host");
 			System.exit(1);
 		}
 

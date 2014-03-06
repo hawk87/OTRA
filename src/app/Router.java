@@ -24,10 +24,36 @@ public class Router {
 	public void route(OTRAFile f, Node from) throws IOException {
 		if(f.getID() > 0) {
 			//normal routing
+			Debug.output("Normal routing");
 			routeNormal(f, from);
 		} else if(f.getID() == -1) {
 			//this is a printing file
 			routePrintingFile(f, from);
+		}
+	}
+	
+	public void forward(OTRAFile dest) {
+		NodeTable tbl = NodeTable.getInstance();
+		if(!tbl.isThisRoot()) {
+			if(tbl.isLeftNode(tbl.getThisNode())) {
+				if(dest.getID() > tbl.getParent().getId())
+					FileTransfer.send(tbl.getParent().getAddress(), dest);
+				else if(dest.getID() < tbl.getParent().getId() && dest.getID() > tbl.getThisNode().getId())
+					FileTransfer.send(tbl.getRightNode().getAddress(), dest);
+				else FileTransfer.send(tbl.getLeftNode().getAddress(), dest);
+			}
+			else if(tbl.isRightNode(tbl.getThisNode())) {
+				if(dest.getID() < tbl.getParent().getId())
+					FileTransfer.send(tbl.getParent().getAddress(), dest);
+				else if(dest.getID() > tbl.getParent().getId() && dest.getID() < tbl.getThisNode().getId())
+					FileTransfer.send(tbl.getLeftNode().getAddress(), dest);
+				else FileTransfer.send(tbl.getRightNode().getAddress(), dest);
+			}
+		}
+		else {
+			if(dest.getID() > tbl.getThisNode().getId())
+				FileTransfer.send(tbl.getRightNode().getAddress(), dest);
+			else FileTransfer.send(tbl.getLeftNode().getAddress(), dest);
 		}
 	}
 	

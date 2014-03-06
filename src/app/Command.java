@@ -51,9 +51,9 @@ public class Command {
 			//TODO ID > 0 check
 			OTRAFile file = new OTRAFile(ID, filename, data);
 			Debug.output("OTRAFile created");
-			Node thisNode = NodeTable.getInstance().getThisNode();
-			Debug.output("Ready to route");
-			Router.getInstance().route(file, thisNode);
+			Debug.output("Ready to send");
+			Router.getInstance().forward(file);
+			Debug.output("File sent");
 			break;
 		case "exit":
 			System.exit(0);
