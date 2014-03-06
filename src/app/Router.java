@@ -112,9 +112,9 @@ public class Router {
 		
 		
 		if(leftTree == null) {
-			leftTree = new OTRAFile(-1, "", Utility.intToByte(-1));
+			leftTree = new OTRAFile(-1, "-1_print", Utility.intToByte(-1));
 		} else if(rightTree == null) {
-			rightTree = new OTRAFile(-1, "", Utility.intToByte(-1));
+			rightTree = new OTRAFile(-1, "-1_print", Utility.intToByte(-1));
 		}
 		
 		byte[] head = Utility.intToByte(tbl.getThisNode().getId());
@@ -131,7 +131,7 @@ public class Router {
 			Command.println(st.read());
 		} else {
 			// send the composed file to parent
-			OTRAFile nfile = new OTRAFile(-1, "", ndata);
+			OTRAFile nfile = new OTRAFile(-1, "-1_print", ndata);
 			FileTransfer.send(tbl.getParent().getAddress(), nfile);
 		}
 		
