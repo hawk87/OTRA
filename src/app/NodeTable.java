@@ -53,7 +53,7 @@ public class NodeTable {
 				return leftChild;
 		}
 		if(rightChild != null) {
-			if(rightChild != null)
+			if(rightChild.getAddress().equals(adr))
 				return rightChild;
 		}
 		//no match
