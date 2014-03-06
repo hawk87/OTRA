@@ -101,7 +101,7 @@ public class MessageSystem extends Thread {
 		flag[0] = MessageType.SET_PARENT.getFlag();
 		byte[] data;
 		
-		if(parent.equals(null)) {
+		if(parent == null) {
 			//we send ID=-1 to signal this situation
 			data = Utility.appendArray(flag, Utility.intToByte(-1));
 		} else {
@@ -116,7 +116,7 @@ public class MessageSystem extends Thread {
 		flag[0] = MessageType.SET_LEFT.getFlag();
 		byte[] data;
 		
-		if(leftChild.equals(null)) {
+		if(leftChild == null) {
 			//we send ID=-1 to signal this situation
 			data = Utility.appendArray(flag, Utility.intToByte(-1));
 		} else {
@@ -132,7 +132,7 @@ public class MessageSystem extends Thread {
 		flag[0] = MessageType.SET_RIGHT.getFlag();
 		byte[] data;
 
-		if(rightChild.equals(null)) {
+		if(rightChild == null) {
 			// we send ID=-1 to signal this situation
 			data = Utility.appendArray(flag, Utility.intToByte(-1));
 		} else {
