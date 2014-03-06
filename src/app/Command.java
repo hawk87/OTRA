@@ -3,6 +3,9 @@ package app;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import app.communication.MessageSystem;
 
@@ -28,7 +31,7 @@ public class Command {
 		}
 	}
 	
-	private void read(String cmd) {
+	private void read(String cmd) throws IOException {
 		String[] tks = cmd.split("[ |\t]+");
 		switch (tks[0]) {
 		case "table":
@@ -37,8 +40,17 @@ public class Command {
 		case "net":
 			printNetwork();
 			break;
-		case "send":
-			//TODO
+		case "send": // send <file path>
+			Path path = Paths.get(tks[1]);
+			byte[] data = Files.readAllBytes(path);
+
+			String filename = path.getFileName().toString();
+			int ID = Integer.parseInt(filename.split("_")[0]);
+			//TODO ID > 0 check
+			OTRAFile file = new OTRAFile(ID, filename, data);
+			Node thisNode = NodeTable.getInstance().getThisNode();
+			
+			Router.getInstance().route(file, thisNode);
 			break;
 		case "exit":
 			System.exit(0);

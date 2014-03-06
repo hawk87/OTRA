@@ -233,7 +233,7 @@ class NormalState extends OperationalState {
 			data = Utility.appendArray(data, Utility.intToByte(-1));
 			data = Utility.appendArray(data, Utility.intToByte(-1));
 
-			OTRAFile file = new OTRAFile(-1, data);
+			OTRAFile file = new OTRAFile(-1, "", data);
 			FileTransfer.send(tbl.getParent().getAddress(), file);
 		} else {
 			Debug.output("dropped");
