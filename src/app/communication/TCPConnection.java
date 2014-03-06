@@ -25,18 +25,25 @@ public class TCPConnection {
 					InetAddress address = socket.getInetAddress();
 
 					InputStream in = socket.getInputStream();
-					DataInputStream dis = new DataInputStream(in);
+					//DataInputStream dis = new DataInputStream(in);
+					ObjectInputStream ois = new ObjectInputStream(in);
+					
+					
 
-					int size = dis.readInt();
+					/*int size = dis.readInt();
 					byte[] data = new byte[size];
 
 					if (size > 0) {
 						dis.readFully(data);
-					}
+					}*/
+					
+					Object data = ois.readObject();
 
 					FileTransfer.receive(address, data);
 
 				} catch (IOException e) {
+					System.err.println(e.getMessage());
+				} catch (ClassNotFoundException e) {
 					System.err.println(e.getMessage());
 				}
 			}
@@ -49,16 +56,19 @@ public class TCPConnection {
 		s.start();
 	}
 
-	public static void send(InetAddress address, byte[] data) {
+	public static void send(InetAddress address, Object data) {
 		try {
 			Socket socket = new Socket(address, SERVER_PORT);
 
 			OutputStream os = socket.getOutputStream();
-			DataOutputStream dos = new DataOutputStream(os);
-			dos.writeInt(data.length);
-			dos.write(data, 0, data.length);
-			dos.flush();
-
+			//DataOutputStream dos = new DataOutputStream(os);
+			//dos.writeInt(data.length);
+			//dos.write(data, 0, data.length);
+			//dos.flush();
+			
+			ObjectOutputStream oos = new ObjectOutputStream(os);
+			oos.writeObject(data);
+			oos.flush();
 			socket.close();
 
 		} catch (IOException e) {
