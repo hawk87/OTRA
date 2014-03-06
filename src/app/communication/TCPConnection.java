@@ -25,18 +25,15 @@ public class TCPConnection {
 					InetAddress address = socket.getInetAddress();
 
 					InputStream in = socket.getInputStream();
-					//DataInputStream dis = new DataInputStream(in);
+					// DataInputStream dis = new DataInputStream(in);
 					ObjectInputStream ois = new ObjectInputStream(in);
-					
-					
 
-					/*int size = dis.readInt();
-					byte[] data = new byte[size];
+					/*
+					 * int size = dis.readInt(); byte[] data = new byte[size];
+					 * 
+					 * if (size > 0) { dis.readFully(data); }
+					 */
 
-					if (size > 0) {
-						dis.readFully(data);
-					}*/
-					
 					Object data = ois.readObject();
 
 					FileTransfer.receive(address, data);
@@ -61,11 +58,11 @@ public class TCPConnection {
 			Socket socket = new Socket(address, SERVER_PORT);
 
 			OutputStream os = socket.getOutputStream();
-			//DataOutputStream dos = new DataOutputStream(os);
-			//dos.writeInt(data.length);
-			//dos.write(data, 0, data.length);
-			//dos.flush();
-			
+			// DataOutputStream dos = new DataOutputStream(os);
+			// dos.writeInt(data.length);
+			// dos.write(data, 0, data.length);
+			// dos.flush();
+
 			ObjectOutputStream oos = new ObjectOutputStream(os);
 			oos.writeObject(data);
 			oos.flush();
