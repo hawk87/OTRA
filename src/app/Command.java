@@ -43,13 +43,16 @@ public class Command {
 		case "send": // send <file path>
 			Path path = Paths.get(tks[1]);
 			byte[] data = Files.readAllBytes(path);
+			Debug.output("Data read");
 
 			String filename = path.getFileName().toString();
 			int ID = Integer.parseInt(filename.split("_")[0]);
+			Debug.output("Got ID");
 			//TODO ID > 0 check
 			OTRAFile file = new OTRAFile(ID, filename, data);
+			Debug.output("OTRAFile created");
 			Node thisNode = NodeTable.getInstance().getThisNode();
-			
+			Debug.output("Ready to route");
 			Router.getInstance().route(file, thisNode);
 			break;
 		case "exit":
