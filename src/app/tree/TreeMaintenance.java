@@ -65,14 +65,13 @@ public final class TreeMaintenance implements Runnable {
 	}
 	
 	/**
-	 * TODO
-	 * @return
+	 * Compute the height of this node
 	 */
-	int maxSubtreeHeight() {
+	int computeHeight() {
 		if(leftHeight >= rightHeight)
-			return leftHeight;
+			return leftHeight + 1;
 		else
-			return rightHeight;
+			return rightHeight + 1;
 	}
 
 	/**

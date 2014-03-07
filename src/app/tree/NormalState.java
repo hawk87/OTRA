@@ -75,9 +75,13 @@ class NormalState extends OperationalState {
 		}
 		
 		if(!tbl.hasLeftNode()) {
+			//we reset because this data can be out of date
+			supervisor.leftHeight = 0;
 			leftIsReady = true;
 		}
 		if(!tbl.hasRightNode()) {
+			//we reset because this data can be out of date
+			supervisor.rightHeight = 0;
 			rightIsReady = true;
 		}
 
@@ -97,7 +101,7 @@ class NormalState extends OperationalState {
 				//send a HEIGHT signal to the parent if any
 				if(!tbl.isThisRoot()) {
 					MessageSystem.sendHeight(
-							tbl.getParent(), supervisor.maxSubtreeHeight() + 1);
+							tbl.getParent(), supervisor.computeHeight());
 				}
 			}
 
