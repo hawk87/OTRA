@@ -68,10 +68,10 @@ class NormalState extends OperationalState {
 					tbl.setParent(null);
 				}
 			}
-			if(!tbl.hasLeftNode() && !tbl.hasRightNode()) {
-				//we are a leaf, then send height up
-				MessageSystem.sendHeight(tbl.getParent(), 1);
-			}
+		}
+		//check if we are a leaf, then send height up
+		if(!tbl.isThisRoot() && !tbl.hasLeftNode() && !tbl.hasRightNode()) {
+			MessageSystem.sendHeight(tbl.getParent(), 1);
 		}
 	}
 
