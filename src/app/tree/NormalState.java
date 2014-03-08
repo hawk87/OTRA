@@ -38,10 +38,8 @@ class NormalState extends OperationalState {
 	 */
 	void service() {
 		NodeTable tbl = NodeTable.getInstance();
-		boolean l = tbl.hasLeftNode();
-		boolean r = tbl.hasRightNode();
 		//check left node
-		if(l) {
+		if(tbl.hasLeftNode()) {
 			if(!MessageSystem.sendTouch(tbl.getLeftNode())) {
 				Debug.output("left node failing TOUCH: " + tbl.getLeftNode());
 				Debug.output("removing from NodeTable");
@@ -49,7 +47,7 @@ class NormalState extends OperationalState {
 			}
 		}
 		// right node
-		if(r){
+		if(tbl.hasRightNode()){
 			if(!MessageSystem.sendTouch(tbl.getRightNode())) {
 				Debug.output("right node failing TOUCH: " + tbl.getRightNode());
 				Debug.output("removing from NodeTable");
@@ -70,7 +68,7 @@ class NormalState extends OperationalState {
 					tbl.setParent(null);
 				}
 			}
-			if(!l && !r) {
+			if(!tbl.hasLeftNode() && !tbl.hasRightNode()) {
 				//we are a leaf, then send height up
 				MessageSystem.sendHeight(tbl.getParent(), 1);
 			}

@@ -9,7 +9,7 @@ class RecoveryState extends OperationalState {
 	private Node sibling;
 	
 	RecoveryState() {
-		Debug.output("Entering recovery master state");
+		Debug.output("Entering recovery state");
 	}
 	
 	void service() {
