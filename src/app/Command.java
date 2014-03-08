@@ -48,12 +48,16 @@ public class Command {
 			String filename = path.getFileName().toString();
 			int ID = Integer.parseInt(filename.split("_")[0]);
 			Debug.output("Got ID");
-			//TODO ID > 0 check
-			OTRAFile file = new OTRAFile(ID, filename, data);
-			Debug.output("OTRAFile created");
-			Debug.output("Ready to send");
-			Router.getInstance().forward(file);
-			Debug.output("File sent");
+			
+			if(ID > 0) {
+				OTRAFile file = new OTRAFile(ID, filename, data);
+				Debug.output("OTRAFile created");
+				Debug.output("Ready to send");
+				Router.getInstance().forward(file);
+				//Router.getInstance().route(file, NodeTable.getInstance().getThisNode());
+				Debug.output("File sent");
+			}
+			else Debug.output("Unknown ID");
 			break;
 		case "exit":
 			System.exit(0);

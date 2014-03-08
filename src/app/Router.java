@@ -34,23 +34,23 @@ public class Router {
 	
 	public void forward(OTRAFile dest) {
 		NodeTable tbl = NodeTable.getInstance();
-		if(!tbl.isThisRoot()) {
-			if(tbl.isLeftNode(tbl.getThisNode())) {
-				if(dest.getID() > tbl.getParent().getId())
+		if(!tbl.isThisRoot()) { // se non sono root, sono un nodo interno o una foglia
+			if(tbl.getThisNode().getId() < tbl.getParent().getId()) { // se sono figlio sx
+				if(dest.getID() >= tbl.getParent().getId())
 					FileTransfer.send(tbl.getParent().getAddress(), dest);
 				else if(dest.getID() < tbl.getParent().getId() && dest.getID() > tbl.getThisNode().getId())
 					FileTransfer.send(tbl.getRightNode().getAddress(), dest);
 				else FileTransfer.send(tbl.getLeftNode().getAddress(), dest);
 			}
-			else if(tbl.isRightNode(tbl.getThisNode())) {
-				if(dest.getID() < tbl.getParent().getId())
+			else if(tbl.getThisNode().getId() > tbl.getParent().getId()) { // se sono figlio dx
+				if(dest.getID() <= tbl.getParent().getId())
 					FileTransfer.send(tbl.getParent().getAddress(), dest);
 				else if(dest.getID() > tbl.getParent().getId() && dest.getID() < tbl.getThisNode().getId())
 					FileTransfer.send(tbl.getLeftNode().getAddress(), dest);
 				else FileTransfer.send(tbl.getRightNode().getAddress(), dest);
 			}
 		}
-		else {
+		else { // se sono root
 			if(dest.getID() > tbl.getThisNode().getId())
 				FileTransfer.send(tbl.getRightNode().getAddress(), dest);
 			else FileTransfer.send(tbl.getLeftNode().getAddress(), dest);
@@ -64,13 +64,13 @@ public class Router {
 			// *service*
 			Debug.output("File is mine");
 			File file = new File(dest.getName());
-			Debug.output("Creating new file");
 			
 			// if file doesn't exists, then create it
 			if (!file.exists()) {
+				Debug.output("Creating new file");
 				file.createNewFile();
 			}
-			Debug.output("File already exists, creating a new one");
+			else Debug.output("File already exists, creating a new one");
 			
 			FileOutputStream f = new FileOutputStream(file);
 			f.write(dest.getData());
