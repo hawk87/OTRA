@@ -4,12 +4,16 @@ public enum MessageType {
 	TOUCH,
 	HEIGHT,
 	JOIN_BROADCAST,
+	JOIN_RESPONSE,
 	JOIN_SEARCH,
 	BALANCE,
 	SET_PARENT,
 	SET_LEFT,
 	SET_RIGHT,
-	PRINT;
+	PRINT,
+	DISCONNECTED,
+	DSCNN_RESPONSE,
+	RECOVERY_FIND_MAX;
 	
 	public byte getFlag() {
 		return (byte)this.ordinal();

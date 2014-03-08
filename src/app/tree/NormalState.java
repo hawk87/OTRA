@@ -1,5 +1,7 @@
 package app.tree;
 
+import java.net.InetAddress;
+
 import app.Utility;
 import app.Node;
 import app.Debug;
@@ -18,6 +20,14 @@ class NormalState extends OperationalState {
 
 	private boolean leftIsReady;
 	private boolean rightIsReady;
+	
+	/**
+	 * References to the lost node that we use to discover other nodes with this
+	 * pending reference, in order to recover the network configuration.
+	 */
+	private Node lostParent;
+	
+	private long latestJoinTime;
 
 	NormalState() {
 		Debug.output("Entering normal state...");
@@ -50,8 +60,15 @@ class NormalState extends OperationalState {
 		if(!tbl.isThisRoot()) {
 			if(!MessageSystem.sendTouch(tbl.getParent())) {
 				Debug.output("parent node failing TOUCH: " + tbl.getParent());
-				Debug.output("TODO: regenerate a joining signal");
-				tbl.setParent(null);
+				if(tbl.getThisNode().getId() < tbl.getParent().getId()) {
+					//we are the left subtree
+					//then we are the master node in recovery operation
+					nextState(new RecoveryState());
+				} else {
+					//we are the right subtree
+					lostParent= tbl.getParent();
+					tbl.setParent(null);
+				}
 			}
 			if(!l && !r) {
 				//we are a leaf, then send height up
@@ -107,7 +124,7 @@ class NormalState extends OperationalState {
 
 			leftIsReady = false;
 			rightIsReady = false;
-		} 
+		}
 	}
 
 	void handleJoinBroadcast(Node n) {
@@ -118,37 +135,44 @@ class NormalState extends OperationalState {
 			// and forward if necessary
 			Debug.output("root received a join broadcast message");
 			Node thisnode = tbl.getThisNode();
-			if (n.getId() < thisnode.getId()) {
-				if (tbl.hasLeftNode()) {
-					// send JOIN_SEARCH to the left child
-					MessageSystem.sendJoinSearch(tbl.getLeftNode(), n);
+			
+			MessageSystem.sendJoinResponse(n);
+			
+			if(System.currentTimeMillis() - latestJoinTime > 150) {
+				latestJoinTime = System.currentTimeMillis();
+				
+				if (n.getId() < thisnode.getId()) {
+					if (tbl.hasLeftNode()) {
+						// send JOIN_SEARCH to the left child
+						MessageSystem.sendJoinSearch(tbl.getLeftNode(), n);
+					} else {
+						// joining node can be attached here, to the left
+						Debug.output("node id: " + n.getId()
+								+ " attaches here to the left");
+						// set joining node as left child
+						tbl.setLeftNode(n);
+						// signal to joining node that it can attach itself here
+						MessageSystem.sendJoinSearch(n, thisnode);
+					}
+				} else if (n.getId() > thisnode.getId()) {
+					if (tbl.hasRightNode()) {
+						// send JOIN_SEARCH to the right child
+						MessageSystem.sendJoinSearch(tbl.getRightNode(), n);
+					} else {
+						// joining node can be attached here, to the right
+						Debug.output("node id: " + n.getId()
+								+ " attaches here to the right");
+						// set joining node as right child
+						tbl.setRightNode(n);
+						// signal to joining node that it can attach itself here
+						MessageSystem.sendJoinSearch(n, thisnode);
+					}
 				} else {
-					// joining node can be attached here, to the left
-					Debug.output("node id: " + n.getId()
-							+ " attaches here to the left");
-					// set joining node as left child
-					tbl.setLeftNode(n);
-					// signal to joining node that it can attach itself here
-					MessageSystem.sendJoinSearch(n, thisnode);
+					// n has the same id of thisnode. ERROR
+					System.out.println("ERROR: joining node has got the same id"
+							+ " as this node: " + n.getId());
+					System.exit(1);
 				}
-			} else if (n.getId() > thisnode.getId()) {
-				if (tbl.hasRightNode()) {
-					// send JOIN_SEARCH to the right child
-					MessageSystem.sendJoinSearch(tbl.getRightNode(), n);
-				} else {
-					// joining node can be attached here, to the right
-					Debug.output("node id: " + n.getId()
-							+ " attaches here to the right");
-					// set joining node as right child
-					tbl.setRightNode(n);
-					// signal to joining node that it can attach itself here
-					MessageSystem.sendJoinSearch(n, thisnode);
-				}
-			} else {
-				// n has the same id of thisnode. ERROR
-				System.out.println("ERROR: joining node has got the same id"
-						+ " as this node: " + n.getId());
-				System.exit(1);
 			}
 		}
 		// else { this is not root -> do nothing }
@@ -242,5 +266,45 @@ class NormalState extends OperationalState {
 		} else {
 			Debug.output("dropped");
 		}
+	}
+	
+	/*
+	 * This message comes from the node which discovered the disconnection case.
+	 * @see app.tree.OperationalState#handleDisconnected(app.Node)
+	 */
+	void handleDisconnected(Node disc, InetAddress from) {
+		NodeTable tbl = NodeTable.getInstance();
+		
+		if(tbl.getParent() == null && disc.equals(lostParent)) {
+			//respond
+			MessageSystem.sendDscnnResponse(from, tbl.getThisNode());
+			lostParent = null;
+		}
+	}
+	
+	void handleRecoveryFindMax(Node left, Node right) {
+		NodeTable tbl = NodeTable.getInstance();
+		
+		if(tbl.hasRightNode()) {
+			//then we forward the message to the right subtree
+			MessageSystem.sendRecoveryFindMax(tbl.getRightNode(), left, right);
+			return;
+		}
+		
+		// ELSE we have to perform the recovery operation
+		
+		MessageSystem.sendSetRight(tbl.getParent(), tbl.getLeftNode());
+		if(tbl.getLeftNode() != null) {
+			MessageSystem.sendSetParent(tbl.getLeftNode(), tbl.getParent());
+		}
+		
+		MessageSystem.sendSetParent(left, tbl.getThisNode());
+		tbl.setLeftNode(left);
+		MessageSystem.sendSetParent(right, tbl.getThisNode());
+		tbl.setRightNode(right);
+		
+		//at this point we are the root of a orphan tree
+		//we try to re-join the network if present
+		nextState(new JoiningState());
 	}
 }

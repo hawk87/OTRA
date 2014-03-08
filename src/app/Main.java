@@ -95,15 +95,16 @@ public class Main {
 		Node thisnode = new Node(id, ourInterface.getAddress());
 		// allocating the node/routing table
 		NodeTable.createInstance(thisnode);
+		// entering in maintenance state
+		TreeMaintenance.getInstance().setName("TreeMaintenance service thread");
+		TreeMaintenance.getInstance().start();
+		// start messaging system
+		MessageSystem.getInstance().setName("MessageSystem listener thread");
+		MessageSystem.getInstance().start();
 		// set up Connection
 		Connection.start(ourInterface);
 		// set up TCPConnection
 		TCPConnection.start();
-		// entering in maintenance state
-		TreeMaintenance.start();
-		// start messaging system
-		MessageSystem.getInstance().setName("MessageSystem listener thread");
-		MessageSystem.getInstance().start();
 		// run repl loop
 		Command repl = new Command();
 		repl.run();

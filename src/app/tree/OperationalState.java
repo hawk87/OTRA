@@ -1,5 +1,7 @@
 package app.tree;
 
+import java.net.InetAddress;
+
 import app.Node;
 
 /**
@@ -38,6 +40,9 @@ abstract class OperationalState {
 	void handleJoinBroadcast(Node n) {	
 	}
 	
+	void handleJoinResponse() {
+	}
+	
 	void handleJoinSearch(Node n) {
 	}
 	
@@ -59,4 +64,12 @@ abstract class OperationalState {
 	void handleSetRight(Node from, Node x) {
 	}
 	
+	void handleDisconnected(Node disc, InetAddress from){
+	}
+	
+	void handleDscnnResponse(Node sib) {
+	}
+	
+	void handleRecoveryFindMax(Node left, Node right) {
+	}
 }

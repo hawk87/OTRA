@@ -69,6 +69,13 @@ public class MessageSystem extends Thread {
 		Connection.sendBroadcast(data);
 	}
 	
+	public static void sendJoinResponse(Node to) {
+		byte[] flag = new byte[1];
+		flag[0] = MessageType.JOIN_RESPONSE.getFlag();
+		
+		Connection.send(to.getAddress(), flag);
+	}
+	
 	public static void sendJoinSearch(Node to, Node joining) {
 		byte[] flag = new byte[1];
 		flag[0] = MessageType.JOIN_SEARCH.getFlag();
@@ -150,7 +157,86 @@ public class MessageSystem extends Thread {
 		}
 		Connection.send(to.getAddress(), data);
 	}
-
+	
+	public static void sendDisconnected(Node disc) {
+		byte[] flag = new byte[1];
+		flag[0] = MessageType.DISCONNECTED.getFlag();
+		byte[] data;
+		
+		data = Utility.appendArray(flag, Utility.intToByte(disc.getId()));
+		data = Utility.appendArray(data, disc.getAddress().getAddress());
+		
+		Connection.sendBroadcast(data);
+	}
+	
+	public static void sendDscnnResponse(InetAddress to, Node x) {
+		byte[] flag = new byte[1];
+		flag[0] = MessageType.DSCNN_RESPONSE.getFlag();
+		byte[] data;
+		
+		data = Utility.appendArray(flag, Utility.intToByte(x.getId()));
+		data = Utility.appendArray(data, x.getAddress().getAddress());
+		
+		Connection.send(to, data);
+	}
+	
+	public static void sendRecoveryFindMax(Node to, Node leftChild, Node rightChild) {
+		byte[] flag = new byte[1];
+		flag[0] = MessageType.RECOVERY_FIND_MAX.getFlag();
+		byte[] data;
+		
+		data = Utility.appendArray(flag, serializeNodeObj(leftChild));
+		data = Utility.appendArray(data, serializeNodeObj(rightChild));
+		
+		Connection.send(to.getAddress(), data);
+	}
+	
+	/**
+	 * Serializing the Node object. Also, null case is handled.
+	 * @param Node x
+	 * @return 8 bytes vector with the serialization of x
+	 */
+	private static byte[] serializeNodeObj(Node x) {
+		byte[] data;
+		if(x == null) {
+			data = Utility.intToByte(-1);
+			data = Utility.appendArray(data, Utility.intToByte(0));
+		} else {
+			data = Utility.intToByte(x.getId());
+			data = Utility.appendArray(data, x.getAddress().getAddress());
+		}
+		return data;
+	}
+	
+	/**
+	 * Read the serial version of the vector Node
+	 * @param vector containing the serial version of the Node
+	 * @return the Node obj
+	 */
+	private static Node readNodeObj(byte[] vector) {
+		if(vector.length != 8) {
+			System.out.println("Wrong size in reading a Node object");
+			System.exit(1);
+		}
+		Node x;
+		int id = Utility.byteToInt(Arrays.copyOfRange(vector, 0, 4));
+		if(id == -1) {
+			x = null;
+		} else {
+			InetAddress adr = null;
+			try {
+				adr = InetAddress.getByAddress(
+						Arrays.copyOfRange(vector, 4, 8));
+			} catch(UnknownHostException uhe) {
+				System.out.println("ERROR: Problems parsing a Node object");
+				System.out.println("  UnknownHostException");
+				System.exit(1);
+			}
+			x = new Node(id, adr);
+		}
+		return x;
+	}
+	
 	private void translate(Message msg) {
 		Node from, x;
 		int k, id;
@@ -176,6 +262,9 @@ public class MessageSystem extends Thread {
 			}
 			from = new Node(k, adr);
 			maintainer.handleJoinBroadcast(from);
+			break;
+		case JOIN_RESPONSE:
+			maintainer.handleJoinResponse();
 			break;
 		case JOIN_SEARCH:
 			InetAddress joinAdr = null;
@@ -268,6 +357,35 @@ public class MessageSystem extends Thread {
 			break;
 		case PRINT:
 			maintainer.handlePrint();
+			break;
+		case DISCONNECTED:
+			InetAddress discAdr = null;
+			id = Utility.byteToInt(Arrays.copyOfRange(data, 1, 5));
+			try {
+				discAdr = InetAddress.getByAddress(
+						Arrays.copyOfRange(data, 5, 9));
+			} catch(UnknownHostException uhe) {
+				System.out.println("  UnknownHostException");
+				System.exit(1);
+			}
+			maintainer.handleDisconnected(new Node(id, discAdr), adr);
+			break;
+		case DSCNN_RESPONSE:
+			id = Utility.byteToInt(Arrays.copyOfRange(data, 1, 5));
+			anodeAdr = null;
+			try {
+				anodeAdr = InetAddress.getByAddress(
+						Arrays.copyOfRange(data, 5, 9));
+			} catch(UnknownHostException uhe) {
+				System.out.println("  UnknownHostException");
+				System.exit(1);
+			}
+			maintainer.handleDscnnResponse(new Node(id, anodeAdr));
+			break;
+		case RECOVERY_FIND_MAX:
+			Node a = readNodeObj(Arrays.copyOfRange(data, 1, 9));
+			Node b = readNodeObj(Arrays.copyOfRange(data, 9, 17));
+			maintainer.handleRecoveryFindMax(a, b);
 			break;
 		default:
 			//if it doesn't match against any of our defined messages

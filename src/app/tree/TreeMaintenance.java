@@ -1,13 +1,20 @@
 package app.tree;
 
+import java.net.InetAddress;
+
 import app.Node;
 
 /**
  * This class holds the current operational state and route incoming messages
  * to the proper object methods.
  */
-public final class TreeMaintenance implements Runnable {
+public final class TreeMaintenance extends Thread {
 	private final int WAITMSEC = 1000;
+
+	/**
+	 * Holds the current operational state. This can be NormalState, Balancing ecc..
+	 */
+	private OperationalState maintenanceState;
 	
 	/**
 	 * height of the left subtree
@@ -19,26 +26,11 @@ public final class TreeMaintenance implements Runnable {
 	int rightHeight;
 	
 	// Singleton design pattern
-	private static TreeMaintenance INSTANCE;
+	private static TreeMaintenance INSTANCE = new TreeMaintenance();
 
 	private TreeMaintenance() {
-	}
-	
-	/**
-	 * Since this class implements the singleton design patter, this is the only
-	 * way to create the single instance.
-	 */
-	public static void start() {
-		if(INSTANCE != null) {
-			System.out.println("maintenance already started..!!");
-			System.exit(1);
-		}
-		INSTANCE = new TreeMaintenance();
-		// we start maintenance from InitialState
-		INSTANCE.maintenanceState = InitialState.init();
-		Thread th = new Thread(INSTANCE);
-		th.setName("TreeMaintenance service thread");
-		th.start();
+		//we start with the joining phase
+		maintenanceState = new JoiningState();
 	}
 	
 	public void run() {
@@ -57,10 +49,6 @@ public final class TreeMaintenance implements Runnable {
 	 * any call to start() method this generate an abort.
 	 */
 	public static TreeMaintenance getInstance() {
-		if(INSTANCE == null) {
-			System.out.println("maintenance not started...abort");
-			System.exit(1);
-		}
 		return INSTANCE;
 	}
 	
@@ -73,11 +61,6 @@ public final class TreeMaintenance implements Runnable {
 		else
 			return rightHeight + 1;
 	}
-
-	/**
-	 * Holds the current operational state. This can be NormalState, Balancing ecc..
-	 */
-	private OperationalState maintenanceState;
 	
 	/**
 	 * Used when there is some operational-state change. From one state we change to
@@ -97,6 +80,10 @@ public final class TreeMaintenance implements Runnable {
 	
 	public void handleJoinBroadcast(Node n) {
 		maintenanceState.handleJoinBroadcast(n);
+	}
+	
+	public void handleJoinResponse() {
+		maintenanceState.handleJoinResponse();
 	}
 	
 	public void handleJoinSearch(Node n) {
@@ -121,5 +108,17 @@ public final class TreeMaintenance implements Runnable {
 	
 	public void handleSetRight(Node from, Node x) {
 		maintenanceState.handleSetRight(from, x);
+	}
+	
+	public void handleDisconnected(Node disc, InetAddress from) {
+		maintenanceState.handleDisconnected(disc, from);
+	}
+	
+	public void handleDscnnResponse(Node sib) {
+		maintenanceState.handleDscnnResponse(sib);
+	}
+	
+	public void handleRecoveryFindMax(Node left, Node right) {
+		maintenanceState.handleRecoveryFindMax(left, right);
 	}
 }
