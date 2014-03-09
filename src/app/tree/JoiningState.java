@@ -22,9 +22,11 @@ class JoiningState extends OperationalState {
 		NodeTable tbl = NodeTable.getInstance();
 		
 		if(!responded) { //only execute once
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e1) {	}
 			for(int i=0; i < 5; i++) {
 				try {
-					Thread.sleep(100);
 					MessageSystem.sendJoinBroadcast(tbl.getThisNode().getId());
 					Thread.sleep(100);
 				} catch (InterruptedException e) { }

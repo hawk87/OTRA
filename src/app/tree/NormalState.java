@@ -136,7 +136,7 @@ class NormalState extends OperationalState {
 			
 			MessageSystem.sendJoinResponse(n);
 			
-			if(System.currentTimeMillis() - latestJoinTime > 150) {
+			if(System.currentTimeMillis() - latestJoinTime > 200) {
 				latestJoinTime = System.currentTimeMillis();
 				
 				if (n.getId() < thisnode.getId()) {
