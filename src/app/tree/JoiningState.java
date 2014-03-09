@@ -30,7 +30,7 @@ class JoiningState extends OperationalState {
 			for(int i=0; i < 5; i++) {
 				try {
 					MessageSystem.sendJoinBroadcast(tbl.getThisNode().getId());
-					Thread.sleep(100);
+					Thread.sleep(300);
 				} catch (InterruptedException e) { }
 				//check if we received a response
 				if(responded)

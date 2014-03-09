@@ -125,7 +125,7 @@ class NormalState extends OperationalState {
 			Node thisnode = tbl.getThisNode();
 			
 			if(latestJoinNode != null && n.equals(latestJoinNode))
-				if(System.currentTimeMillis() - latestJoinTime < 1000)
+				if(System.currentTimeMillis() - latestJoinTime < 2000)
 					//then we have already handled this joining node
 					return;
 			
