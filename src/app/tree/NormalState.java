@@ -124,7 +124,7 @@ class NormalState extends OperationalState {
 			Debug.output("root received a join broadcast message");
 			Node thisnode = tbl.getThisNode();
 			
-			if(n.equals(latestJoinNode))
+			if(latestJoinNode != null && n.equals(latestJoinNode))
 				if(System.currentTimeMillis() - latestJoinTime < 1000)
 					//then we have already handled this joining node
 					return;
