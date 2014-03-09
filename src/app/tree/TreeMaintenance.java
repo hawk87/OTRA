@@ -39,9 +39,15 @@ public final class TreeMaintenance extends Thread {
 			try {
 				Thread.sleep(WAITMSEC);
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				//we use InterruptException to wake up this thread
+				//so, do nothing
 			}
 		}
+	}
+	
+	void forceService() {
+		//wake up this sleeping thread
+		this.interrupt();
 	}
 	
 	/**

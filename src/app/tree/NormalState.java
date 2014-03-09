@@ -1,5 +1,7 @@
 package app.tree;
 
+import java.net.InetAddress;
+
 import app.Utility;
 import app.Node;
 import app.Debug;
@@ -250,6 +252,27 @@ class NormalState extends OperationalState {
 			FileTransfer.send(tbl.getParent().getAddress(), file);
 		} else {
 			Debug.output("dropped");
+		}
+	}
+	
+	void handleDisconnected(Node disc, InetAddress adr) {
+		NodeTable tbl = NodeTable.getInstance();
+		if(tbl.getParent().equals(disc)) {
+			//then we have a disconnection we did not recognize
+			MessageSystem.sendDscnnResponse(adr, tbl.getThisNode());
+			if(tbl.getThisNode().getId() > disc.getId()) {
+				//we are the right sibling
+				//and at this point we have to stay in NormalState
+				tbl.setParent(null);
+			} else {
+				//we are the left sibling
+				nextState(new RecoveryState());
+			}
+		} else if(tbl.getLeftNode().equals(disc)) {
+			tbl.setLeftNode(null);
+		}
+		else if(tbl.getRightNode().equals(disc)) {
+			tbl.setRightNode(null);
 		}
 	}
 	

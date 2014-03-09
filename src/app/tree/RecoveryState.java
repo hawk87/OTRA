@@ -12,6 +12,7 @@ class RecoveryState extends OperationalState {
 	
 	RecoveryState() {
 		Debug.output("Entering recovery state");
+		supervisor.forceService();
 	}
 	
 	void service() {
