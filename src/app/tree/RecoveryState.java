@@ -46,7 +46,7 @@ class RecoveryState extends OperationalState {
 				nextState(new JoiningState());
 			}
 		} else {
-			//we the leftsubtree
+			//we are the left subtree
 			tbl.setParent(null);
 			nextState(new NormalState());
 		}
