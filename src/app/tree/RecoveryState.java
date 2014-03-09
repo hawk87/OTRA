@@ -32,6 +32,7 @@ class RecoveryState extends OperationalState {
 			//then we can deduce that there is no sibling network
 			Debug.output("no sibling network...");
 			//then we try to rejoin the network, if any
+			tbl.setParent(null);
 			nextState(new JoiningState());
 		} else if(tbl.getThisNode().getId() < tbl.getParent().getId()) {
 			//then there are two subtree that have to be merged
