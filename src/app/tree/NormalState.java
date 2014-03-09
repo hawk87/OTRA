@@ -240,11 +240,9 @@ class NormalState extends OperationalState {
 		NodeTable tbl = NodeTable.getInstance();
 		Node thisnode = tbl.getThisNode();
 		
-		if(tbl.isThisRoot()) {
-			//we are root then we have to print nothing
-			Debug.output("dropped");
-		}
-		else if (!tbl.hasLeftNode() && !tbl.hasRightNode()) {
+		if(tbl.isThisRoot())
+			return;
+		if (!tbl.hasLeftNode() && !tbl.hasRightNode()) {
 			Debug.output("accepted");
 			byte[] data = {};
 			data = Utility.appendArray(data,
@@ -254,8 +252,6 @@ class NormalState extends OperationalState {
 
 			OTRAFile file = new OTRAFile(-1, "-1_print", data);
 			FileTransfer.send(tbl.getParent().getAddress(), file);
-		} else {
-			Debug.output("dropped");
 		}
 	}
 	
