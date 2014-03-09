@@ -60,6 +60,10 @@ class RecoveryState extends OperationalState {
 	void handleDisconnected(Node disc, InetAddress from) {
 		NodeTable tbl = NodeTable.getInstance();
 		
+		if(tbl.getThisNode().getAddress().equals(from))
+			//because we received the same message we sent
+			return;
+		
 		if(disc.equals(tbl.getParent())) {
 			//we are the sibling
 			MessageSystem.sendDscnnResponse(from, tbl.getThisNode());
