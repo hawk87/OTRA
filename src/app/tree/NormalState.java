@@ -30,6 +30,7 @@ class NormalState extends OperationalState {
 	 */
 	void service() {
 		NodeTable tbl = NodeTable.getInstance();
+		boolean lostParent = false;
 		//check left node
 		if(tbl.hasLeftNode()) {
 			if(!MessageSystem.sendTouch(tbl.getLeftNode())) {
@@ -50,12 +51,14 @@ class NormalState extends OperationalState {
 		if(!tbl.isThisRoot()) {
 			if(!MessageSystem.sendTouch(tbl.getParent())) {
 				Debug.output("parent node failing TOUCH: " + tbl.getParent());
+				lostParent = true;
 				nextState(new RecoveryState());
 			}
 		}
 		//check if we are a leaf, then send height up
-		if(!tbl.isThisRoot() && !tbl.hasLeftNode() && !tbl.hasRightNode()) {
-			MessageSystem.sendHeight(tbl.getParent(), 1);
+		if(!tbl.hasLeftNode() && !tbl.hasRightNode()) {
+			if(!tbl.isThisRoot() && !lostParent)
+				MessageSystem.sendHeight(tbl.getParent(), 1);
 		}
 	}
 

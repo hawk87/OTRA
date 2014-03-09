@@ -62,7 +62,7 @@ class RecoveryState extends OperationalState {
 		NodeTable tbl = NodeTable.getInstance();
 		
 		if(tbl.getThisNode().getAddress().equals(from))
-			//because we received the same message we sent
+			//because we received the broadcast message we sent
 			return;
 		
 		if(disc.equals(tbl.getParent())) {
