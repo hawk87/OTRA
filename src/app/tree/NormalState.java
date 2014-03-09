@@ -1,7 +1,5 @@
 package app.tree;
 
-import java.net.InetAddress;
-
 import app.Utility;
 import app.Node;
 import app.Debug;
@@ -20,12 +18,6 @@ class NormalState extends OperationalState {
 
 	private boolean leftIsReady;
 	private boolean rightIsReady;
-	
-	/**
-	 * References to the lost node that we use to discover other nodes with this
-	 * pending reference, in order to recover the network configuration.
-	 */
-	private Node lostParent;
 	
 	private long latestJoinTime;
 
@@ -58,15 +50,7 @@ class NormalState extends OperationalState {
 		if(!tbl.isThisRoot()) {
 			if(!MessageSystem.sendTouch(tbl.getParent())) {
 				Debug.output("parent node failing TOUCH: " + tbl.getParent());
-				if(tbl.getThisNode().getId() < tbl.getParent().getId()) {
-					//we are the left subtree
-					//then we are the master node in recovery operation
-					nextState(new RecoveryState());
-				} else {
-					//we are the right subtree
-					lostParent= tbl.getParent();
-					tbl.setParent(null);
-				}
+				nextState(new RecoveryState());
 			}
 		}
 		//check if we are a leaf, then send height up
@@ -263,20 +247,6 @@ class NormalState extends OperationalState {
 			FileTransfer.send(tbl.getParent().getAddress(), file);
 		} else {
 			Debug.output("dropped");
-		}
-	}
-	
-	/*
-	 * This message comes from the node which discovered the disconnection case.
-	 * @see app.tree.OperationalState#handleDisconnected(app.Node)
-	 */
-	void handleDisconnected(Node disc, InetAddress from) {
-		NodeTable tbl = NodeTable.getInstance();
-		
-		if(tbl.getParent() == null && disc.equals(lostParent)) {
-			//respond
-			MessageSystem.sendDscnnResponse(from, tbl.getThisNode());
-			lostParent = null;
 		}
 	}
 	

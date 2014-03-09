@@ -3,15 +3,15 @@ package app.communication;
 public enum MessageType {
 	TOUCH,
 	HEIGHT,
-	JOIN_BROADCAST,
+	JOIN_BROADCAST, //broadcast
 	JOIN_RESPONSE,
 	JOIN_SEARCH,
 	BALANCE,
 	SET_PARENT,
 	SET_LEFT,
 	SET_RIGHT,
-	PRINT,
-	DISCONNECTED,
+	PRINT, 		//broadcast
+	DISCONNECTED,  //broadcast
 	DSCNN_RESPONSE,
 	RECOVERY_FIND_MAX;
 	
