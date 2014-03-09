@@ -16,7 +16,8 @@ class JoiningState extends OperationalState {
 	
 	JoiningState() {
 		Debug.output("Entering Joining state");
-		supervisor.forceService();
+		if(supervisor != null)
+			supervisor.forceService();
 	}
 	
 	void service() {
