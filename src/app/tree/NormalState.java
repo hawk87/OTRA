@@ -21,6 +21,7 @@ class NormalState extends OperationalState {
 	private boolean leftIsReady;
 	private boolean rightIsReady;
 	
+	private Node latestJoinNode;
 	private long latestJoinTime;
 
 	NormalState() {
@@ -123,43 +124,46 @@ class NormalState extends OperationalState {
 			Debug.output("root received a join broadcast message");
 			Node thisnode = tbl.getThisNode();
 			
-			MessageSystem.sendJoinResponse(n);
+			if(n.equals(latestJoinNode))
+				if(System.currentTimeMillis() - latestJoinTime < 1000)
+					//then we have already handled this joining node
+					return;
 			
-			if(System.currentTimeMillis() - latestJoinTime > 200) {
-				latestJoinTime = System.currentTimeMillis();
-				
-				if (n.getId() < thisnode.getId()) {
-					if (tbl.hasLeftNode()) {
-						// send JOIN_SEARCH to the left child
-						MessageSystem.sendJoinSearch(tbl.getLeftNode(), n);
-					} else {
-						// joining node can be attached here, to the left
-						Debug.output("node id: " + n.getId()
-								+ " attaches here to the left");
-						// set joining node as left child
-						tbl.setLeftNode(n);
-						// signal to joining node that it can attach itself here
-						MessageSystem.sendJoinSearch(n, thisnode);
-					}
-				} else if (n.getId() > thisnode.getId()) {
-					if (tbl.hasRightNode()) {
-						// send JOIN_SEARCH to the right child
-						MessageSystem.sendJoinSearch(tbl.getRightNode(), n);
-					} else {
-						// joining node can be attached here, to the right
-						Debug.output("node id: " + n.getId()
-								+ " attaches here to the right");
-						// set joining node as right child
-						tbl.setRightNode(n);
-						// signal to joining node that it can attach itself here
-						MessageSystem.sendJoinSearch(n, thisnode);
-					}
+			MessageSystem.sendJoinResponse(n);
+			latestJoinNode = n;
+			latestJoinTime = System.currentTimeMillis();
+
+			if (n.getId() < thisnode.getId()) {
+				if (tbl.hasLeftNode()) {
+					// send JOIN_SEARCH to the left child
+					MessageSystem.sendJoinSearch(tbl.getLeftNode(), n);
 				} else {
-					// n has the same id of thisnode. ERROR
-					System.out.println("ERROR: joining node has got the same id"
-							+ " as this node: " + n.getId());
-					System.exit(1);
+					// joining node can be attached here, to the left
+					Debug.output("node id: " + n.getId()
+							+ " attaches here to the left");
+					// set joining node as left child
+					tbl.setLeftNode(n);
+					// signal to joining node that it can attach itself here
+					MessageSystem.sendJoinSearch(n, thisnode);
 				}
+			} else if (n.getId() > thisnode.getId()) {
+				if (tbl.hasRightNode()) {
+					// send JOIN_SEARCH to the right child
+					MessageSystem.sendJoinSearch(tbl.getRightNode(), n);
+				} else {
+					// joining node can be attached here, to the right
+					Debug.output("node id: " + n.getId()
+							+ " attaches here to the right");
+					// set joining node as right child
+					tbl.setRightNode(n);
+					// signal to joining node that it can attach itself here
+					MessageSystem.sendJoinSearch(n, thisnode);
+				}
+			} else {
+				// n has the same id of thisnode. ERROR
+				System.out.println("ERROR: joining node has got the same id"
+						+ " as this node: " + n.getId());
+				System.exit(1);
 			}
 		}
 		// else { this is not root -> do nothing }
