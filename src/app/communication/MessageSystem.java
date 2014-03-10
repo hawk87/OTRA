@@ -36,7 +36,9 @@ public class MessageSystem extends Thread {
 	public void run(){
 		while(true) {
 			try {
-				translate(messageQueue.take());
+				synchronized (TreeMaintenance.getInstance()) {
+					translate(messageQueue.take());
+				}
 			} catch(InterruptedException ie) {
 				ie.printStackTrace();
 			}

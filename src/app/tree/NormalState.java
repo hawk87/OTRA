@@ -256,28 +256,26 @@ class NormalState extends OperationalState {
 	}
 	
 	void handleDisconnected(Node disc, InetAddress adr) {
-		synchronized (supervisor) {
-			NodeTable tbl = NodeTable.getInstance();
-			if(tbl.getParent() == null)
-				return;
-			
-			if(tbl.getParent().equals(disc)) {
-				//then we have a disconnection we did not recognize
-				MessageSystem.sendDscnnResponse(adr, tbl.getThisNode());
-				if(tbl.getThisNode().getId() > disc.getId()) {
-					//we are the right sibling
-					//and at this point we have to stay in NormalState
-					tbl.setParent(null);
-				} else {
-					//we are the left sibling
-					nextState(new RecoveryState());
-				}
-			} else if(tbl.hasLeftNode() && tbl.getLeftNode().equals(disc)) {
-				tbl.setLeftNode(null);
+		NodeTable tbl = NodeTable.getInstance();
+		if(tbl.getParent() == null)
+			return;
+
+		if(tbl.getParent().equals(disc)) {
+			//then we have a disconnection we did not recognize
+			MessageSystem.sendDscnnResponse(adr, tbl.getThisNode());
+			if(tbl.getThisNode().getId() > disc.getId()) {
+				//we are the right sibling
+				//and at this point we have to stay in NormalState
+				tbl.setParent(null);
+			} else {
+				//we are the left sibling
+				nextState(new RecoveryState());
 			}
-			else if(tbl.hasRightNode() && tbl.getRightNode().equals(disc)) {
-				tbl.setRightNode(null);
-			}
+		} else if(tbl.hasLeftNode() && tbl.getLeftNode().equals(disc)) {
+			tbl.setLeftNode(null);
+		}
+		else if(tbl.hasRightNode() && tbl.getRightNode().equals(disc)) {
+			tbl.setRightNode(null);
 		}
 	}
 	
