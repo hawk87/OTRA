@@ -16,62 +16,103 @@ import app.communication.TCPConnection;
 import app.tree.TreeMaintenance;
 
 public class Main {
+
 	public static void main(String args[]) {
+
+		String fileArg = "", idArg = "";
 
 		int id = 0;
 		InterfaceAddress ourInterface = null;
 
-		File configFile = new File("config.txt");
+		if (args.length == 0) {
+			//TODO help
+			System.out.println("Missing arguments");
+			System.exit(1);
+		}
 
-		if (configFile.exists()) {
-			// TODO il sistema con verifica la presenza di tutta la
-			// configurazione
-			System.out.println("found configuration file");
-			try {
-				BufferedReader input = new BufferedReader(new FileReader(
-						configFile));
-				String line;
-				while ((line = input.readLine()) != null) {
-					String[] config = line.split("=");
-					switch (config[0]) {
-					case "id":
-						id = Integer.parseInt(config[1]);
-						Debug.output("host starting with id: " + id);
-						break;
-					case "interface":
-						System.setProperty("java.net.preferIPv4Stack", "true");
-						NetworkInterface netinterface = null;
-						try {
-							netinterface = NetworkInterface
-									.getByName(config[1]);
-							Debug.output("host starting with interface: "
-									+ config[1]);
-						} catch (SocketException e) {
-							e.printStackTrace();
-						}
-						if (netinterface == null) {
-							System.out.println("wrong interface name");
-							System.exit(1);
-						}
-						ourInterface = netinterface.getInterfaceAddresses()
-								.get(0);
-						break;
-					default:
-						System.out
-								.println("error in configuration file, remove the file and restart");
-						System.exit(1);
-						break;
-					}
+		for (int i = 0; i < args.length;) {
+			String arg = args[i];
+			switch (arg) {
+			case "-f":
+				if (!idArg.equals("")) {
+					System.out.println("Invalid arguments");
+					System.exit(1);
+				} else {
+					fileArg = args[i + 1];
+					i += 2;
 				}
-				input.close();
+				break;
+			case "-id":
+				if (!fileArg.equals("")) {
+					System.out.println("Invalid arguments");
+					System.exit(1);
+				} else {
+					idArg = args[i + 1];
+					i += 2;
+				}
+				break;
+			default:
+				System.out.println("Invalid arguments default");
+				System.exit(1);
+				break;
+			}
+		}
 
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		if (!fileArg.equals("")) {
+
+			File configFile = new File(fileArg);
+
+			if (configFile.exists()) {
+				System.out.println("start with configuration file");
+				try {
+					BufferedReader input = new BufferedReader(new FileReader(
+							configFile));
+					String line;
+					while ((line = input.readLine()) != null) {
+						String[] config = line.split("=");
+						switch (config[0]) {
+						case "id":
+							id = Integer.parseInt(config[1]);
+							Debug.output("host starting with id: " + id);
+							break;
+						case "interface":
+							System.setProperty("java.net.preferIPv4Stack",
+									"true");
+							NetworkInterface netinterface = null;
+							try {
+								netinterface = NetworkInterface
+										.getByName(config[1]);
+								Debug.output("host starting with interface: "
+										+ config[1]);
+							} catch (SocketException e) {
+								e.printStackTrace();
+							}
+							if (netinterface == null) {
+								System.out.println("wrong interface name");
+								System.exit(1);
+							}
+							ourInterface = netinterface.getInterfaceAddresses()
+									.get(0);
+							break;
+						default:
+							System.out
+									.println("there's an error in the configuration file");
+							System.exit(1);
+							break;
+						}
+					}
+					input.close();
+
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			else{
+				//TODO missing cofig file
 			}
 		} else {
-
-			BufferedReader br = new BufferedReader(new InputStreamReader(
+			/*BufferedReader br = new BufferedReader(new InputStreamReader(
 					System.in));
 
 			System.out.println("set the ID of this host");
@@ -82,7 +123,9 @@ public class Main {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			id = Integer.parseInt(str);
+			id = Integer.parseInt(str);*/
+			
+			id = Integer.parseInt(idArg);
 			if (id <= 0) {
 				System.out.println("the ID must be a positive integer number");
 				System.exit(1);
