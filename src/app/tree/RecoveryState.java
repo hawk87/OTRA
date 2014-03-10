@@ -15,6 +15,11 @@ class RecoveryState extends OperationalState {
 		supervisor.forceService();
 	}
 	
+	RecoveryState(Node sib) {
+		sibling = sib;
+		supervisor.forceService();
+	}
+	
 	void service() {
 		NodeTable tbl = NodeTable.getInstance();
 		
@@ -40,19 +45,19 @@ class RecoveryState extends OperationalState {
 			if(tbl.hasRightNode()) {
 				MessageSystem.sendRecoveryFindMax(tbl.getRightNode(),
 						tbl.getThisNode(), sibling);
-				//go waiting in normal state
-				tbl.setParent(null);
-				nextState(new NormalState());
 			} else {
 				MessageSystem.sendSetParent(sibling, tbl.getThisNode());
 				tbl.setParent(null);
 				nextState(new JoiningState());
 			}
-		} else {
-			//we are the left subtree
-			tbl.setParent(null);
-			nextState(new NormalState());
 		}
+	}
+	
+	void handleSetParent(Node from, Node p) {
+		NodeTable tbl = NodeTable.getInstance();
+		tbl.setParent(p);
+		//in this state this mean someone replaced our parent
+		nextState(new NormalState());
 	}
 	
 	void handleDscnnResponse(Node sib) {

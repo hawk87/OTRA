@@ -35,19 +35,23 @@ class NormalState extends OperationalState {
 		NodeTable tbl = NodeTable.getInstance();
 		boolean lostParent = false;
 		//check left node
-		if(tbl.hasLeftNode()) {
-			if(!MessageSystem.sendTouch(tbl.getLeftNode())) {
-				Debug.output("left node failing TOUCH: " + tbl.getLeftNode());
-				Debug.output("removing from NodeTable");
-				tbl.setLeftNode(null);
+		synchronized (this) {
+			if(tbl.hasLeftNode()) {
+				if(!MessageSystem.sendTouch(tbl.getLeftNode())) {
+					Debug.output("left node failing TOUCH: " + tbl.getLeftNode());
+					Debug.output("removing from NodeTable");
+					tbl.setLeftNode(null);
+				}
 			}
 		}
 		// right node
-		if(tbl.hasRightNode()){
-			if(!MessageSystem.sendTouch(tbl.getRightNode())) {
-				Debug.output("right node failing TOUCH: " + tbl.getRightNode());
-				Debug.output("removing from NodeTable");
-				tbl.setRightNode(null);
+		synchronized (this) {
+			if(tbl.hasRightNode()){
+				if(!MessageSystem.sendTouch(tbl.getRightNode())) {
+					Debug.output("right node failing TOUCH: " + tbl.getRightNode());
+					Debug.output("removing from NodeTable");
+					tbl.setRightNode(null);
+				}
 			}
 		}
 		//check parent
@@ -261,21 +265,17 @@ class NormalState extends OperationalState {
 			return;
 
 		if(tbl.getParent().equals(disc)) {
-			//then we have a disconnection we did not recognize
 			MessageSystem.sendDscnnResponse(adr, tbl.getThisNode());
-			if(tbl.getThisNode().getId() > disc.getId()) {
-				//we are the right sibling
-				//and at this point we have to stay in NormalState
-				tbl.setParent(null);
-			} else {
-				//we are the left sibling
-				nextState(new RecoveryState());
-			}
+			nextState(new RecoveryState(disc));
 		} else if(tbl.hasLeftNode() && tbl.getLeftNode().equals(disc)) {
-			tbl.setLeftNode(null);
+			synchronized (this) {
+				tbl.setLeftNode(null);
+			}
 		}
 		else if(tbl.hasRightNode() && tbl.getRightNode().equals(disc)) {
-			tbl.setRightNode(null);
+			synchronized (this) {
+				tbl.setRightNode(null);
+			}
 		}
 	}
 	
