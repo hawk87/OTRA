@@ -16,152 +16,158 @@ public class Router {
 	private Router() {
 
 	}
-	
+
 	public static Router getInstance() {
 		return INSTANCE;
 	}
-	
+
 	public void route(OTRAFile f, Node from) throws IOException {
-		if(f.getID() > 0) {
-			//normal routing
+		if (f.getID() > 0) {
+			// normal routing
 			Debug.output("Normal routing");
 			routeNormal(f, from);
-		} else if(f.getID() == -1) {
-			//this is a printing file
+		} else if (f.getID() == -1) {
+			// this is a printing file
 			routePrintingFile(f, from);
 		}
 	}
-	
+
 	public void forward(OTRAFile dest) {
 		NodeTable tbl = NodeTable.getInstance();
-		if(!tbl.isThisRoot()) { // se non sono root, sono un nodo interno o una foglia
-			if(tbl.getThisNode().getId() < tbl.getParent().getId()) { // se sono figlio sx
-				if(dest.getID() >= tbl.getParent().getId())
+		if (!tbl.isThisRoot()) { // se non sono root, sono un nodo interno o una
+									// foglia
+			if (tbl.getThisNode().getId() < tbl.getParent().getId()) { // se
+																		// sono
+																		// figlio
+																		// sx
+				if (dest.getID() >= tbl.getParent().getId())
 					FileTransfer.send(tbl.getParent().getAddress(), dest);
-				else if(dest.getID() < tbl.getParent().getId() && dest.getID() > tbl.getThisNode().getId())
+				else if (dest.getID() < tbl.getParent().getId()
+						&& dest.getID() > tbl.getThisNode().getId())
 					FileTransfer.send(tbl.getRightNode().getAddress(), dest);
-				else FileTransfer.send(tbl.getLeftNode().getAddress(), dest);
-			}
-			else if(tbl.getThisNode().getId() > tbl.getParent().getId()) { // se sono figlio dx
-				if(dest.getID() <= tbl.getParent().getId())
-					FileTransfer.send(tbl.getParent().getAddress(), dest);
-				else if(dest.getID() > tbl.getParent().getId() && dest.getID() < tbl.getThisNode().getId())
+				else
 					FileTransfer.send(tbl.getLeftNode().getAddress(), dest);
-				else FileTransfer.send(tbl.getRightNode().getAddress(), dest);
+			} else if (tbl.getThisNode().getId() > tbl.getParent().getId()) { // se
+																				// sono
+																				// figlio
+																				// dx
+				if (dest.getID() <= tbl.getParent().getId())
+					FileTransfer.send(tbl.getParent().getAddress(), dest);
+				else if (dest.getID() > tbl.getParent().getId()
+						&& dest.getID() < tbl.getThisNode().getId())
+					FileTransfer.send(tbl.getLeftNode().getAddress(), dest);
+				else
+					FileTransfer.send(tbl.getRightNode().getAddress(), dest);
 			}
-		}
-		else { // se sono root
-			if(dest.getID() > tbl.getThisNode().getId())
+		} else { // se sono root
+			if (dest.getID() > tbl.getThisNode().getId())
 				FileTransfer.send(tbl.getRightNode().getAddress(), dest);
-			else FileTransfer.send(tbl.getLeftNode().getAddress(), dest);
+			else
+				FileTransfer.send(tbl.getLeftNode().getAddress(), dest);
 		}
 	}
-	
+
 	private void routeNormal(OTRAFile dest, Node from) throws IOException {
 		NodeTable tbl = NodeTable.getInstance();
 		// if(my_ID == dest_ID)
-		if(dest.getID() == tbl.getThisNode().getId()) {
+		if (dest.getID() == tbl.getThisNode().getId()) {
 			// *service*
 			Debug.output("File is mine");
 			File file = new File(dest.getName());
-			
+
 			// if file doesn't exists, then create it
 			if (!file.exists()) {
 				Debug.output("Creating new file");
 				file.createNewFile();
-			}
-			else Debug.output("File already exists, creating a new one");
-			
+			} else
+				Debug.output("File already exists, creating a new one");
+
 			FileOutputStream f = new FileOutputStream(file);
 			f.write(dest.getData());
 			Debug.output("File wrote");
 			f.close();
 			Debug.output("File closed");
 		}
-
 		// if(from == lchild_ID)
-		else if(tbl.hasLeftNode())
-			if(from.getId() == tbl.getLeftNode().getId()) {
-				if(tbl.isThisRoot() || dest.getID() < tbl.getParent().getId()) {
-					// forward to rchild
-					Debug.output("Forwarding to Right Child");
-					FileTransfer.send(tbl.getRightNode().getAddress(), dest);
-				}
-				else { // forward to parent
-					Debug.output("Forwarding to Parent");
-					FileTransfer.send(tbl.getParent().getAddress(), dest);
-				}
+		else if (tbl.hasLeftNode() && from.getId() == tbl.getLeftNode().getId()) {
+			if (tbl.isThisRoot() || dest.getID() < tbl.getParent().getId()) {
+				// forward to rchild
+				Debug.output("Forwarding to Right Child");
+				FileTransfer.send(tbl.getRightNode().getAddress(), dest);
+			} else { // forward to parent
+				Debug.output("Forwarding to Parent");
+				FileTransfer.send(tbl.getParent().getAddress(), dest);
 			}
-
+		}
 		// if(from == rchild_ID)
-			else if(tbl.hasRightNode())
-				if(from.getId() == tbl.getRightNode().getId()) {
-					if(tbl.isThisRoot() || dest.getID() < tbl.getParent().getId()) {
-						// forward to lchild
-						Debug.output("Forwarding to Left Child");
-						FileTransfer.send(tbl.getLeftNode().getAddress(), dest);
-					}
-					else { // forward to parent
-						Debug.output("Forwarding to Parent");
-						FileTransfer.send(tbl.getParent().getAddress(), dest);
-					}
-				}
-
+		else if (tbl.hasRightNode()
+				&& from.getId() == tbl.getRightNode().getId()) {
+			if (tbl.isThisRoot() || dest.getID() < tbl.getParent().getId()) {
+				// forward to lchild
+				Debug.output("Forwarding to Left Child");
+				FileTransfer.send(tbl.getLeftNode().getAddress(), dest);
+			} else { // forward to parent
+				Debug.output("Forwarding to Parent");
+				FileTransfer.send(tbl.getParent().getAddress(), dest);
+			}
+		}
 		// if(from == parent_ID)
-				else if(tbl.isLeftNode(tbl.getThisNode()) || tbl.isRightNode(tbl.getThisNode())) {
-					if(dest.getID() < tbl.getThisNode().getId()) {
-						// forward to lchild
-						Debug.output("Forwarding to Left Child");
-						FileTransfer.send(tbl.getLeftNode().getAddress(), dest);
-					}
-					else { //forward to rchild
-						Debug.output("Forwarding to Right Child");
-						FileTransfer.send(tbl.getRightNode().getAddress(), dest);
-					}
-				}
+		else if (!tbl.isThisRoot() && from.getId() == tbl.getParent().getId()) {
+			if (dest.getID() < tbl.getThisNode().getId()) {
+				// forward to lchild
+				Debug.output("Forwarding to Left Child");
+				FileTransfer.send(tbl.getLeftNode().getAddress(), dest);
+			} else { // forward to rchild
+				Debug.output("Forwarding to Right Child");
+				FileTransfer.send(tbl.getRightNode().getAddress(), dest);
+			}
+		}
+		// if nothing else
+		else {
+			System.out.println("ERROR: error in routing system");
+			System.exit(1);
+		}
 	}
-	
+
 	private void routePrintingFile(OTRAFile f, Node from) {
 		NodeTable tbl = NodeTable.getInstance();
-		
-		if(tbl.isLeftNode(from))
+
+		if (tbl.isLeftNode(from))
 			leftTree = f;
 		else
 			rightTree = f;
-		
-		//Exit conditions. We have to wait for information from
-		//both subtrees to generate a routing printing message.
-		if(leftTree == null && tbl.hasLeftNode())
+
+		// Exit conditions. We have to wait for information from
+		// both subtrees to generate a routing printing message.
+		if (leftTree == null && tbl.hasLeftNode())
 			return;
-		if(rightTree == null && tbl.hasRightNode())
+		if (rightTree == null && tbl.hasRightNode())
 			return;
-		
-		
-		if(leftTree == null) {
+
+		if (leftTree == null) {
 			leftTree = new OTRAFile(-1, "-1_print", Utility.intToByte(-1));
-		} else if(rightTree == null) {
+		} else if (rightTree == null) {
 			rightTree = new OTRAFile(-1, "-1_print", Utility.intToByte(-1));
 		}
-		
+
 		byte[] head = Utility.intToByte(tbl.getThisNode().getId());
 		byte[] ndata;
-		
+
 		ndata = Utility.appendArray(head, rightTree.getData());
 		ndata = Utility.appendArray(ndata, leftTree.getData());
-		
-		if(tbl.isThisRoot()) {
-			//we are root, then we have to print collected information
-			SerialTree st = new SerialTree(
-					Utility.byteArrayToIntArray(ndata));
-			//parse and print the tree
+
+		if (tbl.isThisRoot()) {
+			// we are root, then we have to print collected information
+			SerialTree st = new SerialTree(Utility.byteArrayToIntArray(ndata));
+			// parse and print the tree
 			Command.println(st.read());
 		} else {
 			// send the composed file to parent
 			OTRAFile nfile = new OTRAFile(-1, "-1_print", ndata);
 			FileTransfer.send(tbl.getParent().getAddress(), nfile);
 		}
-		
-		//reset to default condition
+
+		// reset to default condition
 		leftTree = null;
 		rightTree = null;
 	}
