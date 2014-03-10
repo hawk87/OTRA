@@ -35,7 +35,7 @@ public final class TreeMaintenance extends Thread {
 	
 	public void run() {
 		while (true) {
-			synchronized(this) {
+			synchronized (this) {
 				maintenanceState.service();	
 			}
 			try {
@@ -119,7 +119,9 @@ public final class TreeMaintenance extends Thread {
 	}
 	
 	public void handleDisconnected(Node disc, InetAddress from) {
-		maintenanceState.handleDisconnected(disc, from);
+		synchronized (this) {
+			maintenanceState.handleDisconnected(disc, from);
+		}
 	}
 	
 	public void handleDscnnResponse(Node sib) {

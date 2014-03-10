@@ -36,9 +36,7 @@ public class MessageSystem extends Thread {
 	public void run(){
 		while(true) {
 			try {
-				synchronized (TreeMaintenance.getInstance()) {
-					translate(messageQueue.take());
-				}
+				translate(messageQueue.take());
 			} catch(InterruptedException ie) {
 				ie.printStackTrace();
 			}
@@ -164,9 +162,11 @@ public class MessageSystem extends Thread {
 		byte[] flag = new byte[1];
 		flag[0] = MessageType.DISCONNECTED.getFlag();
 		byte[] data;
-		
-		data = Utility.appendArray(flag, Utility.intToByte(disc.getId()));
-		data = Utility.appendArray(data, disc.getAddress().getAddress());
+		if(disc == null) {
+			//null pointer not allowed for this kind of message
+			throw new NullPointerException();
+		}
+		data = Utility.appendArray(flag, serializeNodeObj(disc));
 		
 		Connection.sendBroadcast(data);
 	}
@@ -175,9 +175,11 @@ public class MessageSystem extends Thread {
 		byte[] flag = new byte[1];
 		flag[0] = MessageType.DSCNN_RESPONSE.getFlag();
 		byte[] data;
-		
-		data = Utility.appendArray(flag, Utility.intToByte(x.getId()));
-		data = Utility.appendArray(data, x.getAddress().getAddress());
+		if(x == null) {
+			//null pointer not allowed for this kind of message
+			throw new NullPointerException();
+		}
+		data = Utility.appendArray(flag, serializeNodeObj(x));
 		
 		Connection.send(to, data);
 	}
@@ -186,7 +188,10 @@ public class MessageSystem extends Thread {
 		byte[] flag = new byte[1];
 		flag[0] = MessageType.RECOVERY_FIND_MAX.getFlag();
 		byte[] data;
-		
+		if(leftChild == null || rightChild == null) {
+			//null pointer not allowed for this kin of message
+			throw new NullPointerException();
+		}
 		data = Utility.appendArray(flag, serializeNodeObj(leftChild));
 		data = Utility.appendArray(data, serializeNodeObj(rightChild));
 		
@@ -361,28 +366,12 @@ public class MessageSystem extends Thread {
 			maintainer.handlePrint();
 			break;
 		case DISCONNECTED:
-			InetAddress discAdr = null;
-			id = Utility.byteToInt(Arrays.copyOfRange(data, 1, 5));
-			try {
-				discAdr = InetAddress.getByAddress(
-						Arrays.copyOfRange(data, 5, 9));
-			} catch(UnknownHostException uhe) {
-				System.out.println("  UnknownHostException");
-				System.exit(1);
-			}
-			maintainer.handleDisconnected(new Node(id, discAdr), adr);
+			x = readNodeObj(Arrays.copyOfRange(data, 1, 9));
+			maintainer.handleDisconnected(x, adr);
 			break;
 		case DSCNN_RESPONSE:
-			id = Utility.byteToInt(Arrays.copyOfRange(data, 1, 5));
-			anodeAdr = null;
-			try {
-				anodeAdr = InetAddress.getByAddress(
-						Arrays.copyOfRange(data, 5, 9));
-			} catch(UnknownHostException uhe) {
-				System.out.println("  UnknownHostException");
-				System.exit(1);
-			}
-			maintainer.handleDscnnResponse(new Node(id, anodeAdr));
+			x = readNodeObj(Arrays.copyOfRange(data, 1, 9));
+			maintainer.handleDscnnResponse(x);
 			break;
 		case RECOVERY_FIND_MAX:
 			Node a = readNodeObj(Arrays.copyOfRange(data, 1, 9));
