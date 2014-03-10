@@ -4,11 +4,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+//import java.io.InputStreamReader;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.util.Enumeration;
+//import java.util.Enumeration;
 
 import app.communication.Connection;
 import app.communication.MessageSystem;
@@ -19,14 +19,19 @@ public class Main {
 
 	public static void main(String args[]) {
 
-		String fileArg = "", idArg = "";
+		String fileArg = "", idArg = "", interfaceArg = "";
 
 		int id = 0;
 		InterfaceAddress ourInterface = null;
 
 		if (args.length == 0) {
-			//TODO help
-			System.out.println("Missing arguments");
+			System.out.println("usage:");
+			System.out
+					.println("[-id <id_number>] set the ID number; the ID must be a positive integer number");
+			System.out
+					.println("[-interface <interface_name>] set the network interface");
+			System.out
+					.println("[-f <config_file_path>] set the configuration file path");
 			System.exit(1);
 		}
 
@@ -35,7 +40,7 @@ public class Main {
 			switch (arg) {
 			case "-f":
 				if (!idArg.equals("")) {
-					System.out.println("Invalid arguments");
+					System.out.println("ERROR: invalid arguments");
 					System.exit(1);
 				} else {
 					fileArg = args[i + 1];
@@ -44,18 +49,29 @@ public class Main {
 				break;
 			case "-id":
 				if (!fileArg.equals("")) {
-					System.out.println("Invalid arguments");
+					System.out.println("ERROR: invalid arguments");
 					System.exit(1);
 				} else {
 					idArg = args[i + 1];
 					i += 2;
 				}
 				break;
+			case "-interface":
+				if (!fileArg.equals("")) {
+					System.out.println("ERROR: invalid arguments");
+					System.exit(1);
+				} else {
+					interfaceArg = args[i + 1];
+					i += 2;
+				}
+				break;
 			default:
-				System.out.println("Invalid arguments default");
+				System.out.println("ERROR: invalid arguments");
 				System.exit(1);
 				break;
 			}
+
+			// TODO test argomenti
 		}
 
 		if (!fileArg.equals("")) {
@@ -63,7 +79,6 @@ public class Main {
 			File configFile = new File(fileArg);
 
 			if (configFile.exists()) {
-				System.out.println("start with configuration file");
 				try {
 					BufferedReader input = new BufferedReader(new FileReader(
 							configFile));
@@ -76,63 +91,38 @@ public class Main {
 							Debug.output("host starting with id: " + id);
 							break;
 						case "interface":
-							System.setProperty("java.net.preferIPv4Stack",
-									"true");
-							NetworkInterface netinterface = null;
-							try {
-								netinterface = NetworkInterface
-										.getByName(config[1]);
-								Debug.output("host starting with interface: "
-										+ config[1]);
-							} catch (SocketException e) {
-								e.printStackTrace();
-							}
-							if (netinterface == null) {
-								System.out.println("wrong interface name");
-								System.exit(1);
-							}
-							ourInterface = netinterface.getInterfaceAddresses()
-									.get(0);
+							ourInterface = getNetworkInterface(config[1]);
 							break;
 						default:
 							System.out
-									.println("there's an error in the configuration file");
+									.println("ERROR: error in configuration file");
 							System.exit(1);
 							break;
 						}
 					}
 					input.close();
-
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			}
-			else{
-				//TODO missing cofig file
+
+				if (ourInterface == null || id == 0) {
+					System.out.println("ERROR: error in configuration file");
+					System.exit(1);
+				}
+			} else {
+				System.out.println("ERROR: configuration file not found at: "
+						+ configFile.getAbsolutePath());
+				System.exit(1);
 			}
 		} else {
-			/*BufferedReader br = new BufferedReader(new InputStreamReader(
-					System.in));
-
-			System.out.println("set the ID of this host");
-			System.out.print(">>");
-			String str = "";
-			try {
-				str = br.readLine();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			id = Integer.parseInt(str);*/
-			
 			id = Integer.parseInt(idArg);
 			if (id <= 0) {
 				System.out.println("the ID must be a positive integer number");
 				System.exit(1);
 			}
 			Debug.output("host starting with id: " + id);
-
-			ourInterface = getNetworkInterface();
+			ourInterface = getNetworkInterface(interfaceArg);
 		}
 
 		Node thisnode = new Node(id, ourInterface.getAddress());
@@ -153,36 +143,17 @@ public class Main {
 		repl.run();
 	}
 
-	private static InterfaceAddress getNetworkInterface() {
+	private static InterfaceAddress getNetworkInterface(String interfaceName) {
 		System.setProperty("java.net.preferIPv4Stack", "true");
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
-		System.out.println("available network interfaces");
-		Enumeration<NetworkInterface> interfaces = null;
-		try {
-			for (interfaces = NetworkInterface.getNetworkInterfaces(); interfaces
-					.hasMoreElements();) {
-				System.out.println(interfaces.nextElement());
-			}
-		} catch (SocketException e) {
-			e.printStackTrace();
-		}
-		System.out.print(">>");
-		String str = "";
-		try {
-			str = br.readLine();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
 
 		NetworkInterface netinterface = null;
 		try {
-			netinterface = NetworkInterface.getByName(str);
+			netinterface = NetworkInterface.getByName(interfaceName);
 		} catch (SocketException e) {
 			e.printStackTrace();
 		}
 		if (netinterface == null) {
-			System.out.println("wrong name");
+			System.out.println("ERROR: wrong interface name");
 			System.exit(1);
 		}
 		return netinterface.getInterfaceAddresses().get(0);
