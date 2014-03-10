@@ -17,7 +17,7 @@ public class MessageSystem extends Thread {
 	private static MessageSystem INSTANCE = new MessageSystem();
 	
 	private MessageSystem() {
-		messageQueue = new ArrayBlockingQueue<>(10);
+		messageQueue = new ArrayBlockingQueue<>(25);
 	}
 	
 	public static MessageSystem getInstance() {
