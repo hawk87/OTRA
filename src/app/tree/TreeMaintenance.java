@@ -35,7 +35,9 @@ public final class TreeMaintenance extends Thread {
 	
 	public void run() {
 		while (true) {
-			maintenanceState.service();
+			synchronized(this) {
+				maintenanceState.service();	
+			}
 			try {
 				Thread.sleep(WAITMSEC);
 			} catch (InterruptedException e) {
