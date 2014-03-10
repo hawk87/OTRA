@@ -47,6 +47,7 @@ class RecoveryState extends OperationalState {
 						tbl.getThisNode(), sibling);
 			} else {
 				MessageSystem.sendSetParent(sibling, tbl.getThisNode());
+				tbl.setRightNode(sibling);
 				tbl.setParent(null);
 				nextState(new JoiningState());
 			}

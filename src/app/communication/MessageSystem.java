@@ -367,6 +367,7 @@ public class MessageSystem extends Thread {
 			break;
 		case DISCONNECTED:
 			x = readNodeObj(Arrays.copyOfRange(data, 1, 9));
+			System.out.println("received DISCONNECTED message");
 			maintainer.handleDisconnected(x, adr);
 			break;
 		case DSCNN_RESPONSE:
