@@ -69,7 +69,7 @@ public final class TreeMaintenance extends Thread {
 	}
 	
 	boolean isInRecoveryState() {
-		return (new RecoveryState()).getClass().isInstance(maintenanceState);
+		return RecoveryState.class.isInstance(maintenanceState);
 	}
 	
 	/**
