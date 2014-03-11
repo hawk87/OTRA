@@ -59,7 +59,7 @@ public class MessageSystem extends Thread {
 				//first received bc
 				mappedMessages.put(adr, new Integer(r));
 				return false;
-			} else if(num.intValue() < r) {
+			} else if(num.intValue() != r) {
 				//we have a new bc msg
 				//then substitute the map value
 				mappedMessages.put(adr, new Integer(r));
@@ -67,8 +67,6 @@ public class MessageSystem extends Thread {
 			} else if(num.intValue() == r) {
 				//we have already processed this bc msg
 				return true;
-			} else {
-				System.out.println("MessageSystem.alreadyReceivedBC() anomaly");
 			}
 		}
 		// ELSE return

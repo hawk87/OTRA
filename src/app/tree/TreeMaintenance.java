@@ -37,6 +37,7 @@ public final class TreeMaintenance extends Thread {
 	private TreeMaintenance() {
 		//we start with the joining phase
 		maintenanceState = new JoiningState();
+		broadcastNumber = (int) (Math.random() * Integer.MAX_VALUE);
 	}
 	
 	public void run() {
