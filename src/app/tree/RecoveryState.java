@@ -18,6 +18,7 @@ class RecoveryState extends OperationalState {
 	}
 	
 	RecoveryState(Node sib) {
+		Debug.output("Entering recovery state (slave)");
 		sibling = sib;
 		supervisor.forceService();
 	}
