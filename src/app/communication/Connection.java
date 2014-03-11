@@ -10,6 +10,7 @@ public class Connection {
 	private static final int RETRY_LIMIT = 10;
 	private static final int DELAY_TOLLERANCE = 25;
 	private static final int PORT = 6666;
+	private static final int BUFFER_SIZE = 20;
 	// private static final int ACK_PORT = 7777;
 
 	private static final byte[] ACK = { (byte) 0x00 };
@@ -33,7 +34,7 @@ public class Connection {
 
 		public void run() {
 			while (true) {
-				byte[] buf = new byte[16];
+				byte[] buf = new byte[BUFFER_SIZE];
 				DatagramPacket receivePacket = new DatagramPacket(buf,
 						buf.length);
 				try {
