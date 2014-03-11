@@ -12,6 +12,8 @@ import app.communication.MessageSystem;
  */
 class JoiningState extends OperationalState {
 	
+	private final int START_DELAY = 25;
+	
 	private boolean responded;
 	
 	JoiningState() {
@@ -30,7 +32,7 @@ class JoiningState extends OperationalState {
 			for(int i=0; i < 5; i++) {
 				try {
 					MessageSystem.sendJoinBroadcast(tbl.getThisNode().getId());
-					Thread.sleep(300);
+					Thread.sleep(START_DELAY * (int) Math.pow(1.5, i));
 				} catch (InterruptedException e) { }
 				//check if we received a response
 				if(responded)

@@ -10,6 +10,8 @@ import app.communication.MessageSystem;
 class RecoveryState extends OperationalState {
 	private Node sibling;
 	
+	private final int START_DELAY = 25;
+	
 	RecoveryState() {
 		Debug.output("Entering recovery state");
 		supervisor.forceService();
@@ -27,7 +29,7 @@ class RecoveryState extends OperationalState {
 			for(int i=0; i < 5; i++) {
 				try {
 					MessageSystem.sendDisconnected(tbl.getParent());
-					Thread.sleep(300);
+					Thread.sleep(START_DELAY * (int) Math.pow(1.5, i));
 				} catch (InterruptedException e) { }
 				//check if we received a response
 				if(sibling != null)

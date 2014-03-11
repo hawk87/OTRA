@@ -70,8 +70,8 @@ class NormalState extends OperationalState {
 	}
 
 	void handleHeight(Node n, int h) {
-		Debug.output("received a HEIGHT message");
-		Debug.output("  id: " + n.getId() + " height: " + h);
+		//Debug.output("received a HEIGHT message");
+		//Debug.output("  id: " + n.getId() + " height: " + h);
 		
 		NodeTable tbl = NodeTable.getInstance();
 		
