@@ -59,7 +59,12 @@ class NormalState extends OperationalState {
 			if(!MessageSystem.sendTouch(tbl.getParent())) {
 				Debug.output("parent node failing TOUCH: " + tbl.getParent());
 				lostParent = true;
-				nextState(new RecoveryState());
+				synchronized (this) {
+					if(supervisor.isInRecoveryState())
+						//already in recovery
+						return;
+					nextState(new RecoveryState());
+				}
 			}
 		}
 		//check if we are a leaf, then send height up
@@ -261,12 +266,14 @@ class NormalState extends OperationalState {
 	
 	void handleDisconnected(Node disc, InetAddress adr) {
 		NodeTable tbl = NodeTable.getInstance();
-		if(tbl.getParent() == null)
-			return;
 
-		if(tbl.getParent().equals(disc)) {
-			MessageSystem.sendDscnnResponse(adr, tbl.getThisNode());
-			nextState(new RecoveryState(disc));
+		if(tbl.getParent() != null && tbl.getParent().equals(disc)) {
+			synchronized (this) {
+				if(supervisor.isInRecoveryState())
+					return;
+				MessageSystem.sendDscnnResponse(adr, tbl.getThisNode());
+				nextState(new RecoveryState(disc));
+			}
 		} else if(tbl.hasLeftNode() && tbl.getLeftNode().equals(disc)) {
 			synchronized (this) {
 				tbl.setLeftNode(null);

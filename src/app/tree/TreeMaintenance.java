@@ -68,6 +68,10 @@ public final class TreeMaintenance extends Thread {
 			return rightHeight + 1;
 	}
 	
+	boolean isInRecoveryState() {
+		return (new RecoveryState()).getClass().isInstance(maintenanceState);
+	}
+	
 	/**
 	 * Used when there is some operational-state change. From one state we change to
 	 * another consequential new state. Called from OperationalState class.
