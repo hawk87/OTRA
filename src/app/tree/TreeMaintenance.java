@@ -1,7 +1,5 @@
 package app.tree;
 
-import java.net.InetAddress;
-
 import app.Node;
 
 /**
@@ -127,7 +125,7 @@ public final class TreeMaintenance extends Thread {
 		maintenanceState.handleSetRight(from, x);
 	}
 	
-	public void handleDisconnected(Node disc, InetAddress from) {
+	public void handleDisconnected(Node disc, Node from) {
 		maintenanceState.handleDisconnected(disc, from);
 	}
 	

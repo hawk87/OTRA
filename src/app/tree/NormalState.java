@@ -1,7 +1,5 @@
 package app.tree;
 
-import java.net.InetAddress;
-
 import app.Utility;
 import app.Node;
 import app.Debug;
@@ -264,15 +262,18 @@ class NormalState extends OperationalState {
 		}
 	}
 	
-	void handleDisconnected(Node disc, InetAddress adr) {
+	void handleDisconnected(Node disc, Node from) {
 		NodeTable tbl = NodeTable.getInstance();
 
 		if(tbl.getParent() != null && tbl.getParent().equals(disc)) {
 			synchronized (this) {
-				if(supervisor.isInRecoveryState())
+				if(supervisor.isInRecoveryState()) {
+					//THIS IS VERY HARD TO EXPLAIN..:)
+					supervisor.handleDisconnected(disc, from);
 					return;
-				MessageSystem.sendDscnnResponse(adr, tbl.getThisNode());
-				nextState(new RecoveryState(disc));
+				}
+				MessageSystem.sendDscnnResponse(from.getAddress(), tbl.getThisNode());
+				nextState(new RecoveryState(from));
 			}
 		} else if(tbl.hasLeftNode() && tbl.getLeftNode().equals(disc)) {
 			synchronized (this) {

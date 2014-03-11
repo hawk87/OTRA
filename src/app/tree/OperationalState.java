@@ -1,7 +1,5 @@
 package app.tree;
 
-import java.net.InetAddress;
-
 import app.Node;
 
 /**
@@ -64,7 +62,7 @@ abstract class OperationalState {
 	void handleSetRight(Node from, Node x) {
 	}
 	
-	void handleDisconnected(Node disc, InetAddress from){
+	void handleDisconnected(Node disc, Node from){
 	}
 	
 	void handleDscnnResponse(Node sib) {

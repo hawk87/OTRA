@@ -1,7 +1,5 @@
 package app.tree;
 
-import java.net.InetAddress;
-
 import app.Debug;
 import app.Node;
 import app.NodeTable;
@@ -69,7 +67,7 @@ class RecoveryState extends OperationalState {
 		sibling = sib;
 	}
 	
-	void handleDisconnected(Node disc, InetAddress from) {
+	void handleDisconnected(Node disc, Node from) {
 		NodeTable tbl = NodeTable.getInstance();
 		
 		if(tbl.getThisNode().getAddress().equals(from))
@@ -78,7 +76,7 @@ class RecoveryState extends OperationalState {
 		
 		if(disc.equals(tbl.getParent())) {
 			//we are the sibling
-			MessageSystem.sendDscnnResponse(from, tbl.getThisNode());
+			MessageSystem.sendDscnnResponse(from.getAddress(), tbl.getThisNode());
 		}
 	}
 }

@@ -219,11 +219,13 @@ public class MessageSystem extends Thread {
 		byte[] flag = new byte[1];
 		flag[0] = MessageType.DISCONNECTED.getFlag();
 		byte[] data;
+		NodeTable tbl = NodeTable.getInstance();
 		if(disc == null) {
 			//null pointer not allowed for this kind of message
 			throw new NullPointerException();
 		}
 		data = Utility.appendArray(flag, Utility.intToByte(bcnum));
+		data = Utility.appendArray(data, Utility.intToByte(tbl.getThisNode().getId()));
 		data = Utility.appendArray(data, serializeNodeObj(disc));
 		
 		Connection.sendBroadcast(data);
@@ -326,7 +328,6 @@ public class MessageSystem extends Thread {
 				System.exit(1);
 			}
 			from = new Node(k, adr);
-			System.out.println("received JOIN_BROADCAST message");
 			maintainer.handleJoinBroadcast(from);
 			break;
 		case JOIN_RESPONSE:
@@ -425,9 +426,9 @@ public class MessageSystem extends Thread {
 			maintainer.handlePrint();
 			break;
 		case DISCONNECTED:
-			x = readNodeObj(Arrays.copyOfRange(data, 5, 13));
-			System.out.println("received DISCONNECTED message");
-			maintainer.handleDisconnected(x, adr);
+			id = Utility.byteToInt(Arrays.copyOfRange(data, 5, 9));
+			x = readNodeObj(Arrays.copyOfRange(data, 9, 17));
+			maintainer.handleDisconnected(x, new Node(id, adr));
 			break;
 		case DSCNN_RESPONSE:
 			x = readNodeObj(Arrays.copyOfRange(data, 1, 9));
