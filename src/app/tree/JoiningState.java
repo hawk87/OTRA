@@ -24,6 +24,7 @@ class JoiningState extends OperationalState {
 	
 	void service() {
 		NodeTable tbl = NodeTable.getInstance();
+		int bcnum = TreeMaintenance.getInstance().broadcastNumber++;
 		
 		if(!responded) { //only execute once
 			try {
@@ -31,7 +32,7 @@ class JoiningState extends OperationalState {
 			} catch (InterruptedException e1) {	}
 			for(int i=0; i < 5; i++) {
 				try {
-					MessageSystem.sendJoinBroadcast(tbl.getThisNode().getId());
+					MessageSystem.sendJoinBroadcast(tbl.getThisNode().getId(), bcnum);
 					Thread.sleep(START_DELAY * (int) Math.pow(1.5, i));
 				} catch (InterruptedException e) { }
 				//check if we received a response

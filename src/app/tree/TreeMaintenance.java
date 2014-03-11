@@ -25,6 +25,12 @@ public final class TreeMaintenance extends Thread {
 	 */
 	int rightHeight;
 	
+	/**
+	 * This enumerate the broadcast messages we sent in order to recognize
+	 * multiple receptions of the same message.
+	 */
+	int broadcastNumber;
+	
 	// Singleton design pattern
 	private static TreeMaintenance INSTANCE = new TreeMaintenance();
 

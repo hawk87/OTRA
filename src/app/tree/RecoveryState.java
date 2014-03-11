@@ -25,11 +25,12 @@ class RecoveryState extends OperationalState {
 	
 	void service() {
 		NodeTable tbl = NodeTable.getInstance();
+		int bcnum = TreeMaintenance.getInstance().broadcastNumber++;
 		
 		if(sibling == null) { //only execute once
 			for(int i=0; i < 5; i++) {
 				try {
-					MessageSystem.sendDisconnected(tbl.getParent());
+					MessageSystem.sendDisconnected(tbl.getParent(), bcnum);
 					Thread.sleep(START_DELAY * (int) Math.pow(1.5, i));
 				} catch (InterruptedException e) { }
 				//check if we received a response

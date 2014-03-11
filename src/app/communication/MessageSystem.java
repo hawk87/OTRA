@@ -3,6 +3,8 @@ package app.communication;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import app.Node;
@@ -16,21 +18,78 @@ public class MessageSystem extends Thread {
 	
 	private static MessageSystem INSTANCE = new MessageSystem();
 	
+	/**
+	 * This map the host address and the latest received broadcast message from
+	 * it. We use to decide whether to translate it or not.
+	 */
+	private Map<InetAddress, Integer> mappedMessages;
+	
 	private MessageSystem() {
 		messageQueue = new ArrayBlockingQueue<>(25);
+		mappedMessages = new HashMap<>();
 	}
 	
 	public static MessageSystem getInstance() {
 		return INSTANCE;
 	}
 	
-	public void enqueue(InetAddress address, byte[] data){
-		boolean r;
-		r = messageQueue.offer(new Message(address, data));
+	public void enqueue(InetAddress adr, byte[] data){
+		boolean r = true;
+		if(!receivedBroadcast(adr, data))
+			r = messageQueue.offer(new Message(adr, data));
+		
 		if(!r) {
 			System.out.println("ERROR: MessageSystem.enqueue(): no space available");
 			System.exit(1);
 		}
+	}
+	
+	/**Check if we have already processed this broadcast from the given host.
+	 * @param adr
+	 * @param data
+	 */
+	private boolean receivedBroadcast(InetAddress adr, byte[] data) {
+		int r;
+		Integer num;
+		
+		r = isBroadcast(data);
+		if(r != -1) {
+			num = mappedMessages.get(adr);
+			if(num == null) {
+				//first received bc
+				mappedMessages.put(adr, new Integer(r));
+				return false;
+			} else if(num.intValue() < r) {
+				//we have a new bc msg
+				//then substitute the map value
+				mappedMessages.put(adr, new Integer(r));
+				return false;
+			} else if(num.intValue() == r) {
+				//we have already processed this bc msg
+				return true;
+			} else {
+				System.out.println("MessageSystem.alreadyReceivedBC() anomaly");
+			}
+		}
+		// ELSE return
+		return false;
+	}
+	
+	/**Check if the message in data is of type broadcast and in this case it
+	 * return the number of the broadcast message, otherwise -1
+	 * @param data is the message to inspect
+	 */
+	private int isBroadcast(byte[] data) {
+		MessageType flag = MessageType.convert(data[0]);
+		
+		if(flag.equals(MessageType.JOIN_BROADCAST) ||
+				flag.equals(MessageType.DISCONNECTED)) {
+			//we have a broadcast, then inspect the bc msg number
+			//that is the first word in data
+			return Utility.byteToInt(Arrays.copyOfRange(data, 1, 5));
+		}
+		
+		return -1;
 	}
 	
 	public void run(){
@@ -59,13 +118,13 @@ public class MessageSystem extends Thread {
 		Connection.send(n.getAddress(), data);
 	}
 	
-	public static void sendJoinBroadcast(int id) {
+	public static void sendJoinBroadcast(int id, int bcnum) {
 		byte[] flag = new byte[1];
 		flag[0] = MessageType.JOIN_BROADCAST.getFlag();
 		
-		byte[] data = Utility.appendArray(flag, Utility.intToByte(id));
-		//data now holds the first byte as flag and next four bytes
-		//for the integer
+		byte[] data = Utility.appendArray(flag, Utility.intToByte(bcnum));
+		data = Utility.appendArray(data, Utility.intToByte(id));
+
 		Connection.sendBroadcast(data);
 	}
 	
@@ -158,7 +217,7 @@ public class MessageSystem extends Thread {
 		Connection.send(to.getAddress(), data);
 	}
 	
-	public static void sendDisconnected(Node disc) {
+	public static void sendDisconnected(Node disc, int bcnum) {
 		byte[] flag = new byte[1];
 		flag[0] = MessageType.DISCONNECTED.getFlag();
 		byte[] data;
@@ -166,7 +225,8 @@ public class MessageSystem extends Thread {
 			//null pointer not allowed for this kind of message
 			throw new NullPointerException();
 		}
-		data = Utility.appendArray(flag, serializeNodeObj(disc));
+		data = Utility.appendArray(flag, Utility.intToByte(bcnum));
+		data = Utility.appendArray(data, serializeNodeObj(disc));
 		
 		Connection.sendBroadcast(data);
 	}
@@ -262,12 +322,13 @@ public class MessageSystem extends Thread {
 			maintainer.handlehHeight(from, k);
 			break;
 		case JOIN_BROADCAST:
-			k = Utility.byteToInt(Arrays.copyOfRange(data, 1, 5));
+			k = Utility.byteToInt(Arrays.copyOfRange(data, 5, 9));
 			if(k <= 0) {
 				System.out.println("ERROR: received an invalid identifier: " + k);
 				System.exit(1);
 			}
 			from = new Node(k, adr);
+			System.out.println("received JOIN_BROADCAST message");
 			maintainer.handleJoinBroadcast(from);
 			break;
 		case JOIN_RESPONSE:
@@ -366,7 +427,7 @@ public class MessageSystem extends Thread {
 			maintainer.handlePrint();
 			break;
 		case DISCONNECTED:
-			x = readNodeObj(Arrays.copyOfRange(data, 1, 9));
+			x = readNodeObj(Arrays.copyOfRange(data, 5, 13));
 			System.out.println("received DISCONNECTED message");
 			maintainer.handleDisconnected(x, adr);
 			break;
