@@ -45,25 +45,39 @@ public class Router {
 					if (dest.getID() >= tbl.getParent().getId())
 						FileTransfer.send(tbl.getParent().getAddress(), dest);
 					else if (dest.getID() < tbl.getParent().getId()
-							&& dest.getID() > tbl.getThisNode().getId())
+							&& dest.getID() > tbl.getThisNode().getId()
+							&& tbl.hasRightNode())
 						FileTransfer
 								.send(tbl.getRightNode().getAddress(), dest);
-					else
+					else if (tbl.hasLeftNode())
 						FileTransfer.send(tbl.getLeftNode().getAddress(), dest);
+					else {
+						Debug.output("ID " + dest.getID()
+								+ " doesn't exist. File dropped");
+						dest = null;
+					}
 				}
 				// se sono figlio dx
 				else if (tbl.getThisNode().getId() > tbl.getParent().getId()) {
 					if (dest.getID() <= tbl.getParent().getId())
 						FileTransfer.send(tbl.getParent().getAddress(), dest);
 					else if (dest.getID() > tbl.getParent().getId()
-							&& dest.getID() < tbl.getThisNode().getId())
+							&& dest.getID() < tbl.getThisNode().getId()
+							&& tbl.hasLeftNode())
 						FileTransfer.send(tbl.getLeftNode().getAddress(), dest);
-					else
+					else if (tbl.hasRightNode())
 						FileTransfer
 								.send(tbl.getRightNode().getAddress(), dest);
+					else {
+						Debug.output("ID " + dest.getID()
+								+ " doesn't exist. File dropped");
+						dest = null;
+					}
 				}
 			}
-		} else { // se sono root
+		}
+		// se sono root
+		else {
 			if (dest.getID() > tbl.getThisNode().getId())
 				FileTransfer.send(tbl.getRightNode().getAddress(), dest);
 			else
