@@ -34,30 +34,34 @@ public class Router {
 
 	public void forward(OTRAFile dest) {
 		NodeTable tbl = NodeTable.getInstance();
-		if (!tbl.isThisRoot()) { // se non sono root, sono un nodo interno o una
-									// foglia
-			if (tbl.getThisNode().getId() < tbl.getParent().getId()) { // se
-																		// sono
-																		// figlio
-																		// sx
-				if (dest.getID() >= tbl.getParent().getId())
-					FileTransfer.send(tbl.getParent().getAddress(), dest);
-				else if (dest.getID() < tbl.getParent().getId()
-						&& dest.getID() > tbl.getThisNode().getId())
-					FileTransfer.send(tbl.getRightNode().getAddress(), dest);
-				else
-					FileTransfer.send(tbl.getLeftNode().getAddress(), dest);
-			} else if (tbl.getThisNode().getId() > tbl.getParent().getId()) { // se
-																				// sono
-																				// figlio
-																				// dx
-				if (dest.getID() <= tbl.getParent().getId())
-					FileTransfer.send(tbl.getParent().getAddress(), dest);
-				else if (dest.getID() > tbl.getParent().getId()
-						&& dest.getID() < tbl.getThisNode().getId())
-					FileTransfer.send(tbl.getLeftNode().getAddress(), dest);
-				else
-					FileTransfer.send(tbl.getRightNode().getAddress(), dest);
+		// se non sono root, sono un nodo interno o una foglia
+		if (!tbl.isThisRoot()) {
+			// se sono foglia
+			if (tbl.getLeftNode() == null && tbl.getRightNode() == null) {
+				FileTransfer.send(tbl.getParent().getAddress(), dest);
+			} else {
+				// se sono figlio sx
+				if (tbl.getThisNode().getId() < tbl.getParent().getId()) {
+					if (dest.getID() >= tbl.getParent().getId())
+						FileTransfer.send(tbl.getParent().getAddress(), dest);
+					else if (dest.getID() < tbl.getParent().getId()
+							&& dest.getID() > tbl.getThisNode().getId())
+						FileTransfer
+								.send(tbl.getRightNode().getAddress(), dest);
+					else
+						FileTransfer.send(tbl.getLeftNode().getAddress(), dest);
+				}
+				// se sono figlio dx
+				else if (tbl.getThisNode().getId() > tbl.getParent().getId()) {
+					if (dest.getID() <= tbl.getParent().getId())
+						FileTransfer.send(tbl.getParent().getAddress(), dest);
+					else if (dest.getID() > tbl.getParent().getId()
+							&& dest.getID() < tbl.getThisNode().getId())
+						FileTransfer.send(tbl.getLeftNode().getAddress(), dest);
+					else
+						FileTransfer
+								.send(tbl.getRightNode().getAddress(), dest);
+				}
 			}
 		} else { // se sono root
 			if (dest.getID() > tbl.getThisNode().getId())
