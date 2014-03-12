@@ -19,7 +19,7 @@ class NormalState extends OperationalState {
 	private boolean leftIsReady;
 	private boolean rightIsReady;
 	
-	private final int START_DELAY = 200;
+	private final int START_DELAY = 150;
 	
 	private Node sibling;
 	
