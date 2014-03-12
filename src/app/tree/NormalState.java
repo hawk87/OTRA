@@ -19,9 +19,6 @@ class NormalState extends OperationalState {
 	private boolean leftIsReady;
 	private boolean rightIsReady;
 	
-	private Node latestJoinNode;
-	private long latestJoinTime;
-	
 	private final int START_DELAY = 200;
 	
 	private Node sibling;
@@ -190,14 +187,7 @@ class NormalState extends OperationalState {
 			Debug.output("root received a join broadcast message");
 			Node thisnode = tbl.getThisNode();
 			
-			if(latestJoinNode != null && n.equals(latestJoinNode))
-				if(System.currentTimeMillis() - latestJoinTime < 2000)
-					//then we have already handled this joining node
-					return;
-			
 			MessageSystem.sendJoinResponse(n);
-			latestJoinNode = n;
-			latestJoinTime = System.currentTimeMillis();
 
 			if (n.getId() < thisnode.getId()) {
 				if (tbl.hasLeftNode()) {
