@@ -10,6 +10,7 @@ public class Debug {
 	public static void output(String s) {
 		Thread thisThread = Thread.currentThread();
 		StackTraceElement[] stack = thisThread.getStackTrace();
+		long time = System.currentTimeMillis();
 		//stack[0] is the Thread class
 		//stack[1] is this class
 		//stack[2] is what we need to inspect
@@ -21,7 +22,8 @@ public class Debug {
 			System.err.println("DEBUG: " + classname);
 			currentClass = classname;
 		}
-		System.err.println("  " + s + " (" + methodname + " " + linenumber + ")");
+		System.err.println("[" + time + "]" + "  " + s +
+				" (" + methodname + " " + linenumber + ")");
 	}
 	
 }
