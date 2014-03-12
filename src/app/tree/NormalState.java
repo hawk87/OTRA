@@ -21,6 +21,10 @@ class NormalState extends OperationalState {
 	
 	private Node latestJoinNode;
 	private long latestJoinTime;
+	
+	private final int START_DELAY = 200;
+	
+	private Node sibling;
 
 	NormalState() {
 		Debug.output("Entering normal state...");
@@ -56,19 +60,52 @@ class NormalState extends OperationalState {
 		if(!tbl.isThisRoot()) {
 			if(!MessageSystem.sendTouch(tbl.getParent())) {
 				Debug.output("parent node failing TOUCH: " + tbl.getParent());
-				lostParent = true;
-				synchronized (this) {
-					if(supervisor.isInRecoveryState())
-						//already in recovery
-						return;
-					nextState(new RecoveryState());
-				}
+				discoverSibling();
 			}
 		}
 		//check if we are a leaf, then send height up
 		if(!tbl.hasLeftNode() && !tbl.hasRightNode()) {
 			if(!tbl.isThisRoot() && !lostParent)
 				MessageSystem.sendHeight(tbl.getParent(), 1);
+		}
+	}
+	
+	private void discoverSibling() {
+		NodeTable tbl = NodeTable.getInstance();
+		int bcnum = TreeMaintenance.getInstance().broadcastNumber++;
+		
+		for(int i=0; i < 5; i++) {
+			try {
+				MessageSystem.sendDisconnected(tbl.getParent(), bcnum);
+				Thread.sleep(START_DELAY * (int) Math.pow(1.5, i));
+			} catch (InterruptedException e) { }
+			//check if we received a response
+			if(sibling != null)
+				break;
+		}
+		if(sibling == null) {
+			//then we can deduce that there is no sibling network
+			Debug.output("no sibling network...");
+			//then we try to rejoin the network, if any
+			tbl.setParent(null);
+			nextState(new JoiningState());
+			
+		} else if(tbl.getThisNode().getId() < tbl.getParent().getId()) {
+			//then we are the left orphan
+			if(tbl.hasRightNode()) {
+				MessageSystem.sendRecoveryFindMax(tbl.getRightNode(),
+						tbl.getThisNode(), sibling);
+				//go waiting in recovery state
+				nextState(new RecoveryState());
+			} else {
+				MessageSystem.sendSetParent(sibling, tbl.getThisNode());
+				tbl.setRightNode(sibling);
+				tbl.setParent(null);
+				nextState(new JoiningState());
+			}
+		} else {
+			//we are the right orphan, go waiting
+			nextState(new RecoveryState());
 		}
 	}
 
@@ -264,17 +301,14 @@ class NormalState extends OperationalState {
 	
 	void handleDisconnected(Node disc, Node from) {
 		NodeTable tbl = NodeTable.getInstance();
+		
+		if(tbl.getThisNode().equals(from))
+			//because we received the broadcast message we sent
+			return;
 
 		if(tbl.getParent() != null && tbl.getParent().equals(disc)) {
-			synchronized (this) {
-				if(supervisor.isInRecoveryState()) {
-					//THIS IS VERY HARD TO EXPLAIN..:)
-					supervisor.handleDisconnected(disc, from);
-					return;
-				}
-				MessageSystem.sendDscnnResponse(from.getAddress(), tbl.getThisNode());
-				nextState(new RecoveryState(from));
-			}
+			// we found a sibling
+			sibling = from;
 		} else if(tbl.hasLeftNode() && tbl.getLeftNode().equals(disc)) {
 			synchronized (this) {
 				tbl.setLeftNode(null);
