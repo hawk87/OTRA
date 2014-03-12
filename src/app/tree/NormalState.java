@@ -25,6 +25,8 @@ class NormalState extends OperationalState {
 	private final int START_DELAY = 200;
 	
 	private Node sibling;
+	
+	private boolean sibReady;
 
 	NormalState() {
 		Debug.output("Entering normal state...");
@@ -89,23 +91,44 @@ class NormalState extends OperationalState {
 			tbl.setParent(null);
 			nextState(new JoiningState());
 			
-		} else if(tbl.getThisNode().getId() < tbl.getParent().getId()) {
-			//then we are the left orphan
-			if(tbl.hasRightNode()) {
-				MessageSystem.sendRecoveryFindMax(tbl.getRightNode(),
-						tbl.getThisNode(), sibling);
-				//go waiting in recovery state
-				nextState(new RecoveryState());
-			} else {
-				MessageSystem.sendSetParent(sibling, tbl.getThisNode());
-				tbl.setRightNode(sibling);
-				tbl.setParent(null);
-				nextState(new JoiningState());
-			}
 		} else {
-			//we are the right orphan, go waiting
-			nextState(new RecoveryState());
+			//we wait for synchronization before entering in recovery state
+			waitForSynch();
+			if(tbl.getThisNode().getId() < tbl.getParent().getId()) {
+				//then we are the left orphan
+				if(tbl.hasRightNode()) {
+					//go waiting in recovery state
+					nextState(new RecoveryState());
+					MessageSystem.sendRecoveryFindMax(tbl.getRightNode(),
+							tbl.getThisNode(), sibling);
+				} else {
+					//we complete the recovery
+					Debug.output("we complete the recovery");
+					MessageSystem.sendSetParent(sibling, tbl.getThisNode());
+					tbl.setRightNode(sibling);
+					tbl.setParent(null);
+					nextState(new JoiningState());
+				}
+			} else {
+				//we are the right orphan, go waiting
+				nextState(new RecoveryState());
+			}
 		}
+	}
+	
+	private void waitForSynch() {
+		NodeTable tbl = NodeTable.getInstance();
+		MessageSystem.sendDscnnResponse(sibling.getAddress(), tbl.getThisNode());
+		while(true) {
+			synchronized (this) {
+				if(sibReady)
+					break;
+			}
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) { }
+		}
+		Debug.output("two sibling are synchronized");
 	}
 
 	void handleHeight(Node n, int h) {
@@ -310,13 +333,23 @@ class NormalState extends OperationalState {
 			sibling = from;
 		} else if(tbl.hasLeftNode() && tbl.getLeftNode().equals(disc)) {
 			synchronized (this) {
+				Debug.output("left node failing: " + tbl.getLeftNode());
+				Debug.output("removing from NodeTable");
 				tbl.setLeftNode(null);
 			}
 		}
 		else if(tbl.hasRightNode() && tbl.getRightNode().equals(disc)) {
 			synchronized (this) {
+				Debug.output("right node failing: " + tbl.getRightNode());
+				Debug.output("removing from NodeTable");
 				tbl.setRightNode(null);
 			}
+		}
+	}
+	
+	void handleDscnnResponse(Node x) {
+		synchronized (this) {
+			sibReady = true;
 		}
 	}
 	
