@@ -8,7 +8,6 @@ class RecoveryState extends OperationalState {
 	
 	RecoveryState() {
 		Debug.output("Entering recovery state");
-		supervisor.forceService();
 	}
 	
 	void handleSetRight(Node from, Node x) {

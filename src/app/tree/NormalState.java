@@ -35,7 +35,6 @@ class NormalState extends OperationalState {
 	 */
 	void service() {
 		NodeTable tbl = NodeTable.getInstance();
-		boolean lostParent = false;
 		//check left node
 		synchronized (this) {
 			if(tbl.hasLeftNode()) {
@@ -65,7 +64,7 @@ class NormalState extends OperationalState {
 		}
 		//check if we are a leaf, then send height up
 		if(!tbl.hasLeftNode() && !tbl.hasRightNode()) {
-			if(!tbl.isThisRoot() && !lostParent)
+			if(!tbl.isThisRoot())
 				MessageSystem.sendHeight(tbl.getParent(), 1);
 		}
 	}
