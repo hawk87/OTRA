@@ -9,7 +9,7 @@ import app.communication.CRC8;
 public class Connection {
 
 	private static final int RETRY_LIMIT = 10;
-	private static final int DELAY_TOLLERANCE = 25;
+	private static final int DELAY_TOLLERANCE = 100; //25
 	private static final int PORT = 6666;
 	private static final int BUFFER_SIZE = 20;
 	// private static final int ACK_PORT = 7777;
@@ -132,6 +132,7 @@ public class Connection {
 				} catch (SocketTimeoutException e) {
 					if (++retry >= RETRY_LIMIT) {
 						System.err.println("Max retry limit reached.");
+						Debug.output(message.toString());
 						sent = false;
 						break;
 					}
