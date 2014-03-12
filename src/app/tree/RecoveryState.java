@@ -8,7 +8,7 @@ import app.communication.MessageSystem;
 class RecoveryState extends OperationalState {
 	private Node sibling;
 	
-	private final int START_DELAY = 150;
+	private final int START_DELAY = 200;
 	
 	RecoveryState() {
 		Debug.output("Entering recovery state");
