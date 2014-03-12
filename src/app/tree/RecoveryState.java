@@ -70,7 +70,7 @@ class RecoveryState extends OperationalState {
 	void handleDisconnected(Node disc, Node from) {
 		NodeTable tbl = NodeTable.getInstance();
 		
-		if(tbl.getThisNode().getAddress().equals(from))
+		if(tbl.getThisNode().getAddress().equals(from.getAddress()))
 			//because we received the broadcast message we sent
 			return;
 		
