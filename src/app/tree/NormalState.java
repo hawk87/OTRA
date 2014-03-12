@@ -340,6 +340,7 @@ class NormalState extends OperationalState {
 	void handleDscnnResponse(Node x) {
 		synchronized (this) {
 			sibReady = true;
+			supervisor.forceService();
 		}
 	}
 	
