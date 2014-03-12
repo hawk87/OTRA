@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 
+import app.Debug;
 import app.Node;
 import app.NodeTable;
 import app.Utility;
@@ -161,6 +162,11 @@ public class MessageSystem extends Thread {
 	}
 	
 	public static void sendSetParent(Node to, Node parent) {
+		if(parent == null)
+			Debug.output("MESSAGE DEBUG: setParent to:" + to.getId() + "parent: null");
+		else
+		Debug.output("MESSAGE DEBUG: setParent to:" + to.getId() + "parent: "+parent.getId());
+		
 		byte[] flag = new byte[1];
 		flag[0] = MessageType.SET_PARENT.getFlag();
 		byte[] data;
@@ -179,6 +185,12 @@ public class MessageSystem extends Thread {
 	}
 	
 	public static void sendSetLeft(Node to, Node leftChild) {
+		
+		if(leftChild == null)
+			Debug.output("MESSAGE DEBUG: setLeft to:" + to.getId() + "left: null");
+		else
+		Debug.output("MESSAGE DEBUG: setLeft to:" + to.getId() + "left: "+leftChild.getId());
+		
 		byte[] flag = new byte[1];
 		flag[0] = MessageType.SET_LEFT.getFlag();
 		byte[] data;
@@ -198,6 +210,12 @@ public class MessageSystem extends Thread {
 	}
 	
 	public static void sendSetRight(Node to, Node rightChild) {
+		
+		if(rightChild == null)
+			Debug.output("MESSAGE DEBUG: setRight to:" + to.getId() + "right: null");
+		else
+		Debug.output("MESSAGE DEBUG: setRight to:" + to.getId() + "right: "+rightChild.getId());
+		
 		byte[] flag = new byte[1];
 		flag[0] = MessageType.SET_RIGHT.getFlag();
 		byte[] data;
