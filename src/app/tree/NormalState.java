@@ -299,6 +299,7 @@ class NormalState extends OperationalState {
 		// ELSE we have to perform the recovery operation
 		
 		MessageSystem.sendSetRight(tbl.getParent(), tbl.getLeftNode());
+		tbl.setParent(null);
 		if(tbl.getLeftNode() != null) {
 			MessageSystem.sendSetParent(tbl.getLeftNode(), tbl.getParent());
 		}
