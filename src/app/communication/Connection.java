@@ -3,6 +3,7 @@ package app.communication;
 import java.io.IOException;
 import java.net.*;
 
+import app.Debug;
 import app.communication.CRC8;
 
 public class Connection {
@@ -63,6 +64,7 @@ public class Connection {
 						}
 					} else {
 						if (flag == (byte) 0x00) {
+							Debug.output("Corrupdet message received");
 							DatagramPacket nack = new DatagramPacket(NACK,
 									NACK.length, address, ackPort);
 							receiveSocket.send(nack);
@@ -82,67 +84,6 @@ public class Connection {
 		l.start();
 		interfaceAddress = intAdr;
 	}
-
-	// public static boolean send(InetAddress address, byte[] data) {
-	//
-	// int retry = 0;
-	//
-	// // message packet
-	// byte[] message = new byte[data.length + 3];
-	// System.arraycopy(data, 0, message, 2, data.length);
-	// message[0] = (byte) 0x00;
-	// message[1] = sn; // add SN
-	// message[message.length - 1] = CRC8.calculate(message,
-	// message.length - 1); // add CRC
-	// DatagramPacket sendPacket = new DatagramPacket(message, message.length,
-	// address, PORT);
-	//
-	// // ack packet
-	// byte[] buf = new byte[8];
-	// DatagramPacket ackPacket = new DatagramPacket(buf, buf.length);
-	//
-	// try {
-	// DatagramSocket ackSocket = new DatagramSocket(ACK_PORT);
-	//
-	// while(true) {
-	// // acknowledgment delay tolerance (in milliseconds)
-	// ackSocket.setSoTimeout(DELAY_TOLLERANCE*(int)Math.pow(1.5, retry));
-	//
-	// DatagramSocket sendSocket = new DatagramSocket();
-	// sendSocket.send(sendPacket);
-	// //System.out.println("send " + (int) sn);
-	// sendSocket.close();
-	//
-	// try {
-	// ackSocket.receive(ackPacket);
-	//
-	// // MIGLIORARE VERIFICA
-	// if (ackPacket.getData()[0] == ACK[0]) {
-	// //System.out.println("<- ACK " + (int) sn);
-	// sn++;
-	// ackSocket.close();
-	// return true;
-	// } else {
-	// System.out.println("<- NACK " + (int) sn);
-	// // retry++;
-	// }
-	//
-	// } catch (SocketTimeoutException e) {
-	// if (++retry >= RETRY_LIMIT) {
-	// ackSocket.close();
-	// System.err.println("Max retry limit reached.");
-	// //System.exit(-1);
-	// return false;
-	// }
-	// }
-	// }
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// //System.err.println(e.getMessage());
-	// //System.err.println(e.getStackTrace());
-	// return false;
-	// }
-	// }
 
 	public static boolean send(InetAddress address, byte[] data) {
 
@@ -184,7 +125,7 @@ public class Connection {
 						sent = true;
 						break;
 					} else {
-						System.out.println("<- NACK " + (int) sn);
+						Debug.output("NACK received");
 						retry++;
 					}
 
