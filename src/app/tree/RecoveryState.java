@@ -56,6 +56,11 @@ class RecoveryState extends OperationalState {
 		}
 	}
 	
+	void handleSetRight(Node from, Node x) {
+		NodeTable tbl = NodeTable.getInstance();
+		tbl.setRightNode(x);
+	}
+	
 	void handleSetParent(Node from, Node p) {
 		NodeTable tbl = NodeTable.getInstance();
 		tbl.setParent(p);
