@@ -113,14 +113,14 @@ public class MessageSystem extends Thread {
 		return Connection.send(n.getAddress(), data);
 	}
 
-	public static void sendHeight(Node n, int s) {
+	public static boolean sendHeight(Node n, int s) {
 		byte[] flag = new byte[1];
 		flag[0] = MessageType.HEIGHT.getFlag();
 
 		byte[] data = Utility.appendArray(flag, Utility.intToByte(s));
 		// data[] now holds the first byte as flag and next four bytes
 		// for the integer
-		Connection.send(n.getAddress(), data);
+		return Connection.send(n.getAddress(), data);
 	}
 
 	public static void sendJoinBroadcast(int id, int bcnum) {

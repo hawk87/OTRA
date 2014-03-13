@@ -58,11 +58,16 @@ class NormalState extends OperationalState {
 		}
 		//check parent
 		if(!tbl.isThisRoot()) {
-			if(!MessageSystem.sendTouch(tbl.getParent())) {
-				Debug.output("parent node failing TOUCH: " + tbl.getParent());
-				lostParent = true;
-				discoverSibling();
+			synchronized (this) {
+				if(!lostParent) {
+					if(!MessageSystem.sendTouch(tbl.getParent())) {
+						Debug.output("parent node failing TOUCH: " + tbl.getParent());
+						lostParent = true;
+					}
+				}
 			}
+			if(lostParent)
+				discoverSibling();
 		}
 		//check if we are a leaf, then send height up
 		if(!tbl.hasLeftNode() && !tbl.hasRightNode()) {
@@ -95,6 +100,10 @@ class NormalState extends OperationalState {
 			//we wait for synchronization before entering in recovery state
 			waitForSynch();
 			if(tbl.getThisNode().getId() < tbl.getParent().getId()) {
+				//wait to be sure the right sibling enters recovery state
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) { }
 				//then we are the left orphan
 				if(tbl.hasRightNode()) {
 					//go waiting in recovery state
@@ -168,11 +177,17 @@ class NormalState extends OperationalState {
 				// get b-balance node
 				Node b = tbl.getRightNode();
 				nextState(new BalancingAState(b));
-			} else {
-				//send a HEIGHT signal to the parent if any
-				if(!tbl.isThisRoot() && !lostParent) {
-					MessageSystem.sendHeight(
-							tbl.getParent(), supervisor.computeHeight());
+			}
+			else if(!tbl.isThisRoot()){
+				synchronized (this) {
+					if(!lostParent) {
+						//send a HEIGHT signal to the parent if any
+						if(!MessageSystem.sendHeight(
+								tbl.getParent(), supervisor.computeHeight())) {
+							Debug.output("parent node failing HEIGHT: " + tbl.getParent());
+							lostParent = true;
+						}
+					}
 				}
 			}
 
