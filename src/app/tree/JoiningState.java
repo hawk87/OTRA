@@ -12,7 +12,7 @@ import app.communication.MessageSystem;
  */
 class JoiningState extends OperationalState {
 	
-	private final int START_DELAY = 150;
+	private final int START_DELAY = 200;
 	
 	private boolean responded;
 	
