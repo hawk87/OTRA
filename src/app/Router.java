@@ -108,36 +108,54 @@ public class Router {
 		}
 		// if(from == lchild_ID)
 		else if (tbl.hasLeftNode() && from.getId() == tbl.getLeftNode().getId()) {
-			if (tbl.isThisRoot() || dest.getID() < tbl.getParent().getId()) {
+			if (tbl.isThisRoot()
+					|| (dest.getID() < tbl.getParent().getId() && tbl
+							.hasRightNode())) {
 				// forward to rchild
 				Debug.output("Forwarding to Right Child");
 				FileTransfer.send(tbl.getRightNode().getAddress(), dest);
-			} else { // forward to parent
+			} else if (dest.getID() > tbl.getParent().getId()) { // forward to
+																	// parent
 				Debug.output("Forwarding to Parent");
 				FileTransfer.send(tbl.getParent().getAddress(), dest);
+			} else {
+				Debug.output("ID " + dest.getID()
+						+ " doesn't exist. File dropped");
+				dest = null;
 			}
 		}
 		// if(from == rchild_ID)
 		else if (tbl.hasRightNode()
 				&& from.getId() == tbl.getRightNode().getId()) {
-			if (tbl.isThisRoot() || dest.getID() < tbl.getParent().getId()) {
+			if (tbl.isThisRoot()
+					|| (dest.getID() < tbl.getParent().getId() && tbl
+							.hasLeftNode())) {
 				// forward to lchild
 				Debug.output("Forwarding to Left Child");
 				FileTransfer.send(tbl.getLeftNode().getAddress(), dest);
-			} else { // forward to parent
+			} else if (dest.getID() > tbl.getParent().getId()) { // forward to
+																	// parent
 				Debug.output("Forwarding to Parent");
 				FileTransfer.send(tbl.getParent().getAddress(), dest);
+			} else {
+				Debug.output("ID " + dest.getID()
+						+ " doesn't exist. File dropped");
+				dest = null;
 			}
 		}
 		// if(from == parent_ID)
 		else if (!tbl.isThisRoot() && from.getId() == tbl.getParent().getId()) {
-			if (dest.getID() < tbl.getThisNode().getId()) {
+			if (dest.getID() < tbl.getThisNode().getId() && tbl.hasLeftNode()) {
 				// forward to lchild
 				Debug.output("Forwarding to Left Child");
 				FileTransfer.send(tbl.getLeftNode().getAddress(), dest);
-			} else { // forward to rchild
+			} else if (tbl.hasRightNode()) { // forward to rchild
 				Debug.output("Forwarding to Right Child");
 				FileTransfer.send(tbl.getRightNode().getAddress(), dest);
+			} else {
+				Debug.output("ID " + dest.getID()
+						+ " doesn't exist. File dropped");
+				dest = null;
 			}
 		}
 		// if nothing else
