@@ -64,7 +64,7 @@ public class Connection {
 						}
 					} else {
 						if (flag == (byte) 0x00) {
-							Debug.output("Corrupdet message received");
+							Debug.output("Corrupted message received");
 							DatagramPacket nack = new DatagramPacket(NACK,
 									NACK.length, address, ackPort);
 							receiveSocket.send(nack);

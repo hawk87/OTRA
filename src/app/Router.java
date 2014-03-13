@@ -102,7 +102,7 @@ public class Router {
 
 			FileOutputStream f = new FileOutputStream(file);
 			f.write(dest.getData());
-			Debug.output("File wrote");
+			Debug.output("File written");
 			f.close();
 			Debug.output("File closed");
 		}
