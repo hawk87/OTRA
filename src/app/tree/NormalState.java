@@ -21,6 +21,8 @@ class NormalState extends OperationalState {
 	
 	private final int START_DELAY = 200;
 	
+	private boolean lostParent;
+	
 	private Node sibling;
 	
 	private boolean sibReady;
@@ -58,6 +60,7 @@ class NormalState extends OperationalState {
 		if(!tbl.isThisRoot()) {
 			if(!MessageSystem.sendTouch(tbl.getParent())) {
 				Debug.output("parent node failing TOUCH: " + tbl.getParent());
+				lostParent = true;
 				discoverSibling();
 			}
 		}
@@ -167,7 +170,7 @@ class NormalState extends OperationalState {
 				nextState(new BalancingAState(b));
 			} else {
 				//send a HEIGHT signal to the parent if any
-				if(!tbl.isThisRoot()) {
+				if(!tbl.isThisRoot() && !lostParent) {
 					MessageSystem.sendHeight(
 							tbl.getParent(), supervisor.computeHeight());
 				}
