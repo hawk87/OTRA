@@ -59,8 +59,8 @@ public class Connection {
 							receiveSocket.send(ack);
 						}
 						if (!Cache.isThere(address, sn)) {
-							MessageSystem.getInstance().
-								enqueue(receivePacket.getAddress(), data);
+							MessageSystem.getInstance().enqueue(
+									receivePacket.getAddress(), data);
 						}
 					} else {
 						if (flag == (byte) 0x00) {
@@ -132,7 +132,7 @@ public class Connection {
 				} catch (SocketTimeoutException e) {
 					if (++retry >= RETRY_LIMIT) {
 						System.err.println("Max retry limit reached.");
-						Debug.output("Flag: "+Byte.toString(data[0]));
+						// Debug.output("Flag: "+Byte.toString(data[0]));
 						sent = false;
 						break;
 					}
@@ -141,7 +141,7 @@ public class Connection {
 			socket.close();
 
 		} catch (Exception e) {
-			System.err.print("FATAL ERROR: send function");
+			System.err.println("FATAL ERROR: send function");
 			e.printStackTrace();
 			System.exit(1);
 		}
