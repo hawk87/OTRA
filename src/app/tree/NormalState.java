@@ -78,8 +78,8 @@ class NormalState extends OperationalState {
 				Thread.sleep(START_DELAY * (int) Math.pow(1.5, i));
 			} catch (InterruptedException e) { }
 			//check if we received a response
-			if(sibling != null)
-				break;
+			//if(sibling != null)
+			//	break;
 		}
 		if(sibling == null) {
 			//then we can deduce that there is no sibling network
@@ -340,7 +340,7 @@ class NormalState extends OperationalState {
 	void handleDscnnResponse(Node x) {
 		synchronized (this) {
 			sibReady = true;
-			supervisor.forceService();
+			//supervisor.forceService();
 		}
 	}
 	
