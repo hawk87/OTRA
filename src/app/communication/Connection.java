@@ -131,8 +131,7 @@ public class Connection {
 
 				} catch (SocketTimeoutException e) {
 					if (++retry >= RETRY_LIMIT) {
-						System.err.println("Max retry limit reached.");
-						// Debug.output("Flag: "+Byte.toString(data[0]));
+						System.err.println("Max retry limit reached. Flag: "+Byte.toString(data[0]));
 						sent = false;
 						break;
 					}
