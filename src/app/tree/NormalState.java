@@ -81,12 +81,6 @@ class NormalState extends OperationalState {
 			if(sibling != null)
 				break;
 		}
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		if(sibling == null) {
 			//then we can deduce that there is no sibling network
 			Debug.output("no sibling network...");
