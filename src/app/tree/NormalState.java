@@ -125,7 +125,7 @@ class NormalState extends OperationalState {
 				Thread.sleep(100);
 			} catch (InterruptedException e) { }
 		}
-		Debug.output("two sibling are synchronized");
+		Debug.output("two siblings are synchronized");
 	}
 
 	void handleHeight(Node n, int h) {
