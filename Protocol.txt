@@ -1,11 +1,26 @@
 # PROTOCOL MESSAGES
+# all service is based around the following messages
 
-SIZE <-Node n, int s->
-It comes from children and provides to a given node balancing information of the subtrees.
+TOUCH verify if the given host is up and running
 
-JOIN_BROADCAST <-Node n->
-Lan broadcast packet to inspect if there is a tree network already built.
+HEIGHT send the height of the current subtree up to parent node
 
-JOIN_SEARCH <-Node n->
-Inform the receiving host that Node n is looking for a place to attach. This propagates from the root to the leaves until it encouter a free place where n can attach itself.
+JOIN_BROADCAST broadcast signal to discover if there is an OTRA network already running
 
+JOIN_RESPONSE response to handle incomer hosts
+
+JOIN_SEARCH is propagated downward the tree two find the right position to attach the new joining host
+
+BALANCE signal that there is the need of an balancing operation
+
+SET_PARENT to change references in other host's routing table
+SET_LEFT
+SET_RIGHT
+
+PRINT broadcast signal to force leaves host to send printing information upward
+
+DISCONNECTED broadcast to discover sibling that lost their parent as well
+
+DSCNN_RESPONSE siblings response to DISCONNECTED discovery
+
+RECOVERY_FIND_MAX run in a given subtree find the host which has the greatest id value, this serves to merge two subtree into a new one
